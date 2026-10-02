@@ -1,0 +1,288 @@
+{
+    "common": {
+        "save": "Salvar",
+        "cancel": "Cancelar",
+        "confirm": "Confirmar",
+        "back": "Voltar",
+        "loading": "Carregando...",
+        "saving": "Salvando...",
+        "error": "Erro",
+        "success": "Sucesso",
+        "actions": "Ações",
+        "noResults": "Nenhum resultado encontrado",
+        "goToDashboard": "Ir para o dashboard",
+        "goToLogin": "Ir para o login"
+    },
+    "nav": {
+        "dashboard": "Dashboard",
+        "profile": "Perfil",
+        "sessions": "Sessões",
+        "users": "Usuários",
+        "audit": "Auditoria",
+        "logout": "Sair"
+    },
+    "auth": {
+        "login": {
+            "title": "Entrar",
+            "subtitle": "Acesse sua conta para continuar",
+            "email": "E-mail",
+            "password": "Senha",
+            "submit": "Entrar",
+            "submitting": "Entrando...",
+            "forgotPassword": "Esqueceu a senha?",
+            "noAccount": "Não tem uma conta?",
+            "register": "Criar conta"
+        },
+        "register": {
+            "title": "Criar conta",
+            "subtitle": "Preencha os dados abaixo para se registrar",
+            "name": "Nome",
+            "email": "E-mail",
+            "password": "Senha",
+            "confirmPassword": "Confirmar senha",
+            "submit": "Criar conta",
+            "submitting": "Criando conta...",
+            "hasAccount": "Já tem uma conta?",
+            "login": "Entrar",
+            "success": "Conta criada com sucesso!"
+        },
+        "forgotPassword": {
+            "title": "Esqueceu a senha?",
+            "subtitle": "Informe seu e-mail e enviaremos as instruções para redefinir sua senha.",
+            "email": "E-mail",
+            "submit": "Enviar instruções",
+            "submitting": "Enviando...",
+            "backToLogin": "Voltar para o login",
+            "successTitle": "Verifique seu e-mail",
+            "successMessage": "Se esse e-mail estiver cadastrado, você receberá as instruções para redefinir sua senha em breve."
+        },
+        "resetPassword": {
+            "title": "Redefinir senha",
+            "subtitle": "Crie uma nova senha para sua conta.",
+            "password": "Nova senha",
+            "confirmPassword": "Confirmar nova senha",
+            "submit": "Redefinir senha",
+            "submitting": "Salvando...",
+            "backToLogin": "Voltar para o login",
+            "invalidToken": "Link inválido",
+            "invalidTokenMessage": "Este link de redefinição de senha é inválido ou já foi utilizado.",
+            "requestNewLink": "Solicitar novo link",
+            "success": "Senha redefinida com sucesso!"
+        }
+    },
+    "dashboard": {
+        "greeting": "Olá, {{name}} 👋",
+        "welcome": "Bem-vindo de volta. Você está logado como"
+    },
+    "profile": {
+        "title": "Perfil",
+        "accountInfo": "Informações da conta",
+        "name": "Nome",
+        "email": "E-mail",
+        "role": "Perfil",
+        "theme": {
+            "title": "Tema",
+            "subtitle": "Escolha a aparência da interface",
+            "light": "☀️ Claro",
+            "dark": "🌙 Escuro",
+            "success": "Tema atualizado com sucesso"
+        },
+        "changePassword": {
+            "title": "Alterar senha",
+            "subtitle": "Sua nova senha deve ter no mínimo 8 caracteres e 1 caractere especial",
+            "current": "Senha atual",
+            "new": "Nova senha",
+            "confirm": "Confirmar nova senha",
+            "submit": "Alterar senha",
+            "success": "Senha alterada com sucesso"
+        },
+        "dangerZone": {
+            "title": "Zona de perigo",
+            "subtitle": "Ações irreversíveis relacionadas à sua conta.",
+            "deleteAccount": "Remover minha conta",
+            "deleteAccountDescription": "Sua conta será desativada e você será desconectado imediatamente.",
+            "deleteButton": "Remover conta"
+        }
+    },
+    "deleteAccount": {
+        "title": "Remover conta",
+        "description": "Esta ação é irreversível. Sua conta será desativada imediatamente e você será desconectado.",
+        "passwordLabel": "Digite sua senha para confirmar",
+        "submit": "Remover conta",
+        "submitting": "Removendo...",
+        "success": "Conta removida com sucesso"
+    },
+    "sessions": {
+        "title": "Sessões ativas",
+        "subtitle": "Estes são os dispositivos conectados à sua conta no momento. Encerre qualquer sessão que você não reconheça.",
+        "noSessions": "Nenhuma sessão ativa encontrada.",
+        "loading": "Carregando sessões...",
+        "ip": "IP",
+        "createdAt": "Criada em",
+        "expiresAt": "Expira em",
+        "expiringSoon": "Expira em breve",
+        "terminate": "Encerrar",
+        "terminateTitle": "Encerrar sessão",
+        "terminateMessage": "Tem certeza que deseja encerrar esta sessão?",
+        "terminateSuccess": "Sessão encerrada com sucesso",
+        "unknownDevice": "Dispositivo desconhecido",
+        "unknownBrowser": "Navegador desconhecido"
+    },
+    "users": {
+        "title": "Usuários cadastrados",
+        "count_one": "{{count}} usuário encontrado",
+        "count_other": "{{count}} usuários encontrados",
+        "loading": "Carregando usuários...",
+        "noUsers": "Nenhum usuário encontrado",
+        "newUser": "+ Novo usuário",
+        "tabs": {
+            "active": "Ativos",
+            "deleted": "Deletados"
+        },
+        "table": {
+            "name": "Nome",
+            "email": "E-mail",
+            "role": "Role",
+            "status": "Status",
+            "createdAt": "Criado em",
+            "deletedAt": "Removido em"
+        },
+        "actions": {
+            "edit": "Editar",
+            "inactivate": "Inativar",
+            "reactivate": "Reativar",
+            "resetPassword": "Resetar senha",
+            "delete": "Remover",
+            "restore": "Restaurar",
+            "hardDelete": "Deletar permanentemente",
+            "you": "(você)"
+        },
+        "status": {
+            "active": "Ativo",
+            "inactive": "Inativo",
+            "deleted": "Removido"
+        },
+        "roles": {
+            "user": "user",
+            "administrator": "administrator",
+            "god": "god"
+        },
+        "confirm": {
+            "delete": {
+                "title": "Remover usuário",
+                "message": "Tem certeza que deseja remover este usuário? Esta ação não pode ser desfeita.",
+                "confirm": "Remover"
+            },
+            "inactivate": {
+                "title": "Inativar usuário",
+                "message": "O usuário perderá acesso à plataforma. Deseja continuar?",
+                "confirm": "Inativar"
+            },
+            "reactivate": {
+                "title": "Reativar usuário",
+                "message": "O usuário voltará a ter acesso à plataforma. Deseja continuar?",
+                "confirm": "Reativar"
+            },
+            "resetPassword": {
+                "title": "Resetar senha",
+                "message": "Uma nova senha será gerada e enviada por e-mail ao usuário.",
+                "confirm": "Resetar"
+            },
+            "restore": {
+                "title": "Restaurar usuário",
+                "message": "O usuário voltará a ter acesso à plataforma. Deseja continuar?",
+                "confirm": "Restaurar"
+            },
+            "hardDelete": {
+                "title": "Deletar permanentemente",
+                "message": "Esta ação é irreversível. O usuário e todos os seus dados serão removidos definitivamente.",
+                "confirm": "Deletar permanentemente"
+            }
+        },
+        "form": {
+            "createTitle": "Novo usuário",
+            "editTitle": "Editar usuário",
+            "name": "Nome",
+            "namePlaceholder": "Nome completo",
+            "email": "E-mail",
+            "emailPlaceholder": "email@exemplo.com",
+            "password": "Senha",
+            "role": "Perfil",
+            "roles": {
+                "user": "Usuário",
+                "administrator": "Administrador"
+            },
+            "submit": "Criar usuário",
+            "submitEdit": "Salvar alterações",
+            "submitting": "Salvando...",
+            "createSuccess": "Usuário criado com sucesso",
+            "editSuccess": "Usuário atualizado com sucesso"
+        },
+        "deleted": {
+            "title": "Usuários removidos",
+            "count_one": "{{count}} usuário removido",
+            "count_other": "{{count}} usuários removidos",
+            "noUsers": "Nenhum usuário removido",
+            "restoreSuccess": "Usuário restaurado com sucesso",
+            "hardDeleteSuccess": "Usuário deletado permanentemente"
+        }
+    },
+    "audit": {
+        "title": "Logs de auditoria",
+        "count_one": "{{count}} registro encontrado",
+        "count_other": "{{count}} registros encontrados",
+        "loading": "Carregando logs...",
+        "noLogs": "Nenhum log encontrado",
+        "clearFilters": "Limpar filtros",
+        "table": {
+            "date": "Data",
+            "action": "Ação",
+            "entity": "Entidade",
+            "user": "Usuário",
+            "performedBy": "Realizado por",
+            "ip": "IP"
+        },
+        "filters": {
+            "allActions": "Todas as ações",
+            "allEntities": "Todas as entidades"
+        },
+        "actions": {
+            "USER_REGISTER": "Registro",
+            "USER_LOGIN": "Login",
+            "USER_LOGOUT": "Logout",
+            "USER_LOGOUT_ALL": "Logout geral",
+            "USER_CREATE": "Criação de usuário",
+            "USER_UPDATE": "Atualização de usuário",
+            "USER_DELETE": "Remoção de usuário",
+            "USER_INACTIVATE": "Inativação",
+            "USER_REACTIVATE": "Reativação",
+            "PASSWORD_CHANGE": "Troca de senha",
+            "PASSWORD_RESET_REQUEST": "Solicitação de reset",
+            "PASSWORD_RESET_CONFIRM": "Confirmação de reset",
+            "PASSWORD_ADMIN_RESET": "Reset por admin",
+            "PREFERENCES_UPDATE": "Preferências",
+            "SESSION_LOGOUT": "Logout de sessão"
+        },
+        "entities": {
+            "USER": "Usuário",
+            "PASSWORD": "Senha",
+            "PREFERENCES": "Preferências",
+            "SESSION": "Sessão"
+        }
+    },
+    "errors": {
+        "required": "{{field}} é obrigatório",
+        "invalidEmail": "E-mail inválido",
+        "passwordMinLength": "A senha deve ter no mínimo 8 caracteres",
+        "passwordSpecialChar": "A senha deve conter pelo menos 1 caractere especial",
+        "passwordsMismatch": "As senhas não coincidem",
+        "pageNotFound": "Página não encontrada",
+        "pageNotFoundMessage": "A página que você está procurando não existe ou foi removida.",
+        "forbidden": "Acesso negado",
+        "forbiddenMessage": "Você não tem permissão para acessar esta página. Entre em contato com um administrador se acredita que isso é um erro.",
+        "genericError": "Algo deu errado. Tente novamente."
+    },
+    "pagination": {
+        "page": "Página {{current}} de {{total}}"
+    }
+}

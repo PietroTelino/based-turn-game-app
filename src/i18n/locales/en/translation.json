@@ -1,0 +1,288 @@
+{
+    "common": {
+        "save": "Save",
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "back": "Back",
+        "loading": "Loading...",
+        "saving": "Saving...",
+        "error": "Error",
+        "success": "Success",
+        "actions": "Actions",
+        "noResults": "No results found",
+        "goToDashboard": "Go to dashboard",
+        "goToLogin": "Go to login"
+    },
+    "nav": {
+        "dashboard": "Dashboard",
+        "profile": "Profile",
+        "sessions": "Sessions",
+        "users": "Users",
+        "audit": "Audit",
+        "logout": "Logout"
+    },
+    "auth": {
+        "login": {
+            "title": "Sign in",
+            "subtitle": "Access your account to continue",
+            "email": "Email",
+            "password": "Password",
+            "submit": "Sign in",
+            "submitting": "Signing in...",
+            "forgotPassword": "Forgot password?",
+            "noAccount": "Don't have an account?",
+            "register": "Create account"
+        },
+        "register": {
+            "title": "Create account",
+            "subtitle": "Fill in the details below to register",
+            "name": "Name",
+            "email": "Email",
+            "password": "Password",
+            "confirmPassword": "Confirm password",
+            "submit": "Create account",
+            "submitting": "Creating account...",
+            "hasAccount": "Already have an account?",
+            "login": "Sign in",
+            "success": "Account created successfully!"
+        },
+        "forgotPassword": {
+            "title": "Forgot your password?",
+            "subtitle": "Enter your email and we'll send you instructions to reset your password.",
+            "email": "Email",
+            "submit": "Send instructions",
+            "submitting": "Sending...",
+            "backToLogin": "Back to login",
+            "successTitle": "Check your email",
+            "successMessage": "If this email is registered, you will receive instructions to reset your password shortly."
+        },
+        "resetPassword": {
+            "title": "Reset password",
+            "subtitle": "Create a new password for your account.",
+            "password": "New password",
+            "confirmPassword": "Confirm new password",
+            "submit": "Reset password",
+            "submitting": "Saving...",
+            "backToLogin": "Back to login",
+            "invalidToken": "Invalid link",
+            "invalidTokenMessage": "This password reset link is invalid or has already been used.",
+            "requestNewLink": "Request new link",
+            "success": "Password reset successfully!"
+        }
+    },
+    "dashboard": {
+        "greeting": "Hello, {{name}} 👋",
+        "welcome": "Welcome back. You are logged in as"
+    },
+    "profile": {
+        "title": "Profile",
+        "accountInfo": "Account information",
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "theme": {
+            "title": "Theme",
+            "subtitle": "Choose the interface appearance",
+            "light": "☀️ Light",
+            "dark": "🌙 Dark",
+            "success": "Theme updated successfully"
+        },
+        "changePassword": {
+            "title": "Change password",
+            "subtitle": "Your new password must have at least 8 characters and 1 special character",
+            "current": "Current password",
+            "new": "New password",
+            "confirm": "Confirm new password",
+            "submit": "Change password",
+            "success": "Password changed successfully"
+        },
+        "dangerZone": {
+            "title": "Danger zone",
+            "subtitle": "Irreversible actions related to your account.",
+            "deleteAccount": "Delete my account",
+            "deleteAccountDescription": "Your account will be deactivated and you will be logged out immediately.",
+            "deleteButton": "Delete account"
+        }
+    },
+    "deleteAccount": {
+        "title": "Delete account",
+        "description": "This action is irreversible. Your account will be immediately deactivated and you will be logged out.",
+        "passwordLabel": "Enter your password to confirm",
+        "submit": "Delete account",
+        "submitting": "Deleting...",
+        "success": "Account deleted successfully"
+    },
+    "sessions": {
+        "title": "Active sessions",
+        "subtitle": "These are the devices currently connected to your account. Terminate any session you don't recognize.",
+        "noSessions": "No active sessions found.",
+        "loading": "Loading sessions...",
+        "ip": "IP",
+        "createdAt": "Created at",
+        "expiresAt": "Expires at",
+        "expiringSoon": "Expiring soon",
+        "terminate": "Terminate",
+        "terminateTitle": "Terminate session",
+        "terminateMessage": "Are you sure you want to terminate this session?",
+        "terminateSuccess": "Session terminated successfully",
+        "unknownDevice": "Unknown device",
+        "unknownBrowser": "Unknown browser"
+    },
+    "users": {
+        "title": "Registered users",
+        "count_one": "{{count}} user found",
+        "count_other": "{{count}} users found",
+        "loading": "Loading users...",
+        "noUsers": "No users found",
+        "newUser": "+ New user",
+        "tabs": {
+            "active": "Active",
+            "deleted": "Deleted"
+        },
+        "table": {
+            "name": "Name",
+            "email": "Email",
+            "role": "Role",
+            "status": "Status",
+            "createdAt": "Created at",
+            "deletedAt": "Deleted at"
+        },
+        "actions": {
+            "edit": "Edit",
+            "inactivate": "Inactivate",
+            "reactivate": "Reactivate",
+            "resetPassword": "Reset password",
+            "delete": "Remove",
+            "restore": "Restore",
+            "hardDelete": "Permanently delete",
+            "you": "(you)"
+        },
+        "status": {
+            "active": "Active",
+            "inactive": "Inactive",
+            "deleted": "Deleted"
+        },
+        "roles": {
+            "user": "user",
+            "administrator": "administrator",
+            "god": "god"
+        },
+        "confirm": {
+            "delete": {
+                "title": "Remove user",
+                "message": "Are you sure you want to remove this user? This action cannot be undone.",
+                "confirm": "Remove"
+            },
+            "inactivate": {
+                "title": "Inactivate user",
+                "message": "The user will lose access to the platform. Do you want to continue?",
+                "confirm": "Inactivate"
+            },
+            "reactivate": {
+                "title": "Reactivate user",
+                "message": "The user will regain access to the platform. Do you want to continue?",
+                "confirm": "Reactivate"
+            },
+            "resetPassword": {
+                "title": "Reset password",
+                "message": "A new password will be generated and sent to the user by email.",
+                "confirm": "Reset"
+            },
+            "restore": {
+                "title": "Restore user",
+                "message": "The user will regain access to the platform. Do you want to continue?",
+                "confirm": "Restore"
+            },
+            "hardDelete": {
+                "title": "Permanently delete",
+                "message": "This action is irreversible. The user and all their data will be permanently removed.",
+                "confirm": "Permanently delete"
+            }
+        },
+        "form": {
+            "createTitle": "New user",
+            "editTitle": "Edit user",
+            "name": "Name",
+            "namePlaceholder": "Full name",
+            "email": "Email",
+            "emailPlaceholder": "email@example.com",
+            "password": "Password",
+            "role": "Role",
+            "roles": {
+                "user": "User",
+                "administrator": "Administrator"
+            },
+            "submit": "Create user",
+            "submitEdit": "Save changes",
+            "submitting": "Saving...",
+            "createSuccess": "User created successfully",
+            "editSuccess": "User updated successfully"
+        },
+        "deleted": {
+            "title": "Deleted users",
+            "count_one": "{{count}} user deleted",
+            "count_other": "{{count}} users deleted",
+            "noUsers": "No deleted users",
+            "restoreSuccess": "User restored successfully",
+            "hardDeleteSuccess": "User permanently deleted"
+        }
+    },
+    "audit": {
+        "title": "Audit logs",
+        "count_one": "{{count}} record found",
+        "count_other": "{{count}} records found",
+        "loading": "Loading logs...",
+        "noLogs": "No logs found",
+        "clearFilters": "Clear filters",
+        "table": {
+            "date": "Date",
+            "action": "Action",
+            "entity": "Entity",
+            "user": "User",
+            "performedBy": "Performed by",
+            "ip": "IP"
+        },
+        "filters": {
+            "allActions": "All actions",
+            "allEntities": "All entities"
+        },
+        "actions": {
+            "USER_REGISTER": "Register",
+            "USER_LOGIN": "Login",
+            "USER_LOGOUT": "Logout",
+            "USER_LOGOUT_ALL": "Logout all",
+            "USER_CREATE": "User creation",
+            "USER_UPDATE": "User update",
+            "USER_DELETE": "User removal",
+            "USER_INACTIVATE": "Inactivation",
+            "USER_REACTIVATE": "Reactivation",
+            "PASSWORD_CHANGE": "Password change",
+            "PASSWORD_RESET_REQUEST": "Reset request",
+            "PASSWORD_RESET_CONFIRM": "Reset confirmation",
+            "PASSWORD_ADMIN_RESET": "Admin reset",
+            "PREFERENCES_UPDATE": "Preferences",
+            "SESSION_LOGOUT": "Session logout"
+        },
+        "entities": {
+            "USER": "User",
+            "PASSWORD": "Password",
+            "PREFERENCES": "Preferences",
+            "SESSION": "Session"
+        }
+    },
+    "errors": {
+        "required": "{{field}} is required",
+        "invalidEmail": "Invalid email",
+        "passwordMinLength": "Password must be at least 8 characters",
+        "passwordSpecialChar": "Password must contain at least 1 special character",
+        "passwordsMismatch": "Passwords do not match",
+        "pageNotFound": "Page not found",
+        "pageNotFoundMessage": "The page you are looking for does not exist or has been removed.",
+        "forbidden": "Access denied",
+        "forbiddenMessage": "You do not have permission to access this page. Contact an administrator if you believe this is an error.",
+        "genericError": "Something went wrong. Please try again."
+    },
+    "pagination": {
+        "page": "Page {{current}} of {{total}}"
+    }
+}
