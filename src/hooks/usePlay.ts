@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { createBattle, getCharacters, listBattles } from '@/api/battles';
+import { sfx } from '@/audio/sfx';
 import { useToast } from '@/contexts/ToastContext';
 import type { BattleSummary, Character } from '@/types/battle';
 
@@ -43,6 +44,8 @@ export function usePlay() {
     }, []);
 
     function toggle(characterId: string) {
+        sfx.play('select');
+
         setTeam((current) => {
             if (current.includes(characterId)) {
                 return current.filter((id) => id !== characterId);
@@ -56,6 +59,7 @@ export function usePlay() {
         if (team.length === 0 || isStarting) return;
 
         setIsStarting(true);
+        sfx.play('click');
 
         try {
             const response = await createBattle(team);

@@ -1,8 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import { getBattle, sendBattleAction } from '@/api/battles';
+import { getBattle, sendBattleAction, surrenderBattle } from '@/api/battles';
+import { sfx } from '@/audio/sfx';
+import { impactsOf, skillFxOf } from '@/battle/fx';
+import type { Impact, SkillFx } from '@/battle/fx';
 import { applyEvents, openingState, toBeats } from '@/battle/playback';
+import { cuesOf } from '@/battle/sounds';
+import { useConfirm } from '@/contexts/ConfirmContext';
 import { useToast } from '@/contexts/ToastContext';
 import type { AvailableAction, BattleEvent, BattleResponse, BattleState, BattleUnit, BattleView, TeamId } from '@/types/battle';
 
@@ -12,14 +17,26 @@ export interface Floater {
     unitId: string;
     text: string;
     kind: 'damage' | 'critical' | 'heal' | 'status';
+    /** Linha pequena acima do número (ex.: "Crítico!"). */
+    label?: string;
 }
 
 /** O que está sendo animado neste instante. Tudo vazio quando a tela está parada. */
 export interface BattleEffects {
-    actingUnitId: string | null;
+    /** A habilidade em uso: fica do anúncio até o fim do impacto. */
+    skill: SkillFx | null;
     banner: string | null;
+    /** Aviso no meio da arena: "Batalha!" na abertura (grande) e "Turno N" a cada turno novo. */
+    announce: { text: string; big: boolean } | null;
     hitUnitIds: string[];
     healedUnitIds: string[];
+    /** Quem foi derrotado neste instante: anima a queda. */
+    fallingUnitIds: string[];
+    impacts: Impact[];
+    /** Acerto crítico: a arena treme. */
+    quake: boolean;
+    /** A ordem do turno mudou agora: a fila do topo pisca. */
+    orderChanged: boolean;
     floaters: Floater[];
 }
 
@@ -32,8 +49,21 @@ export interface LogEntry {
 /** loading: buscando a batalha | idle: esperando o jogador | busy: enviando ou animando */
 type Phase = 'loading' | 'idle' | 'busy' | 'error';
 
-const NO_EFFECTS: BattleEffects = { actingUnitId: null, banner: null, hitUnitIds: [], healedUnitIds: [], floaters: [] };
+const NO_EFFECTS: BattleEffects = {
+    skill: null,
+    banner: null,
+    announce: null,
+    hitUnitIds: [],
+    healedUnitIds: [],
+    fallingUnitIds: [],
+    impacts: [],
+    quake: false,
+    orderChanged: false,
+    floaters: [],
+};
 const MAX_LOG_ENTRIES = 60;
+/** Quanto tempo o aviso de começo da batalha fica na tela, em ms. */
+const INTRO_DURATION = 1300;
 
 function sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -86,7 +116,7 @@ function describe(
                 team: null,
             };
 
-        case 'turn_skipped':
+        case 'unit_skipped':
             return {
                 text: t('battle.log.skipped', { unit: units.get(event.unitId)?.name, status: t(`battle.status.${event.status}`) }),
                 team: null,
@@ -107,25 +137,61 @@ function describe(
             return { text: t('battle.log.defeated', { unit: unit?.name }), team: unit?.team ?? null };
         }
 
+        case 'surrendered':
+            return { text: t(event.team === playerTeam ? 'battle.log.surrendered' : 'battle.log.enemySurrendered'), team: event.team };
+
         case 'battle_ended':
             return { text: t(event.winner === playerTeam ? 'battle.log.won' : 'battle.log.lost'), team: null };
 
+        // No log, o turno novo vira uma linha de separação.
         case 'turn_started':
+            return { text: t('battle.turn', { turn: event.turn }), team: null };
+
+        case 'order_changed':
+            return { text: t('battle.log.orderChanged'), team: null };
+
+        case 'unit_activated':
         case 'status_expired':
         case 'statuses_changed':
             return null;
     }
 }
 
-function effectsOf(events: BattleEvent[], units: Map<string, BattleUnit>, nextId: () => number, t: TFunction): BattleEffects {
-    const effects: BattleEffects = { ...NO_EFFECTS, hitUnitIds: [], healedUnitIds: [], floaters: [] };
+/** Eventos que são consequência da habilidade que acabou de ser usada. */
+function isAftermath(event: BattleEvent): boolean {
+    return (
+        event.type === 'damage' ||
+        event.type === 'heal' ||
+        event.type === 'status_applied' ||
+        event.type === 'unit_defeated' ||
+        event.type === 'status_expired' ||
+        event.type === 'statuses_changed' ||
+        event.type === 'order_changed'
+    );
+}
+
+function effectsOf(
+    events: BattleEvent[],
+    units: Map<string, BattleUnit>,
+    skillFx: SkillFx | null,
+    nextId: () => number,
+    t: TFunction,
+): BattleEffects {
+    const effects: BattleEffects = {
+        ...NO_EFFECTS,
+        skill: skillFx,
+        hitUnitIds: [],
+        healedUnitIds: [],
+        fallingUnitIds: [],
+        impacts: impactsOf(events, skillFx, nextId),
+        floaters: [],
+    };
 
     for (const event of events) {
         if (event.type === 'skill_used') {
             const unit = units.get(event.unitId);
             const skill = unit?.skills.find((s) => s.id === event.skillId);
 
-            effects.actingUnitId = event.unitId;
             effects.banner = t('battle.banner', { unit: unit?.name, skill: skill?.name });
         }
 
@@ -133,13 +199,23 @@ function effectsOf(events: BattleEvent[], units: Map<string, BattleUnit>, nextId
             const lost = event.amount - event.absorbed;
 
             effects.hitUnitIds.push(event.targetId);
+            effects.quake ||= event.critical;
             effects.floaters.push({
                 id: nextId(),
                 unitId: event.targetId,
                 // Escudo segurou tudo: em vez de "0", diz o que aconteceu.
-                text: lost === 0 ? t('battle.blocked') : event.critical ? `${lost}!` : String(lost),
+                text: lost === 0 ? t('battle.blocked') : String(lost),
                 kind: lost === 0 ? 'status' : event.critical ? 'critical' : 'damage',
+                ...(event.critical && lost > 0 && { label: t('battle.critical') }),
             });
+        }
+
+        if (event.type === 'unit_defeated') {
+            effects.fallingUnitIds.push(event.unitId);
+        }
+
+        if (event.type === 'order_changed') {
+            effects.orderChanged = true;
         }
 
         if (event.type === 'status_damage') {
@@ -156,7 +232,11 @@ function effectsOf(events: BattleEvent[], units: Map<string, BattleUnit>, nextId
             });
         }
 
-        if (event.type === 'turn_skipped') {
+        if (event.type === 'turn_started') {
+            effects.announce = { text: t('battle.turn', { turn: event.turn }), big: false };
+        }
+
+        if (event.type === 'unit_skipped') {
             effects.banner = t('battle.log.skipped', {
                 unit: units.get(event.unitId)?.name,
                 status: t(`battle.status.${event.status}`),
@@ -185,6 +265,7 @@ function effectsOf(events: BattleEvent[], units: Map<string, BattleUnit>, nextId
 export function useBattle(battleId: string, opening?: BattleResponse) {
     const { t } = useTranslation();
     const { showToast } = useToast();
+    const { confirm } = useConfirm();
 
     const [view, setView] = useState<BattleView | null>(null);
     const [state, setState] = useState<BattleState | null>(null);
@@ -203,11 +284,26 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
             const units = new Map(from.units.map((unit) => [unit.id, unit]));
             const nextId = () => ++idRef.current;
             let current = from;
+            let skillFx: SkillFx | null = null;
 
             for (const beat of toBeats(response.events)) {
                 if (runRef.current !== run) return;
 
                 current = applyEvents(current, beat.events);
+
+                // A habilidade vale do anúncio até o impacto; qualquer outro
+                // acontecimento (a vez de outra unidade, vez perdida, fim) a encerra.
+                const used = beat.events.find((event) => event.type === 'skill_used');
+
+                if (used) {
+                    skillFx = skillFxOf(used, units, nextId());
+                } else if (beat.events.some((event) => !isAftermath(event))) {
+                    skillFx = null;
+                }
+
+                for (const cue of cuesOf(beat.events, skillFx, response.battle.playerTeam)) {
+                    sfx.play(cue.sound, cue.at);
+                }
 
                 // O log mostra o mais recente no topo.
                 const entries = beat.events
@@ -217,7 +313,7 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
                     .reverse();
 
                 setState(current);
-                setEffects(effectsOf(beat.events, units, nextId, t));
+                setEffects(effectsOf(beat.events, units, skillFx, nextId, t));
                 setLog((previous) => [...entries, ...previous].slice(0, MAX_LOG_ENTRIES));
 
                 await sleep(beat.duration);
@@ -243,14 +339,24 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
                 if (runRef.current !== run) return;
 
                 // Só anima a abertura se a batalha ainda está como foi criada
-                // (ao recarregar a página no meio do jogo, não).
-                const isFresh = opening?.battle.id === fetched.id && opening.battle.state.turn === fetched.state.turn;
+                // (ao recarregar a página no meio do jogo, não). `step` sobe
+                // a cada vez jogada, então é ele que diz se algo já mudou.
+                const isFresh = opening?.battle.id === fetched.id && opening.battle.state.step === fetched.state.step;
 
-                if (isFresh && opening.events.length > 1) {
+                if (isFresh) {
+                    // Batalha recém-criada: os times entram e o aviso aparece.
+                    const start = openingState(fetched, opening.events);
+
                     setView(fetched);
-                    setState(openingState(fetched));
+                    setState(start);
                     setPhase('busy');
-                    await play(run, openingState(fetched), { battle: fetched, events: opening.events });
+                    setEffects({ ...NO_EFFECTS, announce: { text: t('battle.begin'), big: true } });
+                    sfx.play('start', 150);
+                    await sleep(INTRO_DURATION);
+
+                    if (runRef.current !== run) return;
+
+                    await play(run, start, { battle: fetched, events: opening.events });
                 } else {
                     setView(fetched);
                     setState(fetched.state);
@@ -268,26 +374,26 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
             // Invalida este carregamento: a animação em andamento para no próximo passo.
             runRef.current = run + 1;
         };
-    }, [battleId, opening, play]);
+    }, [battleId, opening, play, t]);
 
     const actions: AvailableAction[] = view?.availableActions ?? [];
     const selected = actions.find((a) => a.skill.id === selectedSkillId && a.usable) ?? actions.find((a) => a.usable) ?? null;
     const activeUnit = state?.units.find((unit) => unit.id === state.activeUnitId) ?? null;
     const canAct = phase === 'idle' && view?.status === 'in_progress' && activeUnit?.team === view.playerTeam;
 
-    async function act(targetId?: string) {
-        if (!canAct || !view || !state || !activeUnit || !selected) return;
+    // Desistir não depende de ser a vez do jogador: basta a tela estar parada.
+    const canSurrender = phase === 'idle' && view?.status === 'in_progress';
+
+    /** Envia um pedido à API e anima a resposta. Serve para a jogada e para a desistência. */
+    async function submit(request: (battleId: string) => Promise<BattleResponse>) {
+        if (!view || !state) return;
 
         const run = runRef.current;
 
         setPhase('busy');
 
         try {
-            const response = await sendBattleAction(view.id, {
-                unitId: activeUnit.id,
-                skillId: selected.skill.id,
-                ...(selected.requiresTarget && targetId ? { targetId } : {}),
-            });
+            const response = await request(view.id);
 
             await play(run, state, response);
         } catch (error) {
@@ -312,6 +418,34 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
         }
     }
 
+    async function act(targetId?: string) {
+        if (!canAct || !activeUnit || !selected) return;
+
+        await submit((battleId) =>
+            sendBattleAction(battleId, {
+                unitId: activeUnit.id,
+                skillId: selected.skill.id,
+                ...(selected.requiresTarget && targetId ? { targetId } : {}),
+            }),
+        );
+    }
+
+    async function surrender() {
+        if (!canSurrender) return;
+
+        const confirmed = await confirm({
+            title: t('battle.surrenderTitle'),
+            message: t('battle.surrenderMessage'),
+            confirmLabel: t('battle.surrender'),
+            cancelLabel: t('battle.surrenderCancel'),
+            variant: 'danger',
+        });
+
+        if (confirmed) {
+            await submit(surrenderBattle);
+        }
+    }
+
     return {
         view,
         state,
@@ -324,7 +458,12 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
         canAct,
         /** Quem pode ser clicado agora para confirmar a habilidade selecionada. */
         targetIds: canAct && selected ? selected.targetIds : [],
-        selectSkill: setSelectedSkillId,
+        selectSkill: (skillId: string) => {
+            sfx.play('click');
+            setSelectedSkillId(skillId);
+        },
         act,
+        canSurrender,
+        surrender,
     };
 }

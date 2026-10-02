@@ -14,9 +14,11 @@ export interface Beat {
 }
 
 const BEAT_DURATION = {
-    turn_started: 450,
+    turn_started: 850,
+    unit_activated: 450,
     skill_used: 700,
-    turn_skipped: 1000,
+    unit_skipped: 1000,
+    surrendered: 500,
     effects: 800,
     battle_ended: 300,
 } as const;
@@ -34,7 +36,7 @@ function isEffect(event: BattleEvent): boolean {
 
 /** Eventos que só atualizam dados, sem animação própria: entram no beat anterior. */
 function isSilent(event: BattleEvent): boolean {
-    return event.type === 'statuses_changed' || event.type === 'status_expired';
+    return event.type === 'statuses_changed' || event.type === 'status_expired' || event.type === 'order_changed';
 }
 
 export function toBeats(events: BattleEvent[]): Beat[] {
@@ -44,9 +46,9 @@ export function toBeats(events: BattleEvent[]): Beat[] {
         const last = beats[beats.length - 1];
 
         if (isSilent(event)) {
-            // Depois de um turno pulado, o status só some quando a faixa de
+            // Depois de uma vez perdida, o status só some quando a faixa de
             // aviso termina: por isso vai num beat próprio, sem duração.
-            const afterSkip = last?.events[0]?.type === 'turn_skipped';
+            const afterSkip = last?.events[0]?.type === 'unit_skipped';
 
             if (last && !afterSkip) {
                 last.events.push(event);
@@ -78,13 +80,26 @@ export function applyEvents(state: BattleState, events: BattleEvent[]): BattleSt
 
     for (const event of events) {
         switch (event.type) {
+            // Turno novo: a ordem muda, a energia dos dois times é reabastecida
+            // e, por um instante, não é a vez de ninguém.
             case 'turn_started':
                 next = {
                     ...next,
-                    activeUnitId: event.unitId,
                     turn: event.turn,
-                    energy: { ...next.energy, [event.team]: event.energy },
+                    order: event.order,
+                    activeUnitId: null,
+                    turnEnergy: event.energy,
+                    energy: { A: event.energy, B: event.energy },
                 };
+                break;
+
+            // A ordem mudou no meio do turno: é só copiar a nova.
+            case 'order_changed':
+                next = { ...next, order: event.order };
+                break;
+
+            case 'unit_activated':
+                next = { ...next, activeUnitId: event.unitId };
                 break;
 
             case 'skill_used':
@@ -108,6 +123,10 @@ export function applyEvents(state: BattleState, events: BattleEvent[]): BattleSt
                 };
                 break;
 
+            case 'surrendered':
+                next = { ...next, surrenderedBy: event.team };
+                break;
+
             case 'battle_ended':
                 next = { ...next, winner: event.winner, activeUnitId: null };
                 break;
@@ -115,7 +134,7 @@ export function applyEvents(state: BattleState, events: BattleEvent[]): BattleSt
             case 'unit_defeated':
             case 'status_applied':
             case 'status_expired':
-            case 'turn_skipped':
+            case 'unit_skipped':
                 break;
         }
     }
@@ -125,14 +144,22 @@ export function applyEvents(state: BattleState, events: BattleEvent[]): BattleSt
 
 /**
  * Estado do instante em que a batalha foi criada, antes de qualquer jogada.
- * Serve para animar a abertura quando a IA joga primeiro: no começo todo
- * mundo está com a vida cheia, e os eventos cuidam do resto.
+ * Serve para animar a abertura: no começo todo mundo está com a vida cheia,
+ * a energia é a do primeiro turno e a ordem ainda não foi anunciada; os
+ * eventos cuidam do resto.
  */
-export function openingState(view: BattleView): BattleState {
+export function openingState(view: BattleView, events: BattleEvent[]): BattleState {
+    const firstTurn = events.find((event) => event.type === 'turn_started');
+    const energy = firstTurn?.energy ?? view.state.turnEnergy;
+
     return {
         ...view.state,
+        energy: { A: energy, B: energy },
+        turnEnergy: energy,
         units: view.state.units.map((unit) => ({ ...unit, hp: unit.stats.maxHp, statuses: [] })),
         activeUnitId: null,
+        turn: 1,
+        order: [],
         winner: null,
     };
 }

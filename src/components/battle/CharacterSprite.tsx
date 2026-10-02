@@ -1,10 +1,15 @@
 import type { ReactNode } from 'react';
 
 /**
- * Os personagens são desenhados em SVG direto no código: sem arquivos de
- * imagem, sem direitos autorais de ninguém e fáceis de trocar depois por
- * sprites de verdade. Cada desenho ocupa um quadro de 120x120 e olha para a
- * direita; o time inimigo é espelhado pelo CSS.
+ * Desenhos de reserva, em SVG direto no código. Aparecem quando o personagem
+ * ainda não tem ilustração em src/assets/characters (ver CharacterArt.tsx).
+ * Cada desenho ocupa um quadro de 120x120 e olha para a direita; o time
+ * inimigo é espelhado pelo CSS.
+ *
+ * Os nomes abaixo são os ids antigos dos personagens (hoje piromante,
+ * cavaleiro, clérigo, bárbaro, criomante e guardião). Todos já têm
+ * ilustração, então estes desenhos só aparecem se um arquivo de imagem
+ * for apagado.
  */
 
 const INK = '#2a1b3d';

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/Layout';
-import { CharacterSprite } from '@/components/battle/CharacterSprite';
+import { CharacterArt } from '@/components/battle/CharacterArt';
 import { MAX_TEAM_SIZE, usePlay } from '@/hooks/usePlay';
 import type { BattleSummary } from '@/types/battle';
 import '@/styles/battle.css';
@@ -46,7 +46,9 @@ export function PlayPage() {
                                         onClick={() => toggle(character.id)}
                                     >
                                         {isSelected && <span className='bt-card__order'>{position + 1}</span>}
-                                        <CharacterSprite characterId={character.id} className='bt-card__sprite' />
+                                        <span className='bt-card__art'>
+                                            <CharacterArt characterId={character.id} kind='card' className='bt-card__sprite' />
+                                        </span>
                                         <span className='bt-card__name'>{character.name}</span>
                                         <span className='bt-card__role'>{t(`play.roles.${character.role}`)}</span>
                                         <span className='bt-card__stats'>

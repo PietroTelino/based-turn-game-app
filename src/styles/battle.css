@@ -1,38 +1,42 @@
 /*
  * Visual das telas do jogo (montar time e batalha).
  *
- * Estilo: desenho animado de recorte. Tudo tem contorno grosso de "tinta" e
- * sombra dura, sem desfoque. As cores do jogo não seguem o tema claro/escuro
- * do resto do app: um jogo tem a própria paleta.
+ * Estilo: fantasia medieval, para combinar com as ilustrações dos
+ * personagens. Pergaminho nos painéis, pedra e céu na arena, ouro heráldico
+ * nos detalhes. As cores do jogo não seguem o tema claro/escuro do resto do
+ * app: um jogo tem a própria paleta.
  *
  * Todas as classes começam com "bt-" para não colidir com o Tailwind.
  */
 
 .bt {
-    --bt-ink: #2a1b3d;
-    --bt-paper: #fff6dc;
-    --bt-sand: #f3dfa2;
-    --bt-sky: #7fdccf;
-    --bt-sky-low: #e6f7c5;
-    --bt-hill: #b9a2ee;
-    --bt-sun: #ffd23f;
-    --bt-berry: #ff4fa3;
-    --bt-ally: #3d7bff;
-    --bt-enemy: #ff5a4d;
-    --bt-good: #3fcf6b;
+    --bt-ink: #1c1a2b;
+    --bt-paper: #efe3c4;
+    --bt-paper-light: #f9f2df;
+    --bt-stone: #a99b7d;
+    --bt-stone-dark: #7c6f57;
+    --bt-gold: #c8a24b;
+    --bt-gold-bright: #ecd07a;
+    --bt-ally: #2f55a8;
+    --bt-enemy: #a8322c;
+    --bt-good: #5c9a3c;
+    --bt-sun: #d9a72e;
+    --bt-mana: #3f86d8;
 
-    --bt-display: 'Lilita One', 'Trebuchet MS', system-ui, sans-serif;
-    --bt-body: 'Nunito', system-ui, sans-serif;
+    --bt-display: 'Almendra', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+    --bt-body: 'Alegreya Sans', 'Segoe UI', system-ui, sans-serif;
 
-    /* Tamanho do desenho de cada unidade; encolhe em telas estreitas. */
-    --bt-unit: clamp(60px, 9vw, 120px);
+    /* Altura da figura de cada unidade; encolhe em telas estreitas. */
+    --bt-unit: clamp(150px, 25vw, 296px);
+    /* Largura que cada unidade ocupa na fileira (a figura é mais larga e se sobrepõe). */
+    --bt-slot: calc(var(--bt-unit) * 0.5);
 
     max-width: 1080px;
     margin: 0 auto;
     color: var(--bt-ink);
     font-family: var(--bt-body);
-    font-weight: 700;
-    font-size: 15px;
+    font-weight: 500;
+    font-size: 16px;
     line-height: 1.4;
 }
 
@@ -52,40 +56,47 @@
     isolation: isolate;
     display: flex;
     flex-direction: column;
-    min-height: clamp(360px, 54vh, 540px);
+    /* Acompanha o tamanho das figuras, para não sobrar céu em telas estreitas. */
+    min-height: calc(var(--bt-unit) * 1.1 + 236px);
     overflow: hidden;
-    border: 4px solid var(--bt-ink);
-    border-radius: 28px;
-    box-shadow: 0 8px 0 var(--bt-ink);
-    background: linear-gradient(var(--bt-sky), var(--bt-sky-low) 62%);
+    border: 3px solid var(--bt-ink);
+    border-radius: 10px;
+    box-shadow: inset 0 0 0 1px var(--bt-gold), 0 10px 24px rgb(28 26 43 / 0.35);
+    /* Céu de fim de tarde, mais claro no horizonte */
+    background: linear-gradient(#5f8fcf 0%, #9dc0e6 30%, #e6e3cf 50%, #e6e3cf 100%);
 }
 
-/* Morros ao fundo */
+/* Montanhas ao longe */
 .bt-arena::before {
     content: '';
     position: absolute;
-    z-index: -1;
-    inset: auto -5% 38% -5%;
-    height: 32%;
+    z-index: -2;
+    inset: 22% 0 46% 0;
     background:
-        radial-gradient(ellipse 28% 100% at 16% 100%, var(--bt-hill) 99%, transparent 100%),
-        radial-gradient(ellipse 34% 78% at 58% 100%, #cfc0f6 99%, transparent 100%),
-        radial-gradient(ellipse 24% 110% at 92% 100%, var(--bt-hill) 99%, transparent 100%);
+        linear-gradient(#8fa3c4, #b9c5d6) 0 0 / 100% 100%;
+    clip-path: polygon(
+        0 100%, 0 62%, 7% 40%, 13% 55%, 21% 22%, 28% 48%, 35% 36%, 43% 66%, 52% 44%,
+        60% 70%, 69% 30%, 76% 52%, 84% 18%, 91% 46%, 100% 34%, 100% 100%
+    );
 }
 
-/* Chão */
+/* Muralha com ameias e o piso de pedra do pátio */
 .bt-arena::after {
     content: '';
     position: absolute;
     z-index: -1;
     inset: auto 0 0 0;
-    height: 40%;
-    border-top: 4px solid var(--bt-ink);
+    height: 52%;
     background:
-        radial-gradient(circle at 12% 30%, #e4cb82 0 5px, transparent 6px),
-        radial-gradient(circle at 44% 70%, #e4cb82 0 4px, transparent 5px),
-        radial-gradient(circle at 78% 38%, #e4cb82 0 6px, transparent 7px),
-        var(--bt-sand);
+        /* ameias */
+        repeating-linear-gradient(90deg, var(--bt-stone-dark) 0 40px, transparent 40px 66px) 0 0 / 100% 20px no-repeat,
+        /* topo do muro */
+        linear-gradient(var(--bt-stone-dark), #8e8166) 0 20px / 100% 26px no-repeat,
+        linear-gradient(rgb(28 26 43 / 0.45), rgb(28 26 43 / 0)) 0 46px / 100% 14px no-repeat,
+        /* juntas do piso */
+        repeating-linear-gradient(90deg, rgb(28 26 43 / 0.1) 0 2px, transparent 2px 148px) 0 46px / 100% 100% no-repeat,
+        repeating-linear-gradient(0deg, rgb(28 26 43 / 0.1) 0 2px, transparent 2px 54px) 0 46px / 100% 100% no-repeat,
+        linear-gradient(#b9ab8b, #94876b) 0 46px / 100% 100% no-repeat;
 }
 
 .bt-topbar {
@@ -94,45 +105,30 @@
     align-items: center;
     justify-content: space-between;
     gap: 10px;
-    padding: 14px;
+    padding: 16px 18px 0;
 }
 
 .bt-chip {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 4px 14px;
-    border: 3px solid var(--bt-ink);
-    border-radius: 999px;
-    box-shadow: 0 3px 0 var(--bt-ink);
+    padding: 3px 14px;
+    border: 2px solid var(--bt-ink);
+    border-radius: 6px;
+    box-shadow: inset 0 0 0 1px var(--bt-gold), 0 2px 6px rgb(28 26 43 / 0.3);
     background: var(--bt-paper);
     font-family: var(--bt-display);
-    font-weight: 400;
-    font-size: 17px;
+    font-weight: 700;
+    font-size: 18px;
 }
 
 .bt-chip__label {
     font-family: var(--bt-body);
-    font-weight: 800;
-    font-size: 13px;
+    font-weight: 700;
+    font-size: 14px;
 }
 
-/* Fila de turnos */
-.bt-queue-wrap {
-    transition: opacity 0.2s;
-}
-
-.bt-queue-wrap--stale {
-    opacity: 0.35;
-}
-
-/* Em telas estreitas a fila mostra só os cinco próximos. */
-@media (max-width: 640px) {
-    .bt-queue__item:nth-child(n + 6) {
-        display: none;
-    }
-}
-
+/* Ordem de ação do turno: medalhões com o rosto */
 .bt-queue {
     display: flex;
     align-items: center;
@@ -145,51 +141,97 @@
 .bt-queue__item {
     display: grid;
     place-items: center;
-    width: 38px;
-    height: 38px;
-    border: 3px solid var(--bt-ink);
+    width: 40px;
+    height: 40px;
+    overflow: hidden;
+    border: 3px solid var(--bt-ally);
     border-radius: 50%;
+    box-shadow: 0 0 0 1px var(--bt-ink), 0 2px 5px rgb(28 26 43 / 0.4);
     background: var(--bt-paper);
-}
-
-.bt-queue__item--A {
-    box-shadow: inset 0 0 0 3px var(--bt-ally);
+    transition: width 0.2s, height 0.2s, opacity 0.2s, filter 0.2s;
 }
 
 .bt-queue__item--B {
-    box-shadow: inset 0 0 0 3px var(--bt-enemy);
+    border-color: var(--bt-enemy);
 }
 
-.bt-queue__item:first-child {
-    width: 52px;
-    height: 52px;
-    background: var(--bt-sun);
+/* A ordem mudou no meio do turno: quem ainda vai agir pisca em dourado. */
+.bt-queue--changed .bt-queue__item--waiting {
+    animation: bt-reorder 0.7s ease-out;
+}
+
+/* Quem está na vez */
+.bt-queue__item--active {
+    width: 56px;
+    height: 56px;
+    box-shadow: 0 0 0 2px var(--bt-gold-bright), 0 0 0 3px var(--bt-ink), 0 2px 8px rgb(28 26 43 / 0.5);
+}
+
+/* Quem já agiu neste turno */
+.bt-queue__item--done {
+    opacity: 0.45;
+    filter: saturate(0.5);
+}
+
+/* Quem foi derrotado */
+.bt-queue__item--down {
+    opacity: 0.3;
+    filter: grayscale(1);
 }
 
 .bt-queue__sprite {
-    width: 68%;
-    height: 68%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-/* Energia */
+.bt-queue__sprite.bt-art--drawn {
+    width: 70%;
+    height: 70%;
+}
+
+/* Energia: cristais */
 .bt-energy {
     display: inline-flex;
-    gap: 7px;
+    align-items: center;
+    gap: 9px;
+}
+
+.bt-energy__pips {
+    display: inline-flex;
+    gap: 6px;
     padding: 4px 3px;
 }
 
-.bt-energy__pip {
-    width: 13px;
-    height: 13px;
-    border: 3px solid var(--bt-ink);
-    border-radius: 3px;
-    rotate: 45deg;
-    background: #fff;
-    transition: background 0.2s;
+.bt-energy__count {
+    min-width: 42px;
+    font-family: var(--bt-display);
+    font-weight: 700;
+    font-size: 18px;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
 }
 
+/* Gema vazia: energia deste turno que já foi gasta */
+.bt-energy__pip {
+    width: 11px;
+    height: 11px;
+    border: 2px solid var(--bt-ink);
+    border-radius: 2px;
+    rotate: 45deg;
+    background: rgb(255 255 255 / 0.7);
+    transition: background 0.2s, opacity 0.2s, border-color 0.2s;
+}
+
+/* Gema cheia: energia disponível */
 .bt-energy__pip--full {
-    background: var(--bt-berry);
+    background: linear-gradient(135deg, #9fd0ff, var(--bt-mana) 55%, #1f4f9a);
+}
+
+/* Gema apagada: ainda não liberada (a energia do turno cresce 1 por turno) */
+.bt-energy__pip--locked {
+    border-color: rgb(28 26 43 / 0.35);
+    background: rgb(28 26 43 / 0.12);
 }
 
 /* ------------------------------------------------------------------ Campo */
@@ -199,20 +241,26 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     align-items: end;
-    gap: clamp(8px, 6vw, 96px);
-    padding: 26px clamp(8px, 3vw, 40px) 22px;
+    gap: clamp(4px, 3vw, 40px);
+    /* O espaço de baixo é onde os selos de status aparecem, sob as placas. */
+    padding: 34px clamp(6px, 2vw, 24px) 40px;
 }
 
 .bt-team {
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    gap: clamp(2px, 1.2vw, 16px);
 }
 
 /* O primeiro do time fica mais perto do centro do campo. */
 .bt-team--left {
     flex-direction: row-reverse;
+    animation: bt-enter-left 0.7s cubic-bezier(0.2, 0.9, 0.3, 1) backwards;
+}
+
+/* Ao abrir a tela, cada time entra pelo seu lado. */
+.bt-team--right {
+    animation: bt-enter-right 0.7s cubic-bezier(0.2, 0.9, 0.3, 1) backwards;
 }
 
 .bt-unit {
@@ -220,32 +268,65 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: calc(var(--bt-unit) + 14px);
+    width: var(--bt-slot);
     padding: 0;
     border: 0;
-    border-radius: 18px;
+    border-radius: 8px;
     background: none;
     color: inherit;
     font: inherit;
     cursor: default;
 }
 
-/* Quem está no meio fica um passo atrás, para o time não parecer uma fila. */
-.bt-unit:nth-child(even) {
-    margin-bottom: clamp(26px, 5vw, 58px);
+/*
+ * Quem está no meio fica um passo atrás: a figura sobe um pouco e passa por
+ * baixo das vizinhas. As placas de nome continuam todas na mesma linha e
+ * sempre por cima das figuras (por isso o z-index fica na figura e na placa,
+ * e não na unidade inteira).
+ */
+.bt-unit:nth-child(even) .bt-unit__stage {
+    translate: 0 -9%;
+    scale: 0.95;
+    transform-origin: 50% 100%;
+}
+
+.bt-unit:nth-child(even) .bt-unit__sprite {
+    z-index: 1;
 }
 
 .bt-unit:focus-visible {
-    outline: 4px solid var(--bt-ink);
-    outline-offset: 4px;
+    outline: 3px solid var(--bt-gold-bright);
+    outline-offset: 3px;
+}
+
+/* Palco: reserva a altura da figura. A figura em si transborda para os lados. */
+.bt-unit__stage {
+    position: relative;
+    width: 100%;
+    height: var(--bt-unit);
 }
 
 .bt-unit__sprite {
-    width: var(--bt-unit);
-    height: var(--bt-unit);
-    overflow: visible;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: auto;
+    max-width: none;
+    height: 100%;
+    z-index: 2;
+    translate: -50% 0;
     transform-origin: 50% 100%;
-    animation: bt-bob 2.6s ease-in-out infinite;
+    pointer-events: none;
+    user-select: none;
+    filter: drop-shadow(0 3px 4px rgb(28 26 43 / 0.4));
+    animation: bt-breathe 3.4s ease-in-out infinite;
+}
+
+/* Desenho de reserva (quem ainda não tem ilustração): menor. */
+.bt-unit__sprite.bt-art--drawn {
+    height: 44%;
+    bottom: 2%;
+    overflow: visible;
 }
 
 /* O time da direita olha para a esquerda. */
@@ -254,98 +335,126 @@
 }
 
 .bt-unit:nth-child(2) .bt-unit__sprite {
-    animation-delay: -0.9s;
+    animation-delay: -1.1s;
 }
 
 .bt-unit:nth-child(3) .bt-unit__sprite {
-    animation-delay: -1.7s;
+    animation-delay: -2.3s;
 }
 
+/* Sombra no chão, sob os pés, com a cor do time */
 .bt-unit__shadow {
-    width: 62%;
-    height: 12px;
-    margin-top: -7px;
-    border: 3px solid var(--bt-ally);
+    position: absolute;
+    bottom: -3.5%;
+    left: 50%;
+    width: 150%;
+    height: 11%;
+    translate: -50% 0;
     border-radius: 50%;
-    background: rgb(42 27 61 / 0.25);
+    background: radial-gradient(closest-side, rgb(47 85 168 / 0.6), rgb(47 85 168 / 0) 100%);
 }
 
 .bt-team--right .bt-unit__shadow {
-    border-color: var(--bt-enemy);
+    background: radial-gradient(closest-side, rgb(168 50 44 / 0.6), rgb(168 50 44 / 0) 100%);
 }
 
+/* Placa com nome e vida. Os selos de status ficam pendurados embaixo dela. */
 .bt-unit__plate {
+    position: relative;
+    z-index: 5;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px;
-    width: 100%;
-    margin-top: 6px;
+    gap: 3px;
+    width: max(100%, 84px);
+    margin-top: 10px;
+    padding: 3px 6px 5px;
+    border: 2px solid var(--bt-ink);
+    border-radius: 6px;
+    box-shadow: inset 0 0 0 1px rgb(200 162 75 / 0.7), 0 2px 6px rgb(28 26 43 / 0.4);
+    background: rgb(28 26 43 / 0.9);
+    color: var(--bt-paper-light);
+}
+
+.bt-team--left .bt-unit__plate {
+    border-top: 3px solid var(--bt-ally);
+}
+
+.bt-team--right .bt-unit__plate {
+    border-top: 3px solid var(--bt-enemy);
 }
 
 .bt-unit__name {
     font-family: var(--bt-display);
-    font-weight: 400;
+    font-weight: 700;
     font-size: clamp(13px, 1.5vw, 17px);
     line-height: 1.1;
 }
 
 .bt-hp {
     width: 100%;
-    height: 13px;
+    height: 9px;
     overflow: hidden;
-    border: 3px solid var(--bt-ink);
-    border-radius: 8px;
-    background: #fff;
+    border: 1px solid rgb(249 242 223 / 0.55);
+    border-radius: 3px;
+    background: rgb(0 0 0 / 0.5);
 }
 
 .bt-hp__fill {
     display: block;
     height: 100%;
+    box-shadow: inset 0 2px 0 rgb(255 255 255 / 0.25);
     transition: width 0.4s ease-out, background 0.4s;
 }
 
 .bt-hp__text {
     font-size: 12px;
-    font-weight: 800;
+    font-weight: 700;
+    line-height: 1;
     font-variant-numeric: tabular-nums;
 }
 
 .bt-hp__shield {
-    color: #1f5fd0;
+    color: #9cc8ff;
 }
 
-/* Status: fileira de selos embaixo da vida */
+/* Status: selos pendurados embaixo da placa, sem empurrar a figura */
 .bt-statuses {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 50%;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 3px;
-    min-height: 22px;
+    width: max-content;
+    max-width: 116%;
+    translate: -50% 0;
 }
 
 .bt-status {
     display: inline-flex;
     align-items: center;
     gap: 2px;
-    height: 22px;
+    height: 20px;
     padding: 0 5px 0 3px;
-    border: 2px solid var(--bt-ink);
-    border-radius: 999px;
-    background: #ffd9d4;
-    font-size: 11px;
+    border: 1px solid var(--bt-ink);
+    border-radius: 4px;
+    background: #f1c9c0;
+    color: var(--bt-ink);
+    font-size: 11.5px;
     font-weight: 800;
     line-height: 1;
     animation: bt-pop 0.25s ease-out;
 }
 
 .bt-status--good {
-    background: #d5f5df;
+    background: #cfe8c2;
 }
 
 .bt-status__icon {
-    width: 14px;
-    height: 14px;
+    width: 13px;
+    height: 13px;
     overflow: visible;
 }
 
@@ -356,11 +465,11 @@
 .bt-status__arrow {
     width: 9px;
     height: 9px;
-    color: #c4281b;
+    color: #a1241b;
 }
 
 .bt-status--good .bt-status__arrow {
-    color: #14803a;
+    color: #2c7023;
 }
 
 .bt-status__turns {
@@ -369,69 +478,104 @@
     font-variant-numeric: tabular-nums;
 }
 
-/* Escudo: um aro azul em volta do desenho */
-.bt-unit--shielded .bt-unit__sprite {
-    filter: drop-shadow(0 0 0 #5aa2ff) drop-shadow(0 0 6px #5aa2ff);
-}
-
-/* Atordoado: para de balançar e fica desbotado */
-.bt-unit--stunned .bt-unit__sprite {
-    animation: bt-dizzy 1.2s ease-in-out infinite;
-    filter: saturate(0.45);
-}
-
 /* Estados da unidade */
 
 .bt-unit__marker {
     position: absolute;
-    top: -22px;
-    width: 16px;
-    height: 16px;
-    border: 3px solid var(--bt-ink);
-    border-radius: 3px;
+    top: -16px;
+    left: 50%;
+    width: 14px;
+    height: 14px;
+    margin-left: -7px;
+    border: 2px solid var(--bt-ink);
+    z-index: 6;
     rotate: 45deg;
-    background: var(--bt-sun);
-    animation: bt-hop 0.7s ease-in-out infinite alternate;
+    background: var(--bt-gold-bright);
+    box-shadow: 0 0 10px var(--bt-gold-bright);
+    animation: bt-hop 0.8s ease-in-out infinite alternate;
+}
+
+.bt-unit--active .bt-unit__plate {
+    box-shadow: 0 0 0 2px var(--bt-gold-bright), 0 0 14px rgb(236 208 122 / 0.8);
 }
 
 .bt-unit--active .bt-unit__name {
-    padding: 0 8px;
-    border-radius: 999px;
-    background: var(--bt-sun);
-    box-shadow: 0 0 0 3px var(--bt-ink);
+    color: var(--bt-gold-bright);
 }
 
+/* Pode ser escolhida como alvo: contorno de luz na figura */
 .bt-unit--target {
     cursor: pointer;
 }
 
-.bt-unit--target::after {
-    content: '';
-    position: absolute;
-    top: -8px;
-    width: calc(var(--bt-unit) + 10px);
-    height: calc(var(--bt-unit) + 10px);
-    border: 4px dashed var(--bt-enemy);
-    border-radius: 50%;
-    animation: bt-spin 9s linear infinite;
-    pointer-events: none;
+.bt-unit--target .bt-unit__sprite {
+    filter: drop-shadow(0 0 2px #ff8a7a) drop-shadow(0 0 9px var(--bt-enemy));
+    animation: bt-breathe 3.4s ease-in-out infinite, bt-beckon 1.3s ease-in-out infinite;
 }
 
-.bt-team--left .bt-unit--target::after {
-    border-color: var(--bt-good);
+.bt-team--left .bt-unit--target .bt-unit__sprite {
+    filter: drop-shadow(0 0 2px #b9f09a) drop-shadow(0 0 9px var(--bt-good));
+}
+
+.bt-unit--target .bt-unit__plate {
+    border-color: var(--bt-gold-bright);
 }
 
 .bt-unit--target:hover .bt-unit__sprite,
 .bt-unit--target:focus-visible .bt-unit__sprite {
-    animation: bt-wiggle 0.5s ease-in-out infinite;
+    filter: drop-shadow(0 0 3px #fff) drop-shadow(0 0 12px var(--bt-gold-bright)) brightness(1.08);
 }
 
-.bt-team--left .bt-unit--acting .bt-unit__sprite {
-    animation: bt-lunge-right 0.6s ease-in-out;
+/* Escudo: redoma azul atrás da figura */
+.bt-unit--shielded .bt-unit__stage::before {
+    content: '';
+    position: absolute;
+    inset: -2% -28% -3%;
+    border: 2px solid rgb(156 200 255 / 0.9);
+    border-radius: 50% 50% 46% 46%;
+    background: radial-gradient(closest-side, rgb(63 134 216 / 0.05) 55%, rgb(63 134 216 / 0.38));
+    box-shadow: 0 0 16px rgb(63 134 216 / 0.7);
+    animation: bt-ward 2.2s ease-in-out infinite;
 }
 
-.bt-team--right .bt-unit--acting .bt-unit__sprite {
-    animation: bt-lunge-left 0.6s ease-in-out;
+/* Atordoado: balança devagar e perde a cor */
+.bt-unit--stunned .bt-unit__sprite {
+    filter: saturate(0.35) brightness(0.9);
+    animation: bt-dizzy 1.4s ease-in-out infinite;
+}
+
+/*
+ * Golpe corpo a corpo: recua, avança no inimigo e volta. O avanço chega ao
+ * ponto máximo aos 0,7 s, que é quando o dano aparece. Serve para os dois
+ * times: a figura do time da direita é espelhada, então "para a frente" já
+ * aponta para o lado certo.
+ *
+ * O ".bt-unit" a mais no seletor é de propósito: a regra precisa ganhar da
+ * que atrasa a respiração da segunda e da terceira unidade (nth-child), senão
+ * a animação herdaria aquele atraso negativo e já começaria terminada.
+ */
+.bt-unit.bt-unit--acting .bt-unit__sprite {
+    animation: bt-lunge 1.1s ease-in-out;
+}
+
+/* Magia, projétil e suporte: conjura no lugar, com um círculo no chão. */
+.bt-unit.bt-unit--casting .bt-unit__sprite {
+    animation: bt-cast 0.75s ease-in-out;
+}
+
+.bt-unit--casting .bt-unit__stage::after {
+    content: '';
+    position: absolute;
+    bottom: -4%;
+    left: 50%;
+    width: 190%;
+    height: 13%;
+    translate: -50% 0;
+    border: 2px solid var(--fx-a);
+    border-radius: 50%;
+    box-shadow: 0 0 14px var(--fx-b), inset 0 0 14px var(--fx-b);
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--fx-b) 55%, transparent), transparent);
+    animation: bt-rune 0.8s ease-out both;
 }
 
 .bt-unit.bt-unit--hit .bt-unit__sprite {
@@ -442,24 +586,32 @@
     animation: bt-glow 0.7s ease-out;
 }
 
+/* Derrotada: a figura sai de campo; ficam a placa apagada e o lugar vazio. */
 .bt-unit.bt-unit--down .bt-unit__sprite {
     animation: none;
-    transform: scaleY(0.5);
-    filter: grayscale(1);
-    opacity: 0.55;
-    transition: transform 0.3s, opacity 0.3s;
+    opacity: 0;
+}
+
+/* No instante da derrota: leva o golpe, tomba para trás e some. */
+.bt-unit.bt-unit--falling .bt-unit__sprite {
+    animation: bt-fall 0.78s ease-in forwards;
 }
 
 .bt-unit--down .bt-unit__plate {
-    opacity: 0.55;
+    opacity: 0.6;
+}
+
+.bt-unit--down .bt-unit__shadow {
+    opacity: 0;
+    transition: opacity 0.6s;
 }
 
 /* Números de dano e cura */
 
 .bt-unit__floaters {
     position: absolute;
-    z-index: 2;
-    top: 0;
+    z-index: 6;
+    top: 14%;
     left: 50%;
     pointer-events: none;
 }
@@ -469,57 +621,65 @@
     translate: -50% 0;
     color: #fff;
     font-family: var(--bt-display);
-    font-weight: 400;
-    font-size: clamp(22px, 2.6vw, 32px);
+    font-weight: 700;
+    font-size: clamp(24px, 2.8vw, 36px);
     line-height: 1;
     white-space: nowrap;
-    -webkit-text-stroke: 6px var(--bt-ink);
+    -webkit-text-stroke: 5px var(--bt-ink);
     paint-order: stroke fill;
     animation: bt-float 0.8s ease-out forwards;
 }
 
 .bt-floater--critical {
-    color: var(--bt-sun);
-    font-size: clamp(28px, 3.4vw, 42px);
+    color: var(--bt-gold-bright);
+    font-size: clamp(34px, 4.2vw, 54px);
+    animation-name: bt-float-crit;
+}
+
+.bt-floater__label {
+    display: block;
+    font-size: 0.42em;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    -webkit-text-stroke-width: 4px;
 }
 
 .bt-floater--heal {
-    color: #8dffb0;
+    color: #b9f09a;
 }
 
 .bt-floater--status {
     color: #cfe4ff;
-    font-size: clamp(15px, 1.7vw, 20px);
-    -webkit-text-stroke-width: 5px;
+    font-size: clamp(15px, 1.7vw, 21px);
+    -webkit-text-stroke-width: 4px;
 }
 
 /* Dano e status no mesmo golpe: o segundo sobe um pouco depois, mais acima. */
 .bt-floater:nth-child(2) {
-    top: -24px;
+    top: -26px;
     animation-delay: 0.12s;
 }
 
 .bt-floater:nth-child(3) {
-    top: -46px;
+    top: -50px;
     animation-delay: 0.24s;
 }
 
 /* Faixa com o nome da habilidade */
 .bt-banner {
     position: absolute;
-    z-index: 3;
-    top: 76px;
+    z-index: 4;
+    top: 84px;
     left: 50%;
     margin: 0;
-    padding: 6px 18px;
+    padding: 5px 26px 6px;
     translate: -50% 0;
-    rotate: -2deg;
-    border: 4px solid var(--bt-ink);
-    border-radius: 14px;
-    box-shadow: 0 5px 0 var(--bt-ink);
-    background: var(--bt-sun);
+    border: 2px solid var(--bt-ink);
+    border-radius: 4px;
+    box-shadow: inset 0 0 0 1px var(--bt-gold), 0 4px 12px rgb(28 26 43 / 0.45);
+    background: linear-gradient(var(--bt-paper-light), var(--bt-paper));
     font-family: var(--bt-display);
-    font-weight: 400;
+    font-weight: 700;
     font-size: clamp(16px, 2vw, 22px);
     white-space: nowrap;
     animation: bt-pop 0.25s ease-out;
@@ -533,41 +693,123 @@
     display: grid;
     place-items: center;
     padding: 16px;
-    background: rgb(42 27 61 / 0.6);
+    overflow: hidden;
+    background: rgb(28 26 43 / 0.68);
+    animation: bt-fade 0.4s ease-out both;
+}
+
+.bt-result--won {
+    background: radial-gradient(closest-side, rgb(122 92 24 / 0.6), rgb(28 26 43 / 0.84));
+}
+
+.bt-result--lost {
+    background: rgb(18 16 26 / 0.82);
+}
+
+/* Raios dourados girando atrás da carta, só na vitória */
+.bt-result__rays {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1400px;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: repeating-conic-gradient(rgb(236 208 122 / 0.3) 0 9deg, transparent 9deg 18deg);
+    -webkit-mask-image: radial-gradient(closest-side, #000 15%, transparent 70%);
+    mask-image: radial-gradient(closest-side, #000 15%, transparent 70%);
+    animation: bt-spin 50s linear infinite;
 }
 
 .bt-result__card {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
-    max-width: 420px;
-    padding: 22px 30px 26px;
-    border: 4px solid var(--bt-ink);
-    border-radius: 24px;
-    box-shadow: 0 8px 0 var(--bt-ink);
-    background: var(--bt-paper);
+    gap: 8px;
+    max-width: 440px;
+    padding: 22px 36px 26px;
+    border: 3px solid var(--bt-ink);
+    border-radius: 8px;
+    box-shadow: inset 0 0 0 1px var(--bt-gold), inset 0 0 40px rgb(124 111 87 / 0.35), 0 12px 30px rgb(0 0 0 / 0.5);
+    background: linear-gradient(var(--bt-paper-light), var(--bt-paper));
     text-align: center;
-    animation: bt-pop 0.35s ease-out;
+    animation: bt-result-in 0.55s 0.15s cubic-bezier(0.2, 1.5, 0.4, 1) both;
+}
+
+.bt-result--lost .bt-result__card {
+    background: linear-gradient(#e9dfc8, #cdbf9f);
+}
+
+.bt-result__card--won {
+    border-color: #8a6a1c;
+    box-shadow:
+        0 0 0 3px var(--bt-gold-bright),
+        inset 0 0 40px rgb(200 162 75 / 0.35),
+        0 0 70px rgb(236 208 122 / 0.55),
+        0 12px 30px rgb(0 0 0 / 0.5);
 }
 
 .bt-result__title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
     margin: 0;
     color: var(--bt-enemy);
     font-family: var(--bt-display);
-    font-weight: 400;
-    font-size: clamp(40px, 7vw, 64px);
-    line-height: 1;
-    -webkit-text-stroke: 8px var(--bt-ink);
-    paint-order: stroke fill;
+    font-weight: 700;
+    font-size: clamp(42px, 7vw, 68px);
+    line-height: 1.05;
+}
+
+/* Filetes dos dois lados do título */
+.bt-result__title::before,
+.bt-result__title::after {
+    content: '';
+    width: clamp(18px, 4vw, 44px);
+    height: 3px;
+    border-radius: 2px;
+    background: currentColor;
+    opacity: 0.55;
 }
 
 .bt-result__card--won .bt-result__title {
-    color: var(--bt-sun);
+    color: #9a6f12;
+    text-shadow: 0 2px 0 #fff3c4;
 }
 
 .bt-result__text {
-    margin: 0 0 6px;
+    margin: 0;
+    font-size: 17px;
+}
+
+/* Quem do seu time ficou de pé */
+.bt-result__team {
+    display: flex;
+    gap: 10px;
+    margin: 6px 0 12px;
+    padding: 0;
+    list-style: none;
+}
+
+.bt-result__face {
+    width: 52px;
+    height: 52px;
+    overflow: hidden;
+    border: 3px solid var(--bt-ally);
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px var(--bt-ink), 0 2px 5px rgb(28 26 43 / 0.4);
+    background: var(--bt-paper);
+}
+
+.bt-result__face--down {
+    border-color: var(--bt-stone-dark);
+    filter: grayscale(1) brightness(0.7);
+}
+
+/* Derrota: o campo perde a cor por baixo da carta. */
+.bt-arena--lost .bt-field {
+    filter: grayscale(0.75) brightness(0.8);
+    transition: filter 0.8s;
 }
 
 /* ------------------------------------------------------------------- Painel */
@@ -575,12 +817,12 @@
 .bt-hud {
     display: grid;
     gap: 12px;
-    margin-top: 20px;
-    padding: 14px 16px 16px;
-    border: 4px solid var(--bt-ink);
-    border-radius: 24px;
-    box-shadow: 0 6px 0 var(--bt-ink);
-    background: var(--bt-paper);
+    margin-top: 18px;
+    padding: 14px 18px 16px;
+    border: 3px solid var(--bt-ink);
+    border-radius: 10px;
+    box-shadow: inset 0 0 0 1px var(--bt-gold), inset 0 0 36px rgb(124 111 87 / 0.28), 0 6px 16px rgb(28 26 43 / 0.25);
+    background: linear-gradient(var(--bt-paper-light), var(--bt-paper));
 }
 
 .bt-hud__head,
@@ -595,9 +837,16 @@
 .bt-hud__title {
     margin: 0;
     font-family: var(--bt-display);
-    font-weight: 400;
-    font-size: 24px;
+    font-weight: 700;
+    font-size: 27px;
     line-height: 1.1;
+}
+
+.bt-hud__side {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 20px;
 }
 
 .bt-hud__energy {
@@ -606,28 +855,65 @@
     gap: 8px;
 }
 
+/* Som: botão de mudo e volume */
+.bt-sound {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.bt-sound__toggle {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 2px solid #4a3b2a;
+    border-radius: 6px;
+    box-shadow: 0 2px 0 #4a3b2a, inset 0 1px 0 rgb(255 255 255 / 0.6);
+    background: var(--bt-paper-light);
+    color: var(--bt-ink);
+    cursor: pointer;
+}
+
+.bt-sound__toggle[aria-pressed='true'] {
+    color: var(--bt-enemy);
+}
+
+.bt-sound__volume {
+    width: 88px;
+    accent-color: var(--bt-ally);
+    cursor: pointer;
+}
+
+.bt-sound__volume:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
 .bt-hud__hint {
-    min-height: 44px;
-    margin: 0;
     display: flex;
     align-items: center;
+    min-height: 44px;
+    margin: 0;
+    font-weight: 700;
 }
 
 .bt-skills {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
+    gap: 10px;
 }
 
 .bt-skill {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    padding: 10px 14px 12px;
-    border: 3px solid var(--bt-ink);
-    border-radius: 16px;
-    box-shadow: 0 4px 0 var(--bt-ink);
-    background: #fff;
+    gap: 3px;
+    padding: 9px 13px 11px;
+    border: 2px solid #4a3b2a;
+    border-radius: 6px;
+    box-shadow: 0 2px 0 #4a3b2a, inset 0 1px 0 rgb(255 255 255 / 0.6);
+    background: var(--bt-paper-light);
     color: inherit;
     font: inherit;
     text-align: left;
@@ -636,28 +922,29 @@
 }
 
 .bt-skill:hover:not(:disabled) {
-    background: #fff0b8;
+    background: #fff8e2;
 }
 
 .bt-skill:active:not(:disabled) {
-    translate: 0 3px;
-    box-shadow: 0 1px 0 var(--bt-ink);
+    translate: 0 2px;
+    box-shadow: 0 0 0 #4a3b2a;
 }
 
 .bt-skill:focus-visible,
+.bt-sound__toggle:focus-visible,
+.bt-sound__volume:focus-visible,
 .bt-btn:focus-visible,
 .bt-card:focus-visible,
 .bt-link:focus-visible {
-    outline: 4px solid var(--bt-ally);
+    outline: 3px solid var(--bt-ally);
     outline-offset: 3px;
 }
 
-.bt-skill--selected {
-    background: var(--bt-sun);
-}
-
+.bt-skill--selected,
 .bt-skill--selected:hover:not(:disabled) {
-    background: var(--bt-sun);
+    border-color: var(--bt-ink);
+    box-shadow: 0 2px 0 var(--bt-ink), inset 0 0 0 2px #fff3c4;
+    background: linear-gradient(var(--bt-gold-bright), var(--bt-gold));
 }
 
 .bt-skill:disabled {
@@ -675,21 +962,21 @@
 
 .bt-skill__name {
     font-family: var(--bt-display);
-    font-weight: 400;
-    font-size: 18px;
+    font-weight: 700;
+    font-size: 19px;
     line-height: 1.15;
 }
 
 .bt-skill__cost {
     flex-shrink: 0;
-    color: #b0196a;
-    font-size: 13px;
+    color: #1f4f9a;
+    font-size: 14px;
     font-weight: 800;
 }
 
 .bt-skill__text {
-    font-size: 13.5px;
-    font-weight: 600;
+    font-size: 14.5px;
+    line-height: 1.3;
 }
 
 .bt-btn {
@@ -697,59 +984,90 @@
     align-items: center;
     justify-content: center;
     min-height: 44px;
-    padding: 6px 22px;
-    border: 3px solid var(--bt-ink);
-    border-radius: 999px;
-    box-shadow: 0 4px 0 var(--bt-ink);
-    background: var(--bt-berry);
-    color: #fff;
+    padding: 5px 24px 6px;
+    border: 2px solid var(--bt-ink);
+    border-radius: 6px;
+    box-shadow: inset 0 0 0 1px var(--bt-gold), 0 3px 0 var(--bt-ink);
+    background: linear-gradient(#3c66bd, var(--bt-ally));
+    color: var(--bt-paper-light);
     font-family: var(--bt-display);
-    font-weight: 400;
-    font-size: 18px;
+    font-weight: 700;
+    font-size: 19px;
     text-decoration: none;
-    text-shadow: 0 2px 0 var(--bt-ink);
     cursor: pointer;
     transition: translate 0.08s, box-shadow 0.08s;
 }
 
 .bt-btn:active:not(:disabled) {
-    translate: 0 3px;
-    box-shadow: 0 1px 0 var(--bt-ink);
+    translate: 0 2px;
+    box-shadow: inset 0 0 0 1px var(--bt-gold), 0 1px 0 var(--bt-ink);
 }
 
 .bt-btn:disabled {
     box-shadow: none;
-    background: #cfc7d8;
-    text-shadow: none;
+    background: #a59f94;
+    color: #ece6d6;
     cursor: not-allowed;
+}
+
+/* Botão discreto, para ações que não são o caminho principal (desistir) */
+.bt-btn--quiet {
+    padding: 4px 16px 5px;
+    border-color: var(--bt-enemy);
+    box-shadow: none;
+    background: transparent;
+    color: var(--bt-enemy);
+    font-size: 17px;
+}
+
+.bt-btn--quiet:hover:not(:disabled) {
+    background: rgb(168 50 44 / 0.1);
+}
+
+.bt-btn--quiet:active:not(:disabled) {
+    box-shadow: none;
+}
+
+.bt-btn--quiet:disabled {
+    border-color: #a59f94;
+    background: transparent;
+    color: #8f887b;
+}
+
+.bt-hud__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-left: auto;
 }
 
 .bt-btn--big {
     min-height: 54px;
-    padding: 8px 34px;
-    font-size: 22px;
+    padding: 8px 36px 9px;
+    font-size: 23px;
 }
 
 /* --------------------------------------------------------------------- Log */
 
 .bt-log {
-    margin-top: 20px;
-    padding: 12px 16px;
-    border: 3px solid var(--bt-ink);
-    border-radius: 18px;
-    background: #fffdf4;
+    margin-top: 18px;
+    padding: 12px 18px;
+    border: 2px solid var(--bt-ink);
+    border-radius: 8px;
+    background: var(--bt-paper-light);
 }
 
 .bt-log__title {
     margin: 0 0 6px;
     font-family: var(--bt-display);
-    font-weight: 400;
-    font-size: 17px;
+    font-weight: 700;
+    font-size: 19px;
 }
 
 .bt-log__empty {
     margin: 0;
-    font-weight: 600;
 }
 
 .bt-log__list {
@@ -760,13 +1078,12 @@
     padding: 0;
     overflow-y: auto;
     list-style: none;
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 15px;
 }
 
 .bt-log__item {
     padding-left: 12px;
-    border-left: 5px solid var(--bt-ink);
+    border-left: 4px solid var(--bt-stone);
 }
 
 .bt-log__item--A {
@@ -786,27 +1103,28 @@
 .bt-play {
     display: grid;
     gap: 22px;
+    /* As cartas se arrumam pela largura desta área, não pela da janela. */
+    container-type: inline-size;
 }
 
 .bt-title {
     margin: 0;
     font-family: var(--bt-display);
-    font-weight: 400;
-    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 700;
+    font-size: clamp(30px, 4vw, 42px);
     line-height: 1.1;
 }
 
 .bt-subtitle {
     margin: 0 0 8px;
     font-family: var(--bt-display);
-    font-weight: 400;
-    font-size: 22px;
+    font-weight: 700;
+    font-size: 24px;
 }
 
 .bt-lead {
     max-width: 62ch;
     margin: 4px 0 0;
-    font-weight: 600;
 }
 
 /* Fora dos painéis, o texto fica sobre o fundo do app, que muda com o tema. */
@@ -827,16 +1145,29 @@
 
 .bt-message--error {
     padding: 12px 16px;
-    border: 3px solid var(--bt-ink);
-    border-radius: 16px;
-    background: #ffd9d4;
+    border: 2px solid var(--bt-enemy);
+    border-radius: 8px;
+    background: #f6d9d3;
     color: var(--bt-ink);
 }
 
+/* Seis personagens: duas, três ou seis cartas por linha, sem carta sobrando. */
 .bt-roster {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
-    gap: 18px 16px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px 14px;
+}
+
+@container (min-width: 520px) {
+    .bt-roster {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@container (min-width: 900px) {
+    .bt-roster {
+        grid-template-columns: repeat(6, 1fr);
+    }
 }
 
 .bt-card {
@@ -844,78 +1175,107 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3px;
-    padding: 14px 12px 14px;
-    border: 4px solid var(--bt-ink);
-    border-radius: 22px;
-    box-shadow: 0 6px 0 var(--bt-ink);
-    background: var(--bt-paper);
+    gap: 2px;
+    padding: 0 0 12px;
+    border: 3px solid var(--bt-ink);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgb(28 26 43 / 0.3);
+    background: linear-gradient(var(--bt-paper-light), var(--bt-paper));
     color: inherit;
     font: inherit;
     text-align: center;
     cursor: pointer;
-    transition: translate 0.08s, box-shadow 0.08s, background 0.15s;
+    transition: translate 0.12s, box-shadow 0.12s;
 }
 
-.bt-card:active:not(:disabled) {
-    translate: 0 4px;
-    box-shadow: 0 2px 0 var(--bt-ink);
+.bt-card:hover:not(:disabled) {
+    translate: 0 -3px;
+    box-shadow: 0 8px 18px rgb(28 26 43 / 0.35);
 }
 
 .bt-card--selected {
-    background: var(--bt-sun);
+    border-color: #8a6a1c;
+    box-shadow: 0 0 0 3px var(--bt-gold-bright), 0 6px 16px rgb(28 26 43 / 0.4);
 }
 
 .bt-card:disabled {
-    box-shadow: 0 2px 0 var(--bt-ink);
-    opacity: 0.55;
+    opacity: 0.5;
     cursor: not-allowed;
 }
 
 .bt-card__order {
     position: absolute;
-    top: -12px;
-    left: -10px;
+    z-index: 1;
+    top: -13px;
+    left: -11px;
     display: grid;
     place-items: center;
     width: 38px;
     height: 38px;
-    border: 3px solid var(--bt-ink);
+    border: 2px solid var(--bt-ink);
     border-radius: 50%;
-    background: var(--bt-berry);
-    color: #fff;
+    box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.25), 0 2px 5px rgb(28 26 43 / 0.5);
+    background: var(--bt-enemy);
+    color: var(--bt-paper-light);
     font-family: var(--bt-display);
-    font-weight: 400;
-    font-size: 20px;
+    font-weight: 700;
+    font-size: 21px;
+}
+
+/* A ilustração ocupa o topo da carta */
+.bt-card__art {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-bottom: 3px solid var(--bt-ink);
+    border-radius: 5px 5px 0 0;
+    background: linear-gradient(#9dc0e6, #e6e3cf 60%, #b9ab8b 60%);
 }
 
 .bt-card__sprite {
-    width: 96px;
-    height: 96px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 0;
+}
+
+.bt-card__sprite.bt-art--drawn {
+    width: 62%;
+    height: 62%;
     overflow: visible;
 }
 
 .bt-card__name {
+    margin-top: 8px;
     font-family: var(--bt-display);
-    font-weight: 400;
-    font-size: 22px;
+    font-weight: 700;
+    font-size: 24px;
     line-height: 1.1;
 }
 
+/* Com seis cartas na linha o nome encolhe um pouco para caber. */
+@container (min-width: 900px) {
+    .bt-card__name {
+        font-size: clamp(19px, 2.2cqi, 24px);
+    }
+}
+
 .bt-card__role {
-    font-size: 13px;
-    font-weight: 800;
+    font-size: 14px;
+    font-weight: 700;
+    color: #6a4d10;
 }
 
 .bt-card__stats {
     display: grid;
     gap: 1px;
-    width: 100%;
+    width: calc(100% - 24px);
     margin-top: 6px;
     padding-top: 6px;
-    border-top: 3px dotted var(--bt-ink);
-    font-size: 13px;
-    font-weight: 600;
+    border-top: 1px solid var(--bt-stone-dark);
+    font-size: 14px;
     text-align: left;
 }
 
@@ -925,9 +1285,9 @@
 }
 
 .bt-card__skills {
-    margin-top: 4px;
-    font-size: 12.5px;
-    font-weight: 600;
+    width: calc(100% - 24px);
+    margin-top: 5px;
+    font-size: 13px;
     line-height: 1.3;
 }
 
@@ -957,66 +1317,697 @@
     justify-content: space-between;
     gap: 12px;
     padding: 8px 14px;
-    border: 3px solid var(--bt-ink);
-    border-radius: 14px;
-    background: var(--bt-paper);
+    border: 2px solid var(--bt-ink);
+    border-radius: 6px;
+    background: var(--bt-paper-light);
 }
 
 .bt-history__date {
     margin-left: 10px;
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 14px;
 }
 
 .bt-link {
-    color: #1f4fc4;
+    color: #1f4f9a;
     font-weight: 800;
+}
+
+/* ------------------------------------------------------- Efeitos de golpe */
+
+/*
+ * Cores de cada elemento. --fx-a é o miolo claro, --fx-b a cor principal e
+ * --fx-c a borda escura. Quem desenha um efeito usa só essas três variáveis,
+ * então o mesmo desenho serve para qualquer elemento.
+ */
+.bt-el--physical {
+    --fx-a: #fff;
+    --fx-b: #f3e3b0;
+    --fx-c: #b98f3c;
+}
+
+.bt-el--fire {
+    --fx-a: #fff3b0;
+    --fx-b: #ff8a1f;
+    --fx-c: #d5301a;
+}
+
+.bt-el--ice {
+    --fx-a: #fff;
+    --fx-b: #a6dcff;
+    --fx-c: #3f86d8;
+}
+
+.bt-el--lightning {
+    --fx-a: #fff;
+    --fx-b: #9fc4ff;
+    --fx-c: #4a6cff;
+}
+
+.bt-el--nature {
+    --fx-a: #eaffb0;
+    --fx-b: #7fce3c;
+    --fx-c: #6a3fa0;
+}
+
+.bt-el--light {
+    --fx-a: #fff;
+    --fx-b: #ffe58a;
+    --fx-c: #e0a020;
+}
+
+/* Camada por cima do campo: projéteis e ataques em área (FxLayer.tsx). */
+.bt-fx {
+    position: absolute;
+    z-index: 3;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+/*
+ * Projétil. As coordenadas (--x0, --y0 -> --x1, --y1) e o ângulo são medidos
+ * pelo FxLayer. Sai aos 0,3 s e chega aos 0,7 s, junto com o dano.
+ */
+.bt-proj {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(var(--bt-unit) * 0.2);
+    height: calc(var(--bt-unit) * 0.2);
+    margin: calc(var(--bt-unit) * -0.1) 0 0 calc(var(--bt-unit) * -0.1);
+    opacity: 0;
+    filter: drop-shadow(0 0 8px var(--fx-b));
+    animation: bt-fly 0.4s 0.3s cubic-bezier(0.5, 0, 0.9, 0.7) forwards;
+}
+
+/* Rastro */
+.bt-proj::before {
+    content: '';
+    position: absolute;
+    top: 30%;
+    right: 50%;
+    width: 230%;
+    height: 40%;
+    border-radius: 50%;
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--fx-b) 80%, transparent));
+    filter: blur(2px);
+}
+
+/* Cabeça: uma esfera, que muda de forma conforme o elemento */
+.bt-proj::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(
+        closest-side,
+        var(--fx-a) 0 24%,
+        var(--fx-b) 50%,
+        color-mix(in srgb, var(--fx-c) 70%, transparent) 72%,
+        transparent 100%
+    );
+}
+
+.bt-proj.bt-el--ice::after {
+    border-radius: 0;
+    background: linear-gradient(90deg, var(--fx-c), var(--fx-b) 45%, var(--fx-a));
+    clip-path: polygon(0 50%, 55% 14%, 100% 50%, 55% 86%);
+}
+
+.bt-proj.bt-el--light::after {
+    border-radius: 0;
+    background: radial-gradient(closest-side, var(--fx-a) 30%, var(--fx-b));
+    clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+}
+
+.bt-proj.bt-el--nature::after {
+    border-radius: 0;
+    background:
+        radial-gradient(circle at 70% 50%, var(--fx-a) 0 12%, var(--fx-b) 13% 24%, transparent 26%),
+        radial-gradient(circle at 38% 28%, var(--fx-b) 0 13%, var(--fx-c) 14% 17%, transparent 19%),
+        radial-gradient(circle at 40% 74%, var(--fx-b) 0 11%, var(--fx-c) 12% 15%, transparent 17%),
+        radial-gradient(circle at 14% 50%, var(--fx-c) 0 9%, transparent 11%);
+}
+
+/*
+ * Ataque em área. A caixa cobre os alvos (--left, --top, --width, --height).
+ * O padrão é uma chuva de riscos na cor do elemento; fogo, gelo e golpe
+ * físico têm desenho próprio logo abaixo.
+ */
+.bt-area {
+    position: absolute;
+    top: var(--top);
+    left: var(--left);
+    width: var(--width);
+    height: var(--height);
+}
+
+/* Clarão sobre os alvos */
+.bt-area::before {
+    content: '';
+    position: absolute;
+    inset: -4% -8%;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--fx-b) 45%, transparent), transparent);
+    animation: bt-haze 0.95s 0.25s ease-out both;
+}
+
+.bt-area i {
+    position: absolute;
+    top: 0;
+    left: calc(6% + var(--i) * 16%);
+    width: calc(var(--bt-unit) * 0.035);
+    height: 60%;
+    border-radius: 40%;
+    background: linear-gradient(transparent, var(--fx-a) 70%, var(--fx-b));
+    opacity: 0;
+    animation: bt-rain 0.4s calc(0.25s + var(--i) * 0.08s) ease-in forwards;
+}
+
+/* Fogo: meteoros caindo na diagonal */
+.bt-area--fire i {
+    left: calc(4% + var(--i) * 17%);
+    width: calc(var(--bt-unit) * 0.13);
+    height: auto;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, var(--fx-a) 0 25%, var(--fx-b) 55%, transparent 100%);
+    filter: drop-shadow(0 0 6px var(--fx-c));
+    animation: bt-meteor 0.46s calc(0.14s + var(--i) * 0.07s) cubic-bezier(0.6, 0, 1, 0.8) forwards;
+}
+
+.bt-area--fire i::before {
+    content: '';
+    position: absolute;
+    bottom: 50%;
+    left: 20%;
+    width: 60%;
+    height: 330%;
+    border-radius: 50%;
+    background: linear-gradient(transparent, var(--fx-b));
+    filter: blur(2px);
+    transform-origin: 50% 100%;
+    rotate: calc(var(--fx-dir, 1) * -28deg);
+}
+
+/* Gelo: rajadas de vento atravessando os alvos */
+.bt-area--ice::before {
+    background: radial-gradient(closest-side, rgb(255 255 255 / 0.7), rgb(166 220 255 / 0.35) 60%, transparent);
+}
+
+.bt-area--ice i {
+    top: calc(8% + var(--i) * 15%);
+    left: 27%;
+    width: 46%;
+    height: max(3px, calc(var(--bt-unit) * 0.014));
+    border-radius: 3px;
+    background: linear-gradient(90deg, transparent, var(--fx-a) 55%, var(--fx-b));
+    box-shadow: 0 0 6px var(--fx-b);
+    animation: bt-gust 0.5s calc(0.2s + var(--i) * 0.08s) ease-in forwards;
+}
+
+/* Físico: onda de choque que nasce em quem usou (--sx, --sy) e cresce até os alvos */
+.bt-area--physical {
+    inset: 0;
+    width: auto;
+    height: auto;
+}
+
+.bt-area--physical::before {
+    content: none;
+}
+
+.bt-area--physical i {
+    top: var(--sy);
+    left: var(--sx);
+    width: calc(var(--reach) * 2);
+    height: calc(var(--reach) * 2);
+    margin: calc(var(--reach) * -1) 0 0 calc(var(--reach) * -1);
+    border: 6px solid var(--fx-a);
+    border-radius: 50%;
+    box-shadow: 0 0 16px 3px var(--fx-c), inset 0 0 16px 3px var(--fx-c);
+    background: none;
+    animation: bt-shock 0.62s calc(0.2s + var(--i) * 0.14s) ease-out forwards;
+}
+
+.bt-area--physical i:nth-child(n + 4) {
+    display: none;
+}
+
+/*
+ * Impacto em cima de uma unidade (ImpactFx.tsx). A caixa fica no peito da
+ * figura; ::before é o clarão, os <i> são as partículas e ::after é o
+ * traço próprio de cada elemento (corte, raio, coluna de luz...).
+ */
+.bt-impact {
+    position: absolute;
+    z-index: 3;
+    top: 44%;
+    left: 50%;
+    width: calc(var(--bt-unit) * 0.6);
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    pointer-events: none;
+}
+
+.bt-impact--crit {
+    scale: 1.4;
+}
+
+/* Dano de queimadura e veneno no começo do turno: o mesmo efeito, menor. */
+.bt-impact--tick {
+    scale: 0.62;
+}
+
+.bt-impact--hit::before,
+.bt-impact--tick::before {
+    content: '';
+    position: absolute;
+    inset: 14%;
+    border-radius: 50%;
+    background: radial-gradient(
+        closest-side,
+        var(--fx-a) 0 18%,
+        var(--fx-b) 46%,
+        color-mix(in srgb, var(--fx-c) 60%, transparent) 68%,
+        transparent 100%
+    );
+    animation: bt-burst 0.42s ease-out both;
+}
+
+/* Faíscas saindo do centro, uma a cada 60 graus */
+.bt-impact--hit i,
+.bt-impact--tick i {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 7%;
+    height: 24%;
+    margin: -12% 0 0 -3.5%;
+    border-radius: 50%;
+    background: linear-gradient(var(--fx-a), var(--fx-b) 60%, transparent);
+    rotate: calc(var(--i) * 60deg + 20deg);
+    opacity: 0;
+    animation: bt-spark 0.5s ease-out both;
+}
+
+/* Físico: o risco do corte */
+.bt-impact--physical::after {
+    content: '';
+    position: absolute;
+    top: 46%;
+    left: -8%;
+    width: 116%;
+    height: 8%;
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--fx-b);
+    background: linear-gradient(90deg, transparent, #fff 25%, #fff 75%, transparent);
+    rotate: -38deg;
+    animation: bt-slash 0.32s ease-out both;
+}
+
+/* Fogo: labaredas subindo */
+.bt-impact--fire i {
+    width: 13%;
+    height: 34%;
+    margin: -17% 0 0 -6.5%;
+    border-radius: 50% 50% 50% 50% / 68% 68% 32% 32%;
+    background: radial-gradient(ellipse at 50% 72%, var(--fx-a), var(--fx-b) 55%, var(--fx-c));
+    rotate: calc((var(--i) - 2.5) * 22deg);
+    animation: bt-flame 0.62s calc(var(--i) * 0.03s) ease-out both;
+}
+
+/* Gelo: cristais abrindo e um anel de geada */
+.bt-impact--ice i {
+    width: 11%;
+    height: 36%;
+    margin: -18% 0 0 -5.5%;
+    border-radius: 0;
+    background: linear-gradient(var(--fx-a), var(--fx-b) 50%, var(--fx-c));
+    clip-path: polygon(50% 0, 100% 62%, 50% 100%, 0 62%);
+    animation: bt-shard 0.58s ease-out both;
+}
+
+.bt-impact--ice::after {
+    content: '';
+    position: absolute;
+    inset: 6%;
+    border: 3px solid var(--fx-a);
+    border-radius: 50%;
+    box-shadow: 0 0 12px var(--fx-b), inset 0 0 12px var(--fx-b);
+    animation: bt-ring 0.5s ease-out both;
+}
+
+/* Raio: o relâmpago cai de cima e pisca */
+.bt-impact--lightning i {
+    width: 4%;
+}
+
+.bt-impact--lightning::after {
+    content: '';
+    position: absolute;
+    bottom: 40%;
+    left: 30%;
+    width: 40%;
+    height: 215%;
+    background: linear-gradient(var(--fx-b), var(--fx-a) 60%);
+    clip-path: polygon(48% 0, 72% 0, 54% 30%, 80% 30%, 46% 62%, 68% 62%, 30% 100%, 44% 68%, 20% 68%, 46% 36%, 22% 36%);
+    animation: bt-bolt 0.45s steps(1) both;
+}
+
+/* Natureza: esporos subindo devagar */
+.bt-impact--nature i {
+    width: 12%;
+    height: 12%;
+    margin: -6% 0 0 -6%;
+    background: radial-gradient(circle at 35% 35%, var(--fx-a), var(--fx-b) 60%, var(--fx-c));
+    rotate: calc(var(--i) * 60deg + 10deg);
+    animation: bt-spore 0.72s calc(var(--i) * 0.04s) ease-out both;
+}
+
+/* Luz: uma coluna descendo sobre o alvo e estrelas */
+.bt-impact--light i {
+    width: 13%;
+    height: 13%;
+    margin: -6.5% 0 0 -6.5%;
+    border-radius: 0;
+    background: radial-gradient(closest-side, var(--fx-a) 30%, var(--fx-b));
+    clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+    animation: bt-spore 0.6s calc(var(--i) * 0.03s) ease-out both;
+}
+
+.bt-impact--light::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 27%;
+    width: 46%;
+    height: 200%;
+    border-radius: 50% 50% 0 0 / 12% 12% 0 0;
+    background: linear-gradient(
+        to top,
+        color-mix(in srgb, var(--fx-b) 85%, transparent),
+        color-mix(in srgb, var(--fx-a) 65%, transparent) 40%,
+        transparent
+    );
+    transform-origin: 50% 100%;
+    animation: bt-beam 0.5s ease-out both;
+}
+
+/* Cura, bônus e penalidade: uma aura e sinais subindo (ou descendo) */
+.bt-impact--heal::before,
+.bt-impact--boon::before,
+.bt-impact--bane::before {
+    content: '';
+    position: absolute;
+    inset: -4% 8% -34%;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgb(185 240 154 / 0.75), rgb(185 240 154 / 0.25) 60%, transparent);
+    animation: bt-aura 0.75s ease-out both;
+}
+
+.bt-impact--boon::before {
+    background: radial-gradient(closest-side, rgb(236 208 122 / 0.7), rgb(236 208 122 / 0.22) 60%, transparent);
+}
+
+.bt-impact--bane::before {
+    background: radial-gradient(closest-side, rgb(140 70 170 / 0.6), rgb(140 70 170 / 0.2) 60%, transparent);
+}
+
+.bt-impact--heal i,
+.bt-impact--boon i,
+.bt-impact--bane i {
+    position: absolute;
+    top: 62%;
+    left: calc(10% + var(--i) * 14.5%);
+    width: 11%;
+    aspect-ratio: 1;
+    background: linear-gradient(#f6ffe6, #8fdc5c);
+    clip-path: polygon(36% 0, 64% 0, 64% 36%, 100% 36%, 100% 64%, 64% 64%, 64% 100%, 36% 100%, 36% 64%, 0 64%, 0 36%, 36% 36%);
+    opacity: 0;
+    animation: bt-rise 0.75s calc(var(--i) * 0.06s) ease-out both;
+}
+
+.bt-impact--heal i:nth-child(even),
+.bt-impact--boon i:nth-child(even),
+.bt-impact--bane i:nth-child(even) {
+    top: 84%;
+}
+
+/* Bônus: setas douradas para cima. Penalidade: setas roxas para baixo. */
+.bt-impact--boon i,
+.bt-impact--bane i {
+    background: linear-gradient(#fff6d0, var(--bt-gold));
+    clip-path: polygon(50% 0, 100% 56%, 100% 100%, 50% 46%, 0 100%, 0 56%);
+}
+
+.bt-impact--bane i {
+    top: 6%;
+    background: linear-gradient(#b05ad0, #5a2a78);
+    clip-path: polygon(0 0, 50% 54%, 100% 0, 100% 44%, 50% 100%, 0 44%);
+    animation-name: bt-sink;
+}
+
+.bt-impact--bane i:nth-child(even) {
+    top: 26%;
+}
+
+/* Escudo: um anel azul que se fecha em volta da figura */
+.bt-impact--shield::before {
+    content: '';
+    position: absolute;
+    inset: -12% 2% -38%;
+    border: 3px solid #cfe6ff;
+    border-radius: 50%;
+    box-shadow: 0 0 16px #3f86d8, inset 0 0 18px rgb(63 134 216 / 0.6);
+    animation: bt-ring-in 0.6s ease-out both;
+}
+
+.bt-impact--shield i {
+    display: none;
+}
+
+/* Acerto crítico: o campo treme e a arena pisca */
+.bt-arena--quake .bt-field {
+    animation: bt-quake 0.42s linear;
+}
+
+.bt-flash {
+    position: absolute;
+    z-index: 3;
+    inset: 0;
+    background: #fff;
+    opacity: 0;
+    pointer-events: none;
+    animation: bt-flash 0.32s ease-out;
+}
+
+/* Aviso de começo da batalha */
+.bt-announce {
+    position: absolute;
+    z-index: 6;
+    top: 46%;
+    left: 50%;
+    margin: 0;
+    translate: -50% -50%;
+    color: var(--bt-paper-light);
+    font-family: var(--bt-display);
+    font-weight: 700;
+    font-size: clamp(44px, 9vw, 92px);
+    line-height: 1.1;
+    white-space: nowrap;
+    text-shadow: 0 4px 0 var(--bt-ink), 0 0 30px var(--bt-gold-bright);
+    -webkit-text-stroke: 6px var(--bt-ink);
+    paint-order: stroke fill;
+    pointer-events: none;
+    animation: bt-announce 1.3s ease-in-out both;
+}
+
+/* "Turno N", a cada turno novo: o mesmo aviso, menor e mais rápido */
+.bt-announce--turn {
+    font-size: clamp(30px, 5.5vw, 56px);
+    animation-duration: 0.85s;
+}
+
+/* Faixa escura atrás do aviso, de um lado ao outro da arena */
+.bt-announce::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 4% -100vw;
+    border-block: 2px solid var(--bt-gold);
+    background: rgb(28 26 43 / 0.72);
+}
+
+/* ------------------------------------------------------------ Tela estreita */
+
+/*
+ * Em telas estreitas os dois times não cabem lado a lado: os inimigos ficam
+ * na fileira de cima e o seu time na de baixo.
+ */
+@media (max-width: 640px) {
+    .bt {
+        --bt-unit: clamp(120px, 42vw, 190px);
+        --bt-slot: calc(var(--bt-unit) * 0.62);
+    }
+
+    .bt-arena {
+        min-height: 0;
+    }
+
+    .bt-arena::after {
+        height: 66%;
+    }
+
+    .bt-field {
+        grid-template-columns: 1fr;
+        gap: 44px;
+        padding-top: 26px;
+    }
+
+    .bt-team--right {
+        order: -1;
+    }
+
+    /* Com um time em cima do outro, o golpe corpo a corpo avança na vertical. */
+    .bt-team--left .bt-unit.bt-unit--acting .bt-unit__sprite {
+        animation-name: bt-lunge-up;
+    }
+
+    .bt-team--right .bt-unit.bt-unit--acting .bt-unit__sprite {
+        animation-name: bt-lunge-down;
+    }
 }
 
 /* ---------------------------------------------------------------- Animações */
 
-@keyframes bt-bob {
+@keyframes bt-breathe {
     50% {
-        transform: scale(1.03, 0.96);
+        transform: scale(1.012, 0.988);
+    }
+}
+
+@keyframes bt-beckon {
+    50% {
+        opacity: 0.86;
     }
 }
 
 @keyframes bt-hop {
     to {
-        translate: 0 -7px;
+        translate: 0 -6px;
     }
 }
 
-@keyframes bt-spin {
-    to {
-        rotate: 360deg;
+@keyframes bt-ward {
+    50% {
+        opacity: 0.6;
     }
 }
 
-@keyframes bt-wiggle {
+@keyframes bt-dizzy {
     25% {
-        transform: rotate(-4deg);
+        transform: rotate(-3deg);
     }
     75% {
-        transform: rotate(4deg);
+        transform: rotate(3deg);
     }
 }
 
-@keyframes bt-lunge-right {
-    35% {
-        transform: translateX(-12%) scale(0.94, 1.06);
+@keyframes bt-lunge {
+    30%,
+    48% {
+        transform: translateX(-7%) rotate(-2deg);
     }
-    60% {
-        transform: translateX(38%) scale(1.08, 0.94);
+    63% {
+        transform: translateX(40%) rotate(3deg);
+    }
+    74% {
+        transform: translateX(36%) rotate(1deg);
     }
 }
 
-@keyframes bt-lunge-left {
-    35% {
-        transform: translateX(12%) scale(0.94, 1.06);
+@keyframes bt-lunge-up {
+    30%,
+    48% {
+        transform: translateY(3%);
     }
-    60% {
-        transform: translateX(-38%) scale(1.08, 0.94);
+    63% {
+        transform: translateY(-26%);
+    }
+    74% {
+        transform: translateY(-23%);
+    }
+}
+
+@keyframes bt-lunge-down {
+    30%,
+    48% {
+        transform: translateY(-3%);
+    }
+    63% {
+        transform: translateY(20%);
+    }
+    74% {
+        transform: translateY(18%);
+    }
+}
+
+@keyframes bt-cast {
+    30%,
+    62% {
+        transform: translateY(-2.5%) scale(1.03);
+        filter: brightness(1.25) drop-shadow(0 0 10px var(--fx-b));
+    }
+}
+
+@keyframes bt-rune {
+    0% {
+        scale: 0.3;
+        opacity: 0;
+    }
+    30% {
+        scale: 1;
+        opacity: 1;
+    }
+    75% {
+        opacity: 1;
+    }
+    100% {
+        scale: 1.15;
+        opacity: 0;
+    }
+}
+
+@keyframes bt-fall {
+    12% {
+        transform: translateX(-4%) rotate(-3deg);
+        filter: brightness(1.5) saturate(0.7);
+        opacity: 1;
+    }
+    32% {
+        transform: translateX(-6%) rotate(-7deg);
+        filter: grayscale(0.6);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-13%, 5%) rotate(-24deg) scale(0.96);
+        filter: grayscale(1) brightness(0.6);
+        opacity: 0;
+    }
+}
+
+@keyframes bt-enter-left {
+    from {
+        translate: -45% 0;
+        opacity: 0;
+    }
+}
+
+@keyframes bt-enter-right {
+    from {
+        translate: 45% 0;
+        opacity: 0;
     }
 }
 
@@ -1024,34 +2015,24 @@
     0%,
     100% {
         transform: none;
-        filter: none;
     }
     20% {
-        transform: translateX(-9%) rotate(-5deg);
-        filter: brightness(1.7) saturate(0.3);
+        transform: translateX(-5%) rotate(-3deg);
+        filter: brightness(1.5) saturate(0.7);
     }
     45% {
-        transform: translateX(8%) rotate(4deg);
+        transform: translateX(4%) rotate(2deg);
+        filter: drop-shadow(0 0 8px var(--bt-enemy));
     }
     70% {
-        transform: translateX(-5%);
-        filter: none;
+        transform: translateX(-2%);
     }
 }
 
 @keyframes bt-glow {
     40% {
-        transform: scale(1.12);
-        filter: drop-shadow(0 0 10px var(--bt-good)) brightness(1.15);
-    }
-}
-
-@keyframes bt-dizzy {
-    25% {
-        transform: rotate(-5deg);
-    }
-    75% {
-        transform: rotate(5deg);
+        transform: scale(1.04);
+        filter: drop-shadow(0 0 12px var(--bt-good)) brightness(1.2);
     }
 }
 
@@ -1080,6 +2061,376 @@
     }
 }
 
+@keyframes bt-fly {
+    0% {
+        transform: translate(var(--x0), var(--y0)) rotate(var(--angle)) scale(0.3);
+        opacity: 0;
+    }
+    18%,
+    92% {
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--x1), var(--y1)) rotate(var(--angle)) scale(1.1);
+        opacity: 0;
+    }
+}
+
+@keyframes bt-haze {
+    0% {
+        opacity: 0;
+    }
+    35%,
+    60% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes bt-rain {
+    0% {
+        transform: translateY(-110%);
+        opacity: 0;
+    }
+    25% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(70%);
+        opacity: 0;
+    }
+}
+
+@keyframes bt-meteor {
+    0% {
+        transform: translate(calc(var(--fx-dir, 1) * var(--height) * -0.4), calc(var(--height) * -0.7));
+        opacity: 0;
+    }
+    15%,
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translate(0, calc(var(--height) * (0.42 + var(--i) * 0.07)));
+        opacity: 0;
+    }
+}
+
+@keyframes bt-gust {
+    0% {
+        transform: translateX(calc(var(--fx-dir, 1) * var(--width) * -0.7)) scaleX(var(--fx-dir, 1));
+        opacity: 0;
+    }
+    20%,
+    75% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(calc(var(--fx-dir, 1) * var(--width) * 0.7)) scaleX(var(--fx-dir, 1));
+        opacity: 0;
+    }
+}
+
+@keyframes bt-shock {
+    0% {
+        transform: scale(0.06);
+        opacity: 0.95;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0;
+    }
+}
+
+@keyframes bt-burst {
+    0% {
+        scale: 0.2;
+        opacity: 1;
+    }
+    60% {
+        opacity: 0.9;
+    }
+    100% {
+        scale: 1.25;
+        opacity: 0;
+    }
+}
+
+@keyframes bt-spark {
+    0% {
+        transform: translateY(-60%) scaleY(0.4);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-260%) scaleY(1);
+        opacity: 0;
+    }
+}
+
+@keyframes bt-slash {
+    0% {
+        clip-path: inset(0 100% 0 0);
+        opacity: 1;
+    }
+    55% {
+        clip-path: inset(0 0 0 0);
+        opacity: 1;
+    }
+    100% {
+        clip-path: inset(0 0 0 100%);
+        opacity: 0;
+    }
+}
+
+@keyframes bt-flame {
+    0% {
+        transform: translateY(40%) scale(0.3);
+        opacity: 0.95;
+    }
+    60% {
+        opacity: 0.9;
+    }
+    100% {
+        transform: translateY(-150%) scale(1.1, 1.4);
+        opacity: 0;
+    }
+}
+
+@keyframes bt-shard {
+    0% {
+        transform: translateY(-20%) scale(0.2);
+        opacity: 1;
+    }
+    35% {
+        transform: translateY(-120%) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-150%) scale(1);
+        opacity: 0;
+    }
+}
+
+@keyframes bt-ring {
+    0% {
+        scale: 0.3;
+        opacity: 1;
+    }
+    100% {
+        scale: 1.2;
+        opacity: 0;
+    }
+}
+
+@keyframes bt-ring-in {
+    0% {
+        scale: 1.5;
+        opacity: 0;
+    }
+    45% {
+        scale: 1;
+        opacity: 1;
+    }
+    100% {
+        scale: 1;
+        opacity: 0;
+    }
+}
+
+@keyframes bt-bolt {
+    0% {
+        opacity: 1;
+    }
+    20% {
+        opacity: 0.2;
+    }
+    35% {
+        opacity: 1;
+    }
+    60% {
+        opacity: 0.5;
+    }
+    75% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes bt-spore {
+    0% {
+        transform: translateY(0) scale(0.3);
+        opacity: 1;
+    }
+    70% {
+        opacity: 0.9;
+    }
+    100% {
+        transform: translateY(-330%) scale(1.2);
+        opacity: 0;
+    }
+}
+
+@keyframes bt-beam {
+    0% {
+        scale: 0.2 1;
+        opacity: 0;
+    }
+    25% {
+        scale: 1 1;
+        opacity: 1;
+    }
+    100% {
+        scale: 0.6 1;
+        opacity: 0;
+    }
+}
+
+@keyframes bt-aura {
+    0% {
+        scale: 0.5;
+        opacity: 0;
+    }
+    30% {
+        opacity: 1;
+    }
+    100% {
+        scale: 1.1;
+        opacity: 0;
+    }
+}
+
+@keyframes bt-rise {
+    0% {
+        transform: translateY(60%) scale(0.4);
+        opacity: 0;
+    }
+    25% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-420%) scale(1);
+        opacity: 0;
+    }
+}
+
+@keyframes bt-sink {
+    0% {
+        transform: translateY(-60%) scale(0.4);
+        opacity: 0;
+    }
+    25% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(420%) scale(1);
+        opacity: 0;
+    }
+}
+
+@keyframes bt-quake {
+    10% {
+        translate: -6px 3px;
+    }
+    25% {
+        translate: 5px -4px;
+    }
+    40% {
+        translate: -4px -2px;
+    }
+    55% {
+        translate: 4px 3px;
+    }
+    70% {
+        translate: -2px 2px;
+    }
+    85% {
+        translate: 1px -1px;
+    }
+}
+
+@keyframes bt-flash {
+    0% {
+        opacity: 0.34;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes bt-announce {
+    0% {
+        scale: 2.2;
+        opacity: 0;
+    }
+    18% {
+        scale: 1;
+        opacity: 1;
+    }
+    80% {
+        scale: 1.04;
+        opacity: 1;
+    }
+    100% {
+        scale: 1.3;
+        opacity: 0;
+    }
+}
+
+@keyframes bt-float-crit {
+    0% {
+        transform: translateY(10px) scale(0.3);
+        opacity: 0;
+    }
+    18% {
+        transform: translateY(-18px) scale(1.5) rotate(-5deg);
+        opacity: 1;
+    }
+    34% {
+        transform: translateY(-20px) scale(1.1);
+    }
+    78% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-52px) scale(1);
+        opacity: 0;
+    }
+}
+
+@keyframes bt-reorder {
+    0% {
+        scale: 0.6;
+        box-shadow: 0 0 0 3px var(--bt-gold-bright), 0 0 14px 4px var(--bt-gold-bright);
+    }
+    45% {
+        scale: 1.15;
+        box-shadow: 0 0 0 3px var(--bt-gold-bright), 0 0 14px 4px var(--bt-gold-bright);
+    }
+}
+
+@keyframes bt-fade {
+    from {
+        opacity: 0;
+    }
+}
+
+@keyframes bt-result-in {
+    from {
+        scale: 0.5;
+        opacity: 0;
+    }
+}
+
+@keyframes bt-spin {
+    to {
+        rotate: 360deg;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .bt *,
     .bt *::before,
@@ -1093,5 +2444,10 @@
     .bt-floater {
         animation: none !important;
         translate: -50% -30px;
+    }
+
+    /* O aviso de começo também: sem animação ele terminaria invisível. */
+    .bt-announce {
+        animation: none !important;
     }
 }

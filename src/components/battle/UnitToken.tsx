@@ -1,16 +1,22 @@
 import { useTranslation } from 'react-i18next';
-import { CharacterSprite } from './CharacterSprite';
+import { CharacterArt } from './CharacterArt';
+import { ImpactFx } from './ImpactFx';
 import { StatusBadges } from './StatusBadges';
+import type { Impact, SkillFx } from '@/battle/fx';
 import type { Floater } from '@/hooks/useBattle';
 import type { BattleUnit } from '@/types/battle';
 
 interface UnitTokenProps {
     unit: BattleUnit;
     isActive: boolean;
-    isActing: boolean;
+    /** A habilidade que esta unidade está usando agora, se for ela a da vez. */
+    acting: SkillFx | null;
     isHit: boolean;
     isHealed: boolean;
+    /** Acabou de ser derrotada: anima a queda. */
+    isFalling: boolean;
     isTargetable: boolean;
+    impact: Impact | null;
     floaters: Floater[];
     onSelect: (unitId: string) => void;
 }
@@ -22,7 +28,7 @@ function hpColor(ratio: number): string {
 }
 
 /** Uma unidade no campo: desenho, nome, barra de vida e os números que sobem. */
-export function UnitToken({ unit, isActive, isActing, isHit, isHealed, isTargetable, floaters, onSelect }: UnitTokenProps) {
+export function UnitToken({ unit, isActive, acting, isHit, isHealed, isFalling, isTargetable, impact, floaters, onSelect }: UnitTokenProps) {
     const { t } = useTranslation();
     const ratio = unit.hp / unit.stats.maxHp;
     const isDown = unit.hp <= 0;
@@ -32,11 +38,13 @@ export function UnitToken({ unit, isActive, isActing, isHit, isHealed, isTargeta
     const classes = [
         'bt-unit',
         isActive && 'bt-unit--active',
-        isActing && 'bt-unit--acting',
+        // Corpo a corpo avança no alvo; o resto conjura no lugar, na cor do elemento.
+        acting && (acting.delivery === 'melee' ? 'bt-unit--acting' : `bt-unit--casting bt-el--${acting.element}`),
         isHit && 'bt-unit--hit',
         isHealed && 'bt-unit--healed',
         isTargetable && 'bt-unit--target',
         isDown && 'bt-unit--down',
+        isFalling && 'bt-unit--falling',
         shield && 'bt-unit--shielded',
         statuses.some((status) => status.kind === 'stun') && 'bt-unit--stunned',
     ]
@@ -47,6 +55,7 @@ export function UnitToken({ unit, isActive, isActing, isHit, isHealed, isTargeta
         <button
             type='button'
             className={classes}
+            data-unit-id={unit.id}
             disabled={!isTargetable}
             onClick={() => onSelect(unit.id)}
             aria-label={[
@@ -55,18 +64,24 @@ export function UnitToken({ unit, isActive, isActing, isHit, isHealed, isTargeta
                 ...statuses.map((status) => t(`battle.status.${status.kind}`)),
             ].join('. ')}
         >
-            {isActive && <span className='bt-unit__marker' aria-hidden='true' />}
+            {/* A figura é maior que a área clicável e passa por cima das vizinhas. */}
+            <span className='bt-unit__stage'>
+                <span className='bt-unit__shadow' aria-hidden='true' />
+                <CharacterArt characterId={unit.characterId} kind='figure' className='bt-unit__sprite' />
 
-            <span className='bt-unit__floaters' aria-hidden='true'>
-                {floaters.map((floater) => (
-                    <span key={floater.id} className={`bt-floater bt-floater--${floater.kind}`}>
-                        {floater.text}
-                    </span>
-                ))}
+                {impact && <ImpactFx key={impact.id} impact={impact} />}
+
+                {isActive && <span className='bt-unit__marker' aria-hidden='true' />}
+
+                <span className='bt-unit__floaters' aria-hidden='true'>
+                    {floaters.map((floater) => (
+                        <span key={floater.id} className={`bt-floater bt-floater--${floater.kind}`}>
+                            {floater.label && <span className='bt-floater__label'>{floater.label}</span>}
+                            {floater.text}
+                        </span>
+                    ))}
+                </span>
             </span>
-
-            <CharacterSprite characterId={unit.characterId} className='bt-unit__sprite' />
-            <span className='bt-unit__shadow' aria-hidden='true' />
 
             <span className='bt-unit__plate'>
                 <span className='bt-unit__name'>{unit.name}</span>

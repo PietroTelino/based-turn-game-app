@@ -25,3 +25,8 @@ export async function sendBattleAction(id: string, action: BattleActionInput): P
     const { data } = await api.post<BattleResponse>(`/battles/${id}/actions`, action);
     return data;
 }
+
+export async function surrenderBattle(id: string): Promise<BattleResponse> {
+    const { data } = await api.post<BattleResponse>(`/battles/${id}/surrender`);
+    return data;
+}

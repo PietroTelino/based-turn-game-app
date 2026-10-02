@@ -308,7 +308,13 @@
         "notFound": "Não encontramos essa batalha.",
         "backToPlay": "Montar um time",
         "turn": "Turno {{turn}}",
-        "queue": "Próximos a jogar",
+        "queue": "Ordem de ação deste turno",
+        "queueStatus": {
+            "active": "na vez",
+            "done": "já agiu",
+            "waiting": "ainda vai agir",
+            "down": "derrotado"
+        },
         "hudLabel": "Suas jogadas",
         "energy": "Sua energia",
         "enemyEnergy": "Energia inimiga",
@@ -328,7 +334,22 @@
         "victoryText": "Você derrotou o time inimigo no turno {{turn}}.",
         "defeatText": "Seu time caiu no turno {{turn}}.",
         "newBattle": "Nova batalha",
+        "surrender": "Desistir",
+        "surrenderTitle": "Desistir da batalha",
+        "surrenderMessage": "A batalha termina agora e conta como derrota. Não dá para voltar atrás.",
+        "surrenderCancel": "Continuar lutando",
+        "surrenderedText": "Você desistiu no turno {{turn}}.",
         "blocked": "Bloqueado",
+        "critical": "Crítico!",
+        "begin": "Batalha!",
+        "survivors": "Seu time ao fim da batalha",
+        "survived": "{{unit}} ficou de pé",
+        "fell": "{{unit}} foi derrotado",
+        "sound": {
+            "mute": "Desligar o som",
+            "unmute": "Ligar o som",
+            "volume": "Volume do som"
+        },
         "turns_one": "{{count}} turno",
         "turns_other": "{{count}} turnos",
         "shieldPoints": "escudo de {{value}}",
@@ -364,6 +385,7 @@
         "log": {
             "title": "O que aconteceu",
             "empty": "As jogadas vão aparecer aqui.",
+            "orderChanged": "A ordem de ação mudou",
             "skill": "{{unit}} usou {{skill}}",
             "damage": "{{target}} levou {{amount}} de dano",
             "critical": "{{target}} levou {{amount}} de dano crítico",
@@ -373,6 +395,8 @@
             "statusApplied": "{{target}}: {{status}} por {{turns}}",
             "statusDamage": "{{target}} sofreu {{amount}} de dano de {{status}}",
             "skipped": "{{unit}} perdeu a vez: {{status}}",
+            "surrendered": "Você desistiu da batalha.",
+            "enemySurrendered": "O inimigo desistiu da batalha.",
             "won": "Você venceu a batalha.",
             "lost": "Você perdeu a batalha."
         }

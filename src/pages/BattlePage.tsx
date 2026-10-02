@@ -2,6 +2,9 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/Layout';
 import { BattleLog, EnergyPips, SkillBar, TurnQueue } from '@/components/battle/BattleHud';
+import { CharacterArt } from '@/components/battle/CharacterArt';
+import { FxLayer } from '@/components/battle/FxLayer';
+import { SoundControl } from '@/components/battle/SoundControl';
 import { UnitToken } from '@/components/battle/UnitToken';
 import { useBattle } from '@/hooks/useBattle';
 import type { BattleResponse, TeamId } from '@/types/battle';
@@ -9,10 +12,8 @@ import '@/styles/battle.css';
 
 function BattleScreen({ battleId, opening }: { battleId: string; opening?: BattleResponse }) {
     const { t } = useTranslation();
-    const { view, state, phase, effects, log, actions, selected, activeUnit, canAct, targetIds, selectSkill, act } = useBattle(
-        battleId,
-        opening,
-    );
+    const { view, state, phase, effects, log, actions, selected, activeUnit, canAct, targetIds, selectSkill, act, canSurrender, surrender } =
+        useBattle(battleId, opening);
 
     if (phase === 'loading') {
         return <p className='bt-message'>{t('battle.loading')}</p>;
@@ -45,10 +46,12 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
                             key={unit.id}
                             unit={unit}
                             isActive={state.activeUnitId === unit.id}
-                            isActing={effects.actingUnitId === unit.id}
+                            acting={effects.skill?.sourceId === unit.id ? effects.skill : null}
                             isHit={effects.hitUnitIds.includes(unit.id)}
                             isHealed={effects.healedUnitIds.includes(unit.id)}
+                            isFalling={effects.fallingUnitIds.includes(unit.id)}
                             isTargetable={targetIds.includes(unit.id)}
+                            impact={effects.impacts.find((impact) => impact.unitId === unit.id) ?? null}
                             floaters={effects.floaters.filter((floater) => floater.unitId === unit.id)}
                             onSelect={(unitId) => act(unitId)}
                         />
@@ -59,8 +62,10 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
 
     let hint: string;
 
+    const playerSurrendered = state.surrenderedBy === playerTeam;
+
     if (isOver) {
-        hint = playerWon ? t('battle.log.won') : t('battle.log.lost');
+        hint = playerSurrendered ? t('battle.log.surrendered') : playerWon ? t('battle.log.won') : t('battle.log.lost');
     } else if (!canAct || !selected) {
         hint = t('battle.resolving');
     } else if (selected.requiresTarget) {
@@ -71,15 +76,19 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
 
     return (
         <div className='bt'>
-            <div className='bt-arena'>
+            <div className={['bt-arena', effects.quake && 'bt-arena--quake', isOver && !playerWon && 'bt-arena--lost'].filter(Boolean).join(' ')}>
                 <div className='bt-topbar'>
                     <span className='bt-chip'>{t('battle.turn', { turn: state.turn })}</span>
-                    <div className={isAnimating ? 'bt-queue-wrap bt-queue-wrap--stale' : 'bt-queue-wrap'}>
-                        <TurnQueue order={view.turnOrder} units={state.units} />
-                    </div>
+                    <TurnQueue
+                        order={state.order}
+                        activeUnitId={state.activeUnitId}
+                        units={state.units}
+                        isOver={state.winner !== null}
+                        justChanged={effects.orderChanged}
+                    />
                     <span className='bt-chip bt-chip--energy'>
                         <span className='bt-chip__label'>{t('battle.enemyEnergy')}</span>
-                        <EnergyPips value={state.energy[enemyTeam]} label={t('battle.enemyEnergy')} />
+                        <EnergyPips value={state.energy[enemyTeam]} turnEnergy={state.turnEnergy} label={t('battle.enemyEnergy')} />
                     </span>
                 </div>
 
@@ -88,19 +97,58 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
                     {renderTeam(enemyTeam, 'right')}
                 </div>
 
+                <FxLayer skill={effects.skill} />
+
+                {effects.quake && <span className='bt-flash' aria-hidden='true' />}
+
                 {effects.banner && (
                     <p key={effects.banner} className='bt-banner' role='status'>
                         {effects.banner}
                     </p>
                 )}
 
+                {effects.announce && (
+                    <p
+                        key={effects.announce.text}
+                        className={effects.announce.big ? 'bt-announce' : 'bt-announce bt-announce--turn'}
+                        role='status'
+                    >
+                        {effects.announce.text}
+                    </p>
+                )}
+
                 {isOver && (
-                    <div className='bt-result' role='dialog' aria-label={playerWon ? t('battle.victory') : t('battle.defeat')}>
+                    <div
+                        className={`bt-result ${playerWon ? 'bt-result--won' : 'bt-result--lost'}`}
+                        role='dialog'
+                        aria-label={playerWon ? t('battle.victory') : t('battle.defeat')}
+                    >
+                        {playerWon && <span className='bt-result__rays' aria-hidden='true' />}
                         <div className={`bt-result__card ${playerWon ? 'bt-result__card--won' : ''}`}>
                             <p className='bt-result__title'>{playerWon ? t('battle.victory') : t('battle.defeat')}</p>
                             <p className='bt-result__text'>
-                                {t(playerWon ? 'battle.victoryText' : 'battle.defeatText', { turn: state.turn })}
+                                {t(
+                                    playerSurrendered ? 'battle.surrenderedText' : playerWon ? 'battle.victoryText' : 'battle.defeatText',
+                                    { turn: state.turn },
+                                )}
                             </p>
+                            {/* Quem do seu time ficou de pé */}
+                            <ul className='bt-result__team' aria-label={t('battle.survivors')}>
+                                {state.units
+                                    .filter((unit) => unit.team === playerTeam)
+                                    .map((unit) => (
+                                        <li
+                                            key={unit.id}
+                                            className={`bt-result__face ${unit.hp <= 0 ? 'bt-result__face--down' : ''}`}
+                                            title={unit.name}
+                                        >
+                                            <CharacterArt characterId={unit.characterId} kind='face' className='bt-queue__sprite' />
+                                            <span className='bt-visually-hidden'>
+                                                {t(unit.hp > 0 ? 'battle.survived' : 'battle.fell', { unit: unit.name })}
+                                            </span>
+                                        </li>
+                                    ))}
+                            </ul>
                             <Link to='/play' className='bt-btn'>
                                 {t('battle.newBattle')}
                             </Link>
@@ -116,10 +164,13 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
                             ? t(activeUnit.team === playerTeam ? 'battle.yourTurn' : 'battle.enemyTurn', { unit: activeUnit.name })
                             : t('battle.title')}
                     </h2>
-                    <span className='bt-hud__energy'>
-                        <span className='bt-chip__label'>{t('battle.energy')}</span>
-                        <EnergyPips value={state.energy[playerTeam]} label={t('battle.energy')} />
-                    </span>
+                    <div className='bt-hud__side'>
+                        <span className='bt-hud__energy'>
+                            <span className='bt-chip__label'>{t('battle.energy')}</span>
+                            <EnergyPips value={state.energy[playerTeam]} turnEnergy={state.turnEnergy} label={t('battle.energy')} />
+                        </span>
+                        <SoundControl />
+                    </div>
                 </div>
 
                 <SkillBar actions={actions} selectedSkillId={selected?.skill.id ?? null} disabled={!canAct} onSelect={selectSkill} />
@@ -128,11 +179,18 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
                     <p className='bt-hud__hint' aria-live='polite'>
                         {hint}
                     </p>
-                    {canAct && selected && !selected.requiresTarget && (
-                        <button type='button' className='bt-btn' onClick={() => act()}>
-                            {t('battle.useSkill', { skill: selected.skill.name })}
-                        </button>
-                    )}
+                    <div className='bt-hud__buttons'>
+                        {canAct && selected && !selected.requiresTarget && (
+                            <button type='button' className='bt-btn' onClick={() => act()}>
+                                {t('battle.useSkill', { skill: selected.skill.name })}
+                            </button>
+                        )}
+                        {view.status === 'in_progress' && (
+                            <button type='button' className='bt-btn bt-btn--quiet' disabled={!canSurrender} onClick={surrender}>
+                                {t('battle.surrender')}
+                            </button>
+                        )}
+                    </div>
                 </div>
             </section>
 
