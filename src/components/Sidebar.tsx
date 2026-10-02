@@ -11,6 +11,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
     { key: 'dashboard', label: 'Dashboard', path: '/dashboard' },
+    { key: 'play', label: 'Jogar', path: '/play' },
     { key: 'profile', label: 'Perfil', path: '/profile' },
     { key: 'sessions', label: 'Sessões', path: '/sessions' },
     { key: 'users', label: 'Usuários', path: '/users', roles: ['administrator', 'god'] },
@@ -38,7 +39,7 @@ export function Sidebar() {
         <aside className='w-60 min-h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col'>
 
             <div className='h-16 flex items-center px-6 border-b border-gray-200 dark:border-gray-800'>
-                <span className='text-lg font-bold text-gray-900 dark:text-white'>MyApp</span>
+                <span className='text-lg font-bold text-gray-900 dark:text-white'>Based Turn Game</span>
             </div>
 
             <nav className='flex-1 px-3 py-4 flex flex-col gap-1'>

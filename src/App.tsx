@@ -13,6 +13,8 @@ import { RegisterPage } from '@/pages/RegisterPage';
 import { PublicRoute } from './components/PublicRoute';
 import { ForbiddenPage } from './pages/ForbiddenPage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { PlayPage } from '@/pages/PlayPage';
+import { BattlePage } from '@/pages/BattlePage';
 
 export default function App() {
     return (
@@ -28,6 +30,8 @@ export default function App() {
             {/* Rotas privadas — exigem login */}
             <Route element={<PrivateRoute />}>
                 <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/play" element={<PlayPage />} />
+                <Route path="/battle/:id" element={<BattlePage />} />
                 <Route path="/sessions" element={<SessionsPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
 
