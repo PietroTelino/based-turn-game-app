@@ -15,6 +15,8 @@ export interface Beat {
 
 const BEAT_DURATION = {
     turn_started: 850,
+    /** Turno com Berserk: o aviso tem duas linhas e fica mais tempo na tela. */
+    berserk_turn: 1300,
     unit_activated: 450,
     skill_used: 700,
     unit_skipped: 1000,
@@ -68,10 +70,17 @@ export function toBeats(events: BattleEvent[]): Beat[] {
             continue;
         }
 
-        beats.push({ events: [event], duration: BEAT_DURATION[event.type as keyof typeof BEAT_DURATION] });
+        const kind = event.type === 'turn_started' && event.fury > 0 ? 'berserk_turn' : event.type;
+
+        beats.push({ events: [event], duration: BEAT_DURATION[kind as keyof typeof BEAT_DURATION] });
     }
 
     return beats;
+}
+
+/** 0.5 -> 50: o Berserk é mostrado na tela em porcentagem. */
+export function toPercent(fraction: number): number {
+    return Math.round(fraction * 100);
 }
 
 /** Aplica eventos a um estado e devolve um estado novo (não altera o recebido). */
@@ -90,6 +99,7 @@ export function applyEvents(state: BattleState, events: BattleEvent[]): BattleSt
                     activeUnitId: null,
                     turnEnergy: event.energy,
                     energy: { A: event.energy, B: event.energy },
+                    fury: event.fury,
                 };
                 break;
 
@@ -159,6 +169,7 @@ export function openingState(view: BattleView, events: BattleEvent[]): BattleSta
         units: view.state.units.map((unit) => ({ ...unit, hp: unit.stats.maxHp, statuses: [] })),
         activeUnitId: null,
         turn: 1,
+        fury: 0,
         order: [],
         winner: null,
     };

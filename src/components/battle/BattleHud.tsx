@@ -93,10 +93,12 @@ interface SkillBarProps {
     actions: AvailableAction[];
     selectedSkillId: string | null;
     disabled: boolean;
+    /** Berserk ativo: o dano base mostrado já vem aumentado, e o número ganha destaque. */
+    berserk: boolean;
     onSelect: (skillId: string) => void;
 }
 
-export function SkillBar({ actions, selectedSkillId, disabled, onSelect }: SkillBarProps) {
+export function SkillBar({ actions, selectedSkillId, disabled, berserk, onSelect }: SkillBarProps) {
     const { t } = useTranslation();
 
     return (
@@ -124,7 +126,10 @@ export function SkillBar({ actions, selectedSkillId, disabled, onSelect }: Skill
                         {(preview.damage !== null || preview.heal !== null) && (
                             <span className='bt-skill__numbers'>
                                 {preview.damage !== null && (
-                                    <span className='bt-skill__number bt-skill__number--damage'>
+                                    <span
+                                        className={`bt-skill__number bt-skill__number--damage ${berserk ? 'bt-skill__number--berserk' : ''}`}
+                                        title={berserk ? t('battle.berserkIncluded') : undefined}
+                                    >
                                         {t('battle.baseDamage')} <b>{preview.damage}</b>
                                     </span>
                                 )}

@@ -34,7 +34,7 @@ export function cuesOf(events: BattleEvent[], skill: SkillFx | null, playerTeam:
     for (const event of events) {
         switch (event.type) {
             case 'turn_started':
-                add('round');
+                add(event.fury > 0 ? 'berserk' : 'round');
                 break;
 
             case 'unit_activated':

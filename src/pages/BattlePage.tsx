@@ -6,6 +6,7 @@ import { CharacterArt } from '@/components/battle/CharacterArt';
 import { FxLayer } from '@/components/battle/FxLayer';
 import { SoundControl } from '@/components/battle/SoundControl';
 import { UnitToken } from '@/components/battle/UnitToken';
+import { toPercent } from '@/battle/playback';
 import { useBattle } from '@/hooks/useBattle';
 import type { BattleResponse, TeamId } from '@/types/battle';
 import '@/styles/battle.css';
@@ -35,6 +36,8 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
     const isAnimating = phase === 'busy';
     const isOver = !isAnimating && view.status === 'finished';
     const playerWon = view.winner === playerTeam;
+    /** Berserk em porcentagem (50 = dano +50%); 0 enquanto não começou. */
+    const berserk = toPercent(state.fury);
 
     const renderTeam = (team: TeamId, side: 'left' | 'right') => {
         return (
@@ -77,8 +80,19 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
     return (
         <div className='bt'>
             <div className={['bt-arena', effects.quake && 'bt-arena--quake', isOver && !playerWon && 'bt-arena--lost'].filter(Boolean).join(' ')}>
+                {/* Vem antes de tudo para ficar só sobre o cenário, atrás das figuras e dos selos. */}
+                {berserk > 0 && !isOver && <span className='bt-berserk-veil' aria-hidden='true' />}
+
                 <div className='bt-topbar'>
-                    <span className='bt-chip'>{t('battle.turn', { turn: state.turn })}</span>
+                    <span className='bt-topbar__turn'>
+                        <span className='bt-chip'>{t('battle.turn', { turn: state.turn })}</span>
+                        {/* A chave faz o selo "pular" de novo cada vez que o bônus cresce. */}
+                        {berserk > 0 && (
+                            <span key={berserk} className='bt-chip bt-chip--berserk' title={t('battle.berserkHint', { percent: berserk })}>
+                                {t('battle.berserk', { percent: berserk })}
+                            </span>
+                        )}
+                    </span>
                     <TurnQueue
                         order={state.order}
                         activeUnitId={state.activeUnitId}
@@ -110,10 +124,13 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
                 {effects.announce && (
                     <p
                         key={effects.announce.text}
-                        className={effects.announce.big ? 'bt-announce' : 'bt-announce bt-announce--turn'}
+                        className={['bt-announce', !effects.announce.big && 'bt-announce--turn', effects.announce.berserk && 'bt-announce--berserk']
+                            .filter(Boolean)
+                            .join(' ')}
                         role='status'
                     >
                         {effects.announce.text}
+                        {effects.announce.detail && <span className='bt-announce__detail'>{effects.announce.detail}</span>}
                     </p>
                 )}
 
@@ -173,7 +190,13 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
                     </div>
                 </div>
 
-                <SkillBar actions={actions} selectedSkillId={selected?.skill.id ?? null} disabled={!canAct} onSelect={selectSkill} />
+                <SkillBar
+                    actions={actions}
+                    selectedSkillId={selected?.skill.id ?? null}
+                    disabled={!canAct}
+                    berserk={berserk > 0}
+                    onSelect={selectSkill}
+                />
 
                 <div className='bt-hud__foot'>
                     <p className='bt-hud__hint' aria-live='polite'>

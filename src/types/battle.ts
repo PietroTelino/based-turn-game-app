@@ -92,6 +92,11 @@ export interface BattleState {
     /** Turno atual: uma rodada em que cada unidade viva age uma vez. Começa em 1. */
     turn: number;
     /**
+     * Berserk (a "fúria" do motor): quanto o dano das habilidades está aumentado
+     * neste turno. 0 = ainda não começou, 0.5 = +50%, 1 = +100%.
+     */
+    fury: number;
+    /**
      * Ordem de ação do turno atual. Quem vem antes de `activeUnitId` já agiu.
      * Pode mudar no meio do turno, se a velocidade de alguém mudar.
      */
@@ -105,7 +110,7 @@ export interface BattleState {
 
 export type BattleEvent =
     /** Um turno novo começou, com a ordem de ação dele e a energia que os dois times recebem. */
-    | { type: 'turn_started'; turn: number; order: string[]; energy: number }
+    | { type: 'turn_started'; turn: number; order: string[]; energy: number; fury: number }
     /** A velocidade de alguém mudou e quem ainda não agiu foi reordenado. */
     | { type: 'order_changed'; order: string[] }
     /** Chegou a vez de uma unidade. */

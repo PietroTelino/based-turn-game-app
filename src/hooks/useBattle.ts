@@ -5,7 +5,7 @@ import { getBattle, sendBattleAction, surrenderBattle } from '@/api/battles';
 import { sfx } from '@/audio/sfx';
 import { impactsOf, skillFxOf } from '@/battle/fx';
 import type { Impact, SkillFx } from '@/battle/fx';
-import { applyEvents, openingState, toBeats } from '@/battle/playback';
+import { applyEvents, openingState, toBeats, toPercent } from '@/battle/playback';
 import { cuesOf } from '@/battle/sounds';
 import { useConfirm } from '@/contexts/ConfirmContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -26,8 +26,12 @@ export interface BattleEffects {
     /** A habilidade em uso: fica do anúncio até o fim do impacto. */
     skill: SkillFx | null;
     banner: string | null;
-    /** Aviso no meio da arena: "Batalha!" na abertura (grande) e "Turno N" a cada turno novo. */
-    announce: { text: string; big: boolean } | null;
+    /**
+     * Aviso no meio da arena: "Batalha!" na abertura (grande) e "Turno N" a
+     * cada turno novo. Com o Berserk ativo, `detail` é a segunda linha, com
+     * quanto o dano está aumentado.
+     */
+    announce: { text: string; big: boolean; detail?: string; berserk?: boolean } | null;
     hitUnitIds: string[];
     healedUnitIds: string[];
     /** Quem foi derrotado neste instante: anima a queda. */
@@ -145,7 +149,13 @@ function describe(
 
         // No log, o turno novo vira uma linha de separação.
         case 'turn_started':
-            return { text: t('battle.turn', { turn: event.turn }), team: null };
+            return {
+                text:
+                    event.fury > 0
+                        ? t('battle.log.berserkTurn', { turn: event.turn, percent: toPercent(event.fury) })
+                        : t('battle.turn', { turn: event.turn }),
+                team: null,
+            };
 
         case 'order_changed':
             return { text: t('battle.log.orderChanged'), team: null };
@@ -176,6 +186,8 @@ function effectsOf(
     skillFx: SkillFx | null,
     nextId: () => number,
     t: TFunction,
+    /** Quanto valia o Berserk antes destes eventos: para saber se ele começou agora. */
+    previousFury: number,
 ): BattleEffects {
     const effects: BattleEffects = {
         ...NO_EFFECTS,
@@ -234,7 +246,16 @@ function effectsOf(
         }
 
         if (event.type === 'turn_started') {
-            effects.announce = { text: t('battle.turn', { turn: event.turn }), big: false };
+            const percent = toPercent(event.fury);
+
+            if (event.fury === 0) {
+                effects.announce = { text: t('battle.turn', { turn: event.turn }), big: false };
+            } else if (previousFury === 0) {
+                // O Berserk começou neste turno: aviso grande.
+                effects.announce = { text: t('battle.berserkStart'), detail: t('battle.berserkDetail', { percent }), big: true, berserk: true };
+            } else {
+                effects.announce = { text: t('battle.turn', { turn: event.turn }), detail: t('battle.berserk', { percent }), big: false, berserk: true };
+            }
         }
 
         if (event.type === 'unit_skipped') {
@@ -300,6 +321,8 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
             for (const beat of toBeats(response.events)) {
                 if (runRef.current !== run) return;
 
+                const previousFury = current.fury;
+
                 current = applyEvents(current, beat.events);
 
                 // A habilidade vale do anúncio até o impacto; qualquer outro
@@ -324,7 +347,7 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
                     .reverse();
 
                 setState(current);
-                setEffects(effectsOf(beat.events, units, skillFx, nextId, t));
+                setEffects(effectsOf(beat.events, units, skillFx, nextId, t, previousFury));
                 setLog((previous) => [...entries, ...previous].slice(0, MAX_LOG_ENTRIES));
 
                 await sleep(beat.duration);

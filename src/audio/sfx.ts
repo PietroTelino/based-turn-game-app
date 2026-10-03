@@ -12,6 +12,7 @@ export const SOUND_NAMES = [
     'click',
     'select',
     'round',
+    'berserk',
     'turn',
     'cast',
     'whoosh',
@@ -155,6 +156,14 @@ const RECIPES: Record<SoundName, (voice: Voice) => void> = {
     round(voice) {
         drum(voice, 0, 0.32);
         brass(voice, 294, 0.02, 0.32, 0.13);
+    },
+    // Turno com Berserk: dois tambores e uma nota grave e áspera, com outra quase igual por cima.
+    berserk(voice) {
+        drum(voice, 0, 0.5);
+        drum(voice, 0.16, 0.42);
+        voice.tone({ type: 'sawtooth', from: 82, to: 55, duration: 0.7, gain: 0.14, attack: 0.03 });
+        brass(voice, 147, 0.02, 0.6, 0.13);
+        brass(voice, 156, 0.02, 0.6, 0.09);
     },
     // Chegou a vez de uma unidade do jogador.
     turn(voice) {

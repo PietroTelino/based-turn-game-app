@@ -100,6 +100,7 @@
 }
 
 .bt-topbar {
+    position: relative;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -126,6 +127,36 @@
     font-family: var(--bt-body);
     font-weight: 700;
     font-size: 14px;
+}
+
+/* O turno e, depois que ele começa, o selo do Berserk, lado a lado */
+.bt-topbar__turn {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Selo do Berserk: quanto o dano das habilidades está aumentado neste turno */
+.bt-chip--berserk {
+    border-color: #3a0a06;
+    box-shadow: inset 0 0 0 1px #ff9a4a, 0 0 14px rgb(255 84 30 / 0.7);
+    background: linear-gradient(#b3261a, #6e120c);
+    color: #ffe9c2;
+    white-space: nowrap;
+    animation: bt-berserk-pop 0.6s ease-out, bt-berserk-glow 1.6s 0.6s ease-in-out infinite alternate;
+}
+
+/*
+ * Com o Berserk ativo, as bordas do cenário ficam avermelhadas. Fica atrás
+ * das figuras e do topo porque vem antes deles no HTML.
+ */
+.bt-berserk-veil {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 58%, transparent 38%, rgb(170 30 15 / 0.5) 100%);
+    pointer-events: none;
+    animation: bt-berserk-veil 1.8s ease-in-out infinite alternate;
 }
 
 /* Ordem de ação do turno: medalhões com o rosto */
@@ -1024,6 +1055,14 @@
     border-color: #9bc084;
     background: #e4f3d8;
     color: #2c5e1c;
+}
+
+/* Berserk ativo: o dano base já vem aumentado, e o número fica em brasa */
+.bt-skill__number--berserk {
+    border-color: #e0752e;
+    box-shadow: 0 0 6px rgb(255 110 40 / 0.55);
+    background: linear-gradient(#ffe3c8, #ffc496);
+    color: #8a1a0c;
 }
 
 .bt-btn {
@@ -1989,6 +2028,29 @@
     animation-duration: 0.85s;
 }
 
+/* Segunda linha do aviso: quanto o Berserk aumenta o dano */
+.bt-announce__detail {
+    display: block;
+    margin-top: 4px;
+    color: #ffd9a8;
+    font-size: clamp(20px, 3.4vw, 34px);
+    letter-spacing: 0.03em;
+    -webkit-text-stroke-width: 4px;
+}
+
+/* Aviso de turno com Berserk: em brasa, e fica mais tempo na tela */
+.bt-announce--berserk {
+    color: #ffb27a;
+    text-align: center;
+    text-shadow: 0 4px 0 var(--bt-ink), 0 0 34px #ff4a1c;
+    animation-duration: 1.3s;
+}
+
+.bt-announce--berserk::before {
+    border-color: #ff7a3a;
+    background: rgb(64 10 8 / 0.8);
+}
+
 /* Faixa escura atrás do aviso, de um lado ao outro da arena */
 .bt-announce::before {
     content: '';
@@ -2320,6 +2382,38 @@
     100% {
         transform: translateY(calc(var(--height) * 0.6));
         opacity: 0;
+    }
+}
+
+@keyframes bt-berserk-pop {
+    0% {
+        scale: 0.4;
+        opacity: 0;
+    }
+    55% {
+        scale: 1.25;
+        opacity: 1;
+    }
+    100% {
+        scale: 1;
+    }
+}
+
+@keyframes bt-berserk-glow {
+    from {
+        box-shadow: inset 0 0 0 1px #ff9a4a, 0 0 8px rgb(255 84 30 / 0.5);
+    }
+    to {
+        box-shadow: inset 0 0 0 1px #ffc27a, 0 0 18px rgb(255 84 30 / 0.95);
+    }
+}
+
+@keyframes bt-berserk-veil {
+    from {
+        opacity: 0.65;
+    }
+    to {
+        opacity: 1;
     }
 }
 
