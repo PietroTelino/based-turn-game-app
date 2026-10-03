@@ -36,6 +36,8 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
     const isAnimating = phase === 'busy';
     const isOver = !isAnimating && view.status === 'finished';
     const playerWon = view.winner === playerTeam;
+    /** Time com mais de três: as figuras e as placas encolhem para caber (bt-arena--crowd). */
+    const isCrowded = state.units.filter((unit) => unit.team === playerTeam).length > 3 || state.units.filter((unit) => unit.team === enemyTeam).length > 3;
     /** Berserk em porcentagem (50 = dano +50%); 0 enquanto não começou. */
     const berserk = toPercent(state.fury);
 
@@ -79,7 +81,11 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
 
     return (
         <div className='bt'>
-            <div className={['bt-arena', effects.quake && 'bt-arena--quake', isOver && !playerWon && 'bt-arena--lost'].filter(Boolean).join(' ')}>
+            <div
+                className={['bt-arena', isCrowded && 'bt-arena--crowd', effects.quake && 'bt-arena--quake', isOver && !playerWon && 'bt-arena--lost']
+                    .filter(Boolean)
+                    .join(' ')}
+            >
                 {/* Vem antes de tudo para ficar só sobre o cenário, atrás das figuras e dos selos. */}
                 {berserk > 0 && !isOver && <span className='bt-berserk-veil' aria-hidden='true' />}
 

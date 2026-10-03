@@ -6,7 +6,8 @@ import { sfx } from '@/audio/sfx';
 import { useToast } from '@/contexts/ToastContext';
 import type { BattleSummary, Character } from '@/types/battle';
 
-export const MAX_TEAM_SIZE = 3;
+/** Toda batalha é 5 contra 5: o time precisa ter exatamente este número de personagens. */
+export const TEAM_SIZE = 5;
 
 /** Tela de montar o time: catálogo, escolha dos personagens e batalhas anteriores. */
 export function usePlay() {
@@ -51,12 +52,12 @@ export function usePlay() {
                 return current.filter((id) => id !== characterId);
             }
 
-            return current.length < MAX_TEAM_SIZE ? [...current, characterId] : current;
+            return current.length < TEAM_SIZE ? [...current, characterId] : current;
         });
     }
 
     async function start() {
-        if (team.length === 0 || isStarting) return;
+        if (team.length !== TEAM_SIZE || isStarting) return;
 
         setIsStarting(true);
         sfx.play('click');

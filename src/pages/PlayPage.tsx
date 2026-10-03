@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/Layout';
-import { CharacterArt } from '@/components/battle/CharacterArt';
-import { MAX_TEAM_SIZE, usePlay } from '@/hooks/usePlay';
+import { CharacterCard } from '@/components/battle/CharacterCard';
+import { TEAM_SIZE, usePlay } from '@/hooks/usePlay';
 import type { BattleSummary } from '@/types/battle';
 import '@/styles/battle.css';
 
@@ -22,7 +22,7 @@ export function PlayPage() {
             <div className='bt bt-play'>
                 <header>
                     <h2 className='bt-title'>{t('play.title')}</h2>
-                    <p className='bt-lead'>{t('play.subtitle', { max: MAX_TEAM_SIZE })}</p>
+                    <p className='bt-lead'>{t('play.subtitle', { size: TEAM_SIZE })}</p>
                 </header>
 
                 {isLoading && <p className='bt-message'>{t('play.loading')}</p>}
@@ -33,41 +33,28 @@ export function PlayPage() {
                         <div className='bt-roster'>
                             {characters.map((character) => {
                                 const position = team.indexOf(character.id);
-                                const isSelected = position !== -1;
-                                const isFull = team.length >= MAX_TEAM_SIZE;
 
                                 return (
-                                    <button
+                                    <CharacterCard
                                         key={character.id}
-                                        type='button'
-                                        className={`bt-card ${isSelected ? 'bt-card--selected' : ''}`}
-                                        aria-pressed={isSelected}
-                                        disabled={!isSelected && isFull}
-                                        onClick={() => toggle(character.id)}
-                                    >
-                                        {isSelected && <span className='bt-card__order'>{position + 1}</span>}
-                                        <span className='bt-card__art'>
-                                            <CharacterArt characterId={character.id} kind='card' className='bt-card__sprite' />
-                                        </span>
-                                        <span className='bt-card__name'>{character.name}</span>
-                                        <span className='bt-card__role'>{t(`play.roles.${character.role}`)}</span>
-                                        <span className='bt-card__stats'>
-                                            <span>{t('play.stats.hp')} <b>{character.stats.maxHp}</b></span>
-                                            <span>{t('play.stats.atk')} <b>{character.stats.atk}</b></span>
-                                            <span>{t('play.stats.def')} <b>{character.stats.def}</b></span>
-                                            <span>{t('play.stats.speed')} <b>{character.stats.speed}</b></span>
-                                        </span>
-                                        <span className='bt-card__skills'>{character.skills.map((skill) => skill.name).join(', ')}</span>
-                                    </button>
+                                        character={character}
+                                        position={position}
+                                        isLocked={position === -1 && team.length >= TEAM_SIZE}
+                                        onToggle={toggle}
+                                    />
                                 );
                             })}
                         </div>
 
                         <div className='bt-play__actions'>
-                            <button type='button' className='bt-btn bt-btn--big' disabled={team.length === 0 || isStarting} onClick={start}>
+                            <button type='button' className='bt-btn bt-btn--big' disabled={team.length !== TEAM_SIZE || isStarting} onClick={start}>
                                 {isStarting ? t('play.starting') : t('play.start')}
                             </button>
-                            <p className='bt-lead'>{t('play.selected', { count: team.length, max: MAX_TEAM_SIZE })}</p>
+                            <p className='bt-lead'>
+                                {team.length === TEAM_SIZE
+                                    ? t('play.selected', { count: team.length, max: TEAM_SIZE })
+                                    : t('play.selectedMissing', { count: team.length, max: TEAM_SIZE, missing: TEAM_SIZE - team.length })}
+                            </p>
                         </div>
 
                         <section className='bt-history'>
