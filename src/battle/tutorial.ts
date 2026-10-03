@@ -21,7 +21,7 @@ export const TUTORIAL_TEAM = ['cavaleiro', 'barbaro', 'piromante', 'arqueiro', '
 export const TUTORIAL_ENEMY_TEAM = ['guardiao', 'vampiro', 'espadachim', 'criomante', 'driade'];
 
 /** A parte da tela que a dica aponta: ela ganha um contorno enquanto a dica está aberta. */
-export type TutorialFocus = 'teams' | 'queue' | 'energy' | 'skills' | 'targets' | 'statuses' | 'berserk';
+export type TutorialFocus = 'teams' | 'queue' | 'energy' | 'skills' | 'targets' | 'passive' | 'statuses' | 'berserk';
 
 /** Os textos de cada dica ficam nas traduções, em `tutorial.tips.<id>`. */
 export type TutorialTipId =
@@ -31,6 +31,7 @@ export type TutorialTipId =
     | 'skills'
     | 'target'
     | 'damage'
+    | 'passive'
     | 'area'
     | 'allySkill'
     | 'noEnergy'
@@ -88,6 +89,12 @@ const MOMENTS: { tip: TutorialTip; happens: (situation: TutorialSituation) => bo
     {
         tip: { id: 'damage', focus: null },
         happens: ({ hasPlayed }) => hasPlayed,
+    },
+    {
+        // Na segunda vez do jogador em diante: a carta de passiva de quem está na vez.
+        tip: { id: 'passive', focus: 'passive' },
+        happens: ({ canAct, hasPlayed, state }) =>
+            canAct && hasPlayed && (state.units.find((unit) => unit.id === state.activeUnitId)?.passives?.length ?? 0) > 0,
     },
     {
         tip: { id: 'status', focus: 'statuses' },

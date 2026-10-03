@@ -19,6 +19,8 @@ const BEAT_DURATION = {
     berserk_turn: 1300,
     unit_activated: 450,
     skill_used: 700,
+    /** Passiva de começo de vez: o mesmo tempo de uma habilidade, porque usa a mesma animação. */
+    passive_triggered: 700,
     unit_skipped: 1000,
     surrendered: 500,
     effects: 800,
@@ -32,7 +34,10 @@ function isEffect(event: BattleEvent): boolean {
         event.type === 'heal' ||
         event.type === 'unit_defeated' ||
         event.type === 'status_applied' ||
-        event.type === 'status_damage'
+        event.type === 'status_damage' ||
+        // No meio de uma habilidade, a passiva e a energia que ela devolve aparecem junto com o golpe.
+        event.type === 'passive_triggered' ||
+        event.type === 'energy_gained'
     );
 }
 
@@ -43,9 +48,24 @@ function isSilent(event: BattleEvent): boolean {
 
 export function toBeats(events: BattleEvent[]): Beat[] {
     const beats: Beat[] = [];
+    /** Uma habilidade foi usada nesta vez: o que vier agora é consequência dela. */
+    let inSkill = false;
+    /** O anúncio de uma passiva de começo de vez: os efeitos dela vêm no beat seguinte, não neste. */
+    let announcement: Beat | null = null;
 
     for (const event of events) {
         const last = beats[beats.length - 1];
+
+        if (event.type === 'skill_used') inSkill = true;
+        if (event.type === 'unit_activated' || event.type === 'turn_started') inSkill = false;
+
+        // Passiva de começo de vez: ninguém usou habilidade ainda. Ela ganha um
+        // beat só dela, como o anúncio de uma habilidade, e os efeitos vêm depois.
+        if (event.type === 'passive_triggered' && !inSkill) {
+            announcement = { events: [event], duration: BEAT_DURATION.passive_triggered };
+            beats.push(announcement);
+            continue;
+        }
 
         if (isSilent(event)) {
             // Depois de uma vez perdida, o status só some quando a faixa de
@@ -62,7 +82,7 @@ export function toBeats(events: BattleEvent[]): Beat[] {
 
         if (isEffect(event)) {
             // Efeitos seguidos fazem parte da mesma habilidade: mostram-se juntos.
-            if (last && last.events.every((e) => isEffect(e) || isSilent(e)) && last.events.some(isEffect)) {
+            if (last && last !== announcement && last.events.every((e) => isEffect(e) || isSilent(e)) && last.events.some(isEffect)) {
                 last.events.push(event);
             } else {
                 beats.push({ events: [event], duration: BEAT_DURATION.effects });
@@ -113,6 +133,7 @@ export function applyEvents(state: BattleState, events: BattleEvent[]): BattleSt
                 break;
 
             case 'skill_used':
+            case 'energy_gained':
                 next = { ...next, energy: { ...next.energy, [event.team]: event.energy } };
                 break;
 
@@ -145,6 +166,7 @@ export function applyEvents(state: BattleState, events: BattleEvent[]): BattleSt
             case 'status_applied':
             case 'status_expired':
             case 'unit_skipped':
+            case 'passive_triggered':
                 break;
         }
     }

@@ -86,6 +86,19 @@ export function cuesOf(events: BattleEvent[], skill: SkillFx | null, playerTeam:
                 add('select', 350);
                 break;
 
+            // Passiva de começo de vez: o mesmo som de quando uma habilidade é usada.
+            case 'passive_triggered':
+                if (skill?.passive) {
+                    add('cast');
+                    if (skill.delivery === 'projectile') add('whoosh', 300);
+                    if (skill.delivery === 'melee') add('whoosh', 420);
+                }
+                break;
+
+            case 'energy_gained':
+                add('boon', 150);
+                break;
+
             case 'surrendered':
             case 'status_expired':
             case 'statuses_changed':

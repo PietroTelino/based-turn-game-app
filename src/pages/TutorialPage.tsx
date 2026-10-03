@@ -5,7 +5,7 @@ import { useTutorialStart } from '@/hooks/useTutorialStart';
 import '@/styles/battle.css';
 
 /** As regras do resumo, na ordem em que aparecem. Os textos ficam em `tutorial.rules.<id>`. */
-const RULES = ['goal', 'turns', 'energy', 'skills', 'effects', 'berserk'] as const;
+const RULES = ['goal', 'turns', 'energy', 'skills', 'passives', 'effects', 'berserk'] as const;
 
 /** Entrada do tutorial: o resumo das regras e o botão que começa a batalha de treino. */
 export function TutorialPage() {

@@ -60,6 +60,36 @@ export interface Skill {
     ranged?: boolean;
 }
 
+/** Quando uma passiva de golpe vale, olhando para o alvo. Sem condição, vale sempre. */
+export type PassiveCondition =
+    | { type: 'target_has_status'; statuses: StatusKind[] }
+    | { type: 'target_hp_below'; ratio: number }
+    | { type: 'target_hp_above'; ratio: number };
+
+/**
+ * O que a passiva faz. Quem aplica é a API; a tela só precisa saber se é uma
+ * passiva de começo de vez (`turn_start`), para animar o golpe ou a cura dela.
+ */
+export type PassiveEffect =
+    | { type: 'damage_bonus'; amount: number; when?: PassiveCondition }
+    | { type: 'crit_chance_bonus'; amount: number; when?: PassiveCondition }
+    | { type: 'ignore_defense'; amount: number }
+    | { type: 'atk_from_def'; amount: number }
+    | { type: 'lifesteal'; amount: number }
+    | { type: 'energy_on_crit'; amount: number }
+    | { type: 'status_power'; statuses: StatusKind[]; amount: number }
+    | { type: 'turn_start'; target: 'all-allies' | 'fastest-enemy'; effects: SkillEffect[] };
+
+/** Habilidade que ninguém usa: vale sozinha para o personagem que a tem. */
+export interface Passive {
+    id: string;
+    name: string;
+    description: string;
+    effect: PassiveEffect;
+    element?: SkillElement;
+    ranged?: boolean;
+}
+
 export type CharacterRole = 'attacker' | 'tank' | 'support' | 'assassin' | 'mage' | 'fighter';
 
 export interface Character {
@@ -68,6 +98,7 @@ export interface Character {
     role: CharacterRole;
     stats: Stats;
     skills: Skill[];
+    passives: Passive[];
 }
 
 export interface BattleUnit {
@@ -80,6 +111,8 @@ export interface BattleUnit {
     /** Ausente em batalhas gravadas antes de os status existirem. */
     statuses?: StatusEffect[];
     skills: Skill[];
+    /** Ausente em batalhas gravadas antes de as passivas existirem. */
+    passives?: Passive[];
 }
 
 export interface BattleState {
@@ -127,6 +160,13 @@ export type BattleEvent =
     /** A unidade perdeu a vez (atordoada). */
     | { type: 'unit_skipped'; unitId: string; status: StatusKind }
     | { type: 'unit_defeated'; unitId: string }
+    /**
+     * A passiva de uma unidade fez diferença agora. Numa passiva de começo de
+     * vez, `targetIds` é quem ela atingiu; numa passiva de golpe, o alvo do golpe.
+     */
+    | { type: 'passive_triggered'; unitId: string; passiveId: string; targetIds: string[] }
+    /** O time recuperou energia no meio do turno, por causa de `unitId`. `energy` é quanto ele tem agora. */
+    | { type: 'energy_gained'; team: TeamId; unitId: string; amount: number; energy: number }
     | { type: 'surrendered'; team: TeamId }
     | { type: 'battle_ended'; winner: TeamId };
 

@@ -18,6 +18,8 @@ export interface SkillFx {
     rain: boolean;
     sourceId: string;
     targetIds: string[];
+    /** Não é uma habilidade: é a passiva de começo de vez da unidade agindo sozinha. */
+    passive: boolean;
 }
 
 export type ImpactKind = 'hit' | 'tick' | 'heal' | 'shield' | 'boon' | 'bane';
@@ -50,6 +52,33 @@ export function skillFxOf(event: Extract<BattleEvent, { type: 'skill_used' }>, u
         rain: delivery === 'area' && skill?.ranged === true,
         sourceId: event.unitId,
         targetIds: event.targetIds,
+        passive: false,
+    };
+}
+
+/**
+ * Uma passiva de começo de vez é animada como uma habilidade: a cura em área
+ * como um feitiço, o golpe num inimigo como projétil ou investida. As outras
+ * passivas mudam um golpe que já está sendo animado: para elas não há nada
+ * novo a desenhar, e a função devolve null.
+ */
+export function passiveFxOf(event: Extract<BattleEvent, { type: 'passive_triggered' }>, units: Map<string, BattleUnit>, id: number): SkillFx | null {
+    const passive = units.get(event.unitId)?.passives?.find((p) => p.id === event.passiveId);
+
+    if (!passive || passive.effect.type !== 'turn_start' || event.targetIds.length === 0) {
+        return null;
+    }
+
+    const onAllies = passive.effect.target === 'all-allies';
+
+    return {
+        id,
+        element: passive.element ?? 'physical',
+        delivery: onAllies ? 'cast' : passive.ranged ? 'projectile' : 'melee',
+        rain: false,
+        sourceId: event.unitId,
+        targetIds: event.targetIds,
+        passive: true,
     };
 }
 

@@ -415,11 +415,17 @@
             "surrendered": "You surrendered the battle.",
             "enemySurrendered": "The enemy surrendered the battle.",
             "won": "You won the battle.",
-            "lost": "You lost the battle."
+            "lost": "You lost the battle.",
+            "passive": "{{unit}}'s passive: {{passive}}",
+            "energyGained": "Your team recovered {{count}} energy",
+            "enemyEnergyGained": "The enemy recovered {{count}} energy"
         },
         "waitingOpponent": "Waiting for the opponent's move...",
         "waitingOpponentLong": "It's the other player's turn. As soon as they play, the move shows up here.",
-        "enemySurrenderedText": "The opponent surrendered on turn {{turn}}."
+        "enemySurrenderedText": "The opponent surrendered on turn {{turn}}.",
+        "passive": "Passive",
+        "passiveBanner": "{{unit}}: {{passive}}",
+        "energyFloater": "+{{count}} energy"
     },
     "multiplayer": {
         "title": "Multiplayer",
@@ -491,6 +497,10 @@
                 "title": "Skills",
                 "text": "Every character has a free attack and stronger skills that cost energy."
             },
+            "passives": {
+                "title": "Passives",
+                "text": "Every character has a passive skill. Nobody has to use it: it makes their strikes stronger or acts on its own at the start of their turn."
+            },
             "effects": {
                 "title": "Effects",
                 "text": "Some skills leave effects for a few turns: burn, poison, stun, shield and changes to attack, defense and speed."
@@ -535,6 +545,10 @@
             "damage": {
                 "title": "First strike",
                 "text": "The number that floats up is the damage, and the bar under each character is their health. Now the others act, each on their turn; the computer plays for the enemy."
+            },
+            "passive": {
+                "title": "Passive",
+                "text": "The last card, tagged Passive, is not for clicking: it is a skill that works on its own. Each character has one; read it to know when it helps."
             },
             "area": {
                 "title": "Area skill",

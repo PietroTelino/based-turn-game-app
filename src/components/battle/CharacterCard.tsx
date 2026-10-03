@@ -45,7 +45,7 @@ export function CharacterCard({ character, position, isLocked, isReadOnly = fals
                         <span>{t('play.stats.def')} <b>{character.stats.def}</b></span>
                         <span>{t('play.stats.speed')} <b>{character.stats.speed}</b></span>
                     </span>
-                    <span className='bt-card__hint'>{t('play.skillsOnBack', { count: character.skills.length })}</span>
+                    <span className='bt-card__hint'>{t('play.skillsOnBack', { count: character.skills.length + character.passives.length })}</span>
                 </span>
 
                 <span className='bt-card__face bt-card__face--back'>
@@ -63,6 +63,16 @@ export function CharacterCard({ character, position, isLocked, isReadOnly = fals
                                     </span>
                                 </span>
                                 <span className='bt-card__skill-text'>{skill.description}</span>
+                            </span>
+                        ))}
+                        {/* As passivas vêm por último, com a etiqueta no lugar do custo. */}
+                        {character.passives.map((passive) => (
+                            <span key={passive.id} className='bt-card__skill bt-card__skill--passive'>
+                                <span className='bt-card__skill-top'>
+                                    <span className='bt-card__skill-name'>{passive.name}</span>
+                                    <span className='bt-card__cost bt-card__cost--passive'>{t('battle.passive')}</span>
+                                </span>
+                                <span className='bt-card__skill-text'>{passive.description}</span>
                             </span>
                         ))}
                     </span>

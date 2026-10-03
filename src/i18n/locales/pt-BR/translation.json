@@ -415,11 +415,17 @@
             "surrendered": "Você desistiu da batalha.",
             "enemySurrendered": "O inimigo desistiu da batalha.",
             "won": "Você venceu a batalha.",
-            "lost": "Você perdeu a batalha."
+            "lost": "Você perdeu a batalha.",
+            "passive": "Passiva de {{unit}}: {{passive}}",
+            "energyGained": "Seu time recuperou {{count}} de energia",
+            "enemyEnergyGained": "O inimigo recuperou {{count}} de energia"
         },
         "waitingOpponent": "Esperando a jogada do adversário...",
         "waitingOpponentLong": "É a vez do outro jogador. Assim que ele jogar, a jogada aparece aqui.",
-        "enemySurrenderedText": "O adversário desistiu no turno {{turn}}."
+        "enemySurrenderedText": "O adversário desistiu no turno {{turn}}.",
+        "passive": "Passiva",
+        "passiveBanner": "{{unit}}: {{passive}}",
+        "energyFloater": "+{{count}} de energia"
     },
     "multiplayer": {
         "title": "Multiplayer",
@@ -491,6 +497,10 @@
                 "title": "Habilidades",
                 "text": "Todo personagem tem um ataque sem custo e habilidades mais fortes, que gastam energia."
             },
+            "passives": {
+                "title": "Passivas",
+                "text": "Todo personagem tem uma habilidade passiva. Ninguém precisa usá-la: ela deixa os golpes dele mais fortes ou age sozinha no começo da vez."
+            },
             "effects": {
                 "title": "Efeitos",
                 "text": "Algumas habilidades deixam efeitos por alguns turnos: queimadura, veneno, atordoamento, escudo e mudanças de ataque, defesa e velocidade."
@@ -535,6 +545,10 @@
             "damage": {
                 "title": "Primeiro golpe",
                 "text": "O número que sobe é o dano, e a barra embaixo de cada personagem é a vida dele. Agora os outros agem, cada um na sua vez; o computador joga pelo inimigo."
+            },
+            "passive": {
+                "title": "Passiva",
+                "text": "A última carta, com a etiqueta Passiva, não é para clicar: é uma habilidade que funciona sozinha. Cada personagem tem a sua; leia para saber quando ela ajuda."
             },
             "area": {
                 "title": "Golpe em área",

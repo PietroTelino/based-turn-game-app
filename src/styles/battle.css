@@ -1056,6 +1056,43 @@
     line-height: 1.3;
 }
 
+/* Passiva de quem está na vez: fica junto das habilidades, mas não é botão. */
+.bt-skill--passive {
+    border-style: dashed;
+    border-color: #6a4d10;
+    box-shadow: none;
+    background: rgb(200 162 75 / 0.16);
+    cursor: default;
+}
+
+/* As regras de botão (.bt-skill:hover, :active) não valem para ela. */
+.bt-skill--passive:hover:not(:disabled),
+.bt-skill--passive:active:not(:disabled) {
+    box-shadow: none;
+    background: rgb(200 162 75 / 0.16);
+    translate: none;
+}
+
+.bt-skill__cost.bt-skill__cost--passive,
+.bt-card__cost.bt-card__cost--passive {
+    padding: 0 7px 1px;
+    border-radius: 999px;
+    background: #6a4d10;
+    color: var(--bt-paper-light);
+    letter-spacing: 0.03em;
+}
+
+.bt-card__skill--passive .bt-card__skill-name {
+    color: #6a4d10;
+}
+
+/* O nome da passiva, quando ela age, sobe de quem a tem. */
+.bt-floater--passive {
+    color: var(--bt-gold-bright);
+    font-size: clamp(14px, 1.6vw, 20px);
+    -webkit-text-stroke-width: 4px;
+}
+
 /* Dano base e cura base da habilidade, embaixo da descrição */
 .bt-skill__numbers {
     display: flex;
@@ -2067,6 +2104,7 @@
 .bt[data-coach='queue'] .bt-queue,
 .bt[data-coach='energy'] .bt-hud__energy,
 .bt[data-coach='skills'] .bt-skills,
+.bt[data-coach='passive'] .bt-skill--passive,
 .bt[data-coach='statuses'] .bt-statuses:not(:empty),
 .bt[data-coach='berserk'] .bt-chip--berserk {
     border-radius: 8px;
@@ -2146,6 +2184,7 @@
     .bt[data-coach] .bt-queue,
     .bt[data-coach] .bt-hud__energy,
     .bt[data-coach] .bt-skills,
+    .bt[data-coach] .bt-skill--passive,
     .bt[data-coach] .bt-statuses,
     .bt[data-coach] .bt-chip--berserk {
         animation: none;
@@ -2223,7 +2262,12 @@
     margin: calc(var(--bt-unit) * -0.1) 0 0 calc(var(--bt-unit) * -0.1);
     opacity: 0;
     filter: drop-shadow(0 0 8px var(--fx-b));
-    animation: bt-fly 0.4s 0.3s cubic-bezier(0.5, 0, 0.9, 0.7) forwards;
+    /*
+     * "both": durante a espera de 0,3 s o projétil já fica no ponto de saída,
+     * invisível. Só com "forwards" ele esperava no canto da arena e podia
+     * piscar lá no instante em que a animação começava.
+     */
+    animation: bt-fly 0.4s 0.3s cubic-bezier(0.5, 0, 0.9, 0.7) both;
 }
 
 /* Rastro */
@@ -2860,7 +2904,8 @@
     left: 0;
 }
 
-.bt-arena--crowd .bt-floater--status {
+.bt-arena--crowd .bt-floater--status,
+.bt-arena--crowd .bt-floater--passive {
     font-size: clamp(11.5px, 1.25vw, 15px);
     -webkit-text-stroke-width: 3px;
 }

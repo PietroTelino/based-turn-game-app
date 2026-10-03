@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { CharacterArt } from './CharacterArt';
 import type { LogEntry } from '@/hooks/useBattle';
-import type { AvailableAction, BattleUnit } from '@/types/battle';
+import type { AvailableAction, BattleUnit, Passive } from '@/types/battle';
 
 /** O máximo de energia que um turno pode dar. É o mesmo valor de MAX_ENERGY na API. */
 const MAX_ENERGY = 10;
@@ -91,6 +91,8 @@ export function TurnQueue({ order, activeUnitId, units, isOver, justChanged }: T
 
 interface SkillBarProps {
     actions: AvailableAction[];
+    /** As passivas de quem está na vez: aparecem depois das habilidades, só para ler. */
+    passives: Passive[];
     selectedSkillId: string | null;
     disabled: boolean;
     /** Berserk ativo: o dano base mostrado já vem aumentado, e o número ganha destaque. */
@@ -98,7 +100,7 @@ interface SkillBarProps {
     onSelect: (skillId: string) => void;
 }
 
-export function SkillBar({ actions, selectedSkillId, disabled, berserk, onSelect }: SkillBarProps) {
+export function SkillBar({ actions, passives, selectedSkillId, disabled, berserk, onSelect }: SkillBarProps) {
     const { t } = useTranslation();
 
     return (
@@ -143,6 +145,16 @@ export function SkillBar({ actions, selectedSkillId, disabled, berserk, onSelect
                     </button>
                 );
             })}
+            {/* Passiva não é botão: ninguém a usa, ela vale sozinha. */}
+            {passives.map((passive) => (
+                <div key={passive.id} className='bt-skill bt-skill--passive'>
+                    <span className='bt-skill__top'>
+                        <span className='bt-skill__name'>{passive.name}</span>
+                        <span className='bt-skill__cost bt-skill__cost--passive'>{t('battle.passive')}</span>
+                    </span>
+                    <span className='bt-skill__text'>{passive.description}</span>
+                </div>
+            ))}
         </div>
     );
 }

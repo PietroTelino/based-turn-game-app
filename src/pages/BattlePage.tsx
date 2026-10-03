@@ -83,6 +83,8 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
     const isWaitingOpponent = isVersus && view.status === 'in_progress' && actions.length === 0;
     /** Para onde o jogador volta quando a batalha acaba. */
     const lobbyPath = isVersus ? '/multiplayer' : '/play';
+    /** As passivas de quem está na vez: são mostradas junto das habilidades dele. */
+    const actingPassives = actions.length > 0 ? (view.state.units.find((unit) => unit.id === view.state.activeUnitId)?.passives ?? []) : [];
     /** A parte da tela que o guia do treino está explicando agora. */
     const coachFocus = tutorial?.guide.focus ?? null;
 
@@ -234,6 +236,7 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
                 ) : (
                     <SkillBar
                         actions={actions}
+                        passives={actingPassives}
                         selectedSkillId={selected?.skill.id ?? null}
                         disabled={!canAct}
                         berserk={berserk > 0}

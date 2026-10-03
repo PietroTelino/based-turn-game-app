@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { getBattle, getBattleEvents, sendBattleAction, surrenderBattle } from '@/api/battles';
 import { sfx } from '@/audio/sfx';
-import { impactsOf, skillFxOf } from '@/battle/fx';
+import { impactsOf, passiveFxOf, skillFxOf } from '@/battle/fx';
 import type { Impact, SkillFx } from '@/battle/fx';
 import { applyEvents, openingState, toBeats, toPercent } from '@/battle/playback';
 import { cuesOf } from '@/battle/sounds';
@@ -16,7 +16,7 @@ export interface Floater {
     id: number;
     unitId: string;
     text: string;
-    kind: 'damage' | 'critical' | 'heal' | 'status';
+    kind: 'damage' | 'critical' | 'heal' | 'status' | 'passive';
     /** Linha pequena acima do número (ex.: "Crítico!"). */
     label?: string;
 }
@@ -164,6 +164,19 @@ function describe(
         case 'order_changed':
             return { text: t('battle.log.orderChanged'), team: null };
 
+        case 'passive_triggered': {
+            const unit = units.get(event.unitId);
+            const passive = unit?.passives?.find((p) => p.id === event.passiveId);
+
+            return { text: t('battle.log.passive', { unit: unit?.name, passive: passive?.name }), team: unit?.team ?? null };
+        }
+
+        case 'energy_gained':
+            return {
+                text: t(event.team === playerTeam ? 'battle.log.energyGained' : 'battle.log.enemyEnergyGained', { count: event.amount }),
+                team: event.team,
+            };
+
         case 'unit_activated':
         case 'status_expired':
         case 'statuses_changed':
@@ -180,7 +193,9 @@ function isAftermath(event: BattleEvent): boolean {
         event.type === 'unit_defeated' ||
         event.type === 'status_expired' ||
         event.type === 'statuses_changed' ||
-        event.type === 'order_changed'
+        event.type === 'order_changed' ||
+        event.type === 'passive_triggered' ||
+        event.type === 'energy_gained'
     );
 }
 
@@ -229,6 +244,23 @@ function effectsOf(
 
         if (event.type === 'unit_defeated') {
             effects.fallingUnitIds.push(event.unitId);
+        }
+
+        if (event.type === 'passive_triggered') {
+            const unit = units.get(event.unitId);
+            const name = unit?.passives?.find((p) => p.id === event.passiveId)?.name;
+
+            if (name && skillFx?.passive) {
+                // Passiva de começo de vez, que age sozinha: é anunciada na faixa, como uma habilidade.
+                effects.banner = t('battle.passiveBanner', { unit: unit?.name, passive: name });
+            } else if (name) {
+                // Passiva que mudou um golpe: o nome dela sobe de quem bateu.
+                effects.floaters.push({ id: nextId(), unitId: event.unitId, text: name, kind: 'passive' });
+            }
+        }
+
+        if (event.type === 'energy_gained') {
+            effects.floaters.push({ id: nextId(), unitId: event.unitId, text: t('battle.energyFloater', { count: event.amount }), kind: 'passive' });
         }
 
         if (event.type === 'order_changed') {
@@ -339,9 +371,14 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
                 // A habilidade vale do anúncio até o impacto; qualquer outro
                 // acontecimento (a vez de outra unidade, vez perdida, fim) a encerra.
                 const used = beat.events.find((event) => event.type === 'skill_used');
+                const triggered = beat.events.find((event) => event.type === 'passive_triggered');
 
                 if (used) {
                     skillFx = skillFxOf(used, units, nextId());
+                } else if (triggered && !skillFx) {
+                    // Ninguém está usando habilidade: é uma passiva de começo
+                    // de vez, animada como se fosse uma (null para as outras).
+                    skillFx = passiveFxOf(triggered, units, nextId());
                 } else if (beat.events.some((event) => !isAftermath(event))) {
                     skillFx = null;
                 }
