@@ -33,6 +33,11 @@
     --bt-arena-unit: clamp(150px, 25vw, 296px);
     /* Altura da figura de cada unidade; encolhe em telas estreitas e em times grandes. */
     --bt-unit: var(--bt-arena-unit);
+    /*
+     * Fila: quanto cada um sobe em relação a quem está na frente dele, como
+     * fração da altura da figura. Em tela estreita o degrau é menor.
+     */
+    --bt-rise: 0.13;
     /* Largura que cada unidade ocupa na fileira (a figura é mais larga e se sobrepõe). */
     --bt-slot: calc(var(--bt-unit) * 0.5);
 
@@ -95,7 +100,8 @@
     position: absolute;
     z-index: -1;
     inset: auto 0 0 0;
-    height: 52%;
+    /* O piso começa alto o bastante para o último da fila ainda pisar nele. */
+    height: 61%;
     background:
         /* ameias */
         repeating-linear-gradient(90deg, var(--bt-stone-dark) 0 40px, transparent 40px 66px) 0 0 / 100% 20px no-repeat,
@@ -283,23 +289,29 @@
     align-items: end;
     gap: clamp(4px, 3vw, 40px);
     /* O espaço de baixo é onde os selos de status aparecem, sob as placas. */
-    padding: 34px clamp(6px, 2vw, 24px) 40px;
+    padding: 10px clamp(6px, 2vw, 24px) 40px;
 }
 
 .bt-team {
     display: flex;
     align-items: flex-end;
     justify-content: center;
+    /* Espaço para quem está no fim da fila (o quinto), que fica mais alto que o primeiro. */
+    padding-top: calc(var(--bt-unit) * (var(--bt-rise) * 4 - 0.16) + 14px);
 }
 
-/* O primeiro do time fica mais perto do centro do campo. */
+/*
+ * O primeiro do time fica do lado de fora do campo e os seguintes vão em
+ * direção ao centro: no time da esquerda a ordem é a do HTML, no da direita
+ * é invertida.
+ */
 .bt-team--left {
-    flex-direction: row-reverse;
     animation: bt-enter-left 0.7s cubic-bezier(0.2, 0.9, 0.3, 1) backwards;
 }
 
 /* Ao abrir a tela, cada time entra pelo seu lado. */
 .bt-team--right {
+    flex-direction: row-reverse;
     animation: bt-enter-right 0.7s cubic-bezier(0.2, 0.9, 0.3, 1) backwards;
 }
 
@@ -319,19 +331,40 @@
 }
 
 /*
- * Quem está no meio fica um passo atrás: a figura sobe um pouco e passa por
- * baixo das vizinhas. As placas de nome continuam todas na mesma linha e
- * sempre por cima das figuras (por isso o z-index fica na figura e na placa,
- * e não na unidade inteira).
+ * Formação em fila. O primeiro do time fica na frente; cada um dos seguintes
+ * fica um passo atrás do anterior: um pouco mais alto na tela, um pouco menor
+ * e por baixo de quem está na frente dele. Vistos juntos, os dois times são
+ * duas filas viradas uma para a outra, que se afastam de quem olha.
+ *
+ * --bt-rank é a posição na fila (0 = o da frente). As placas de nome ficam
+ * todas na mesma linha, embaixo, cada uma sob a sua figura.
+ *
+ * O palco não usa transform de propósito: assim ele não prende o z-index dos
+ * filhos, e os números de dano de quem está atrás aparecem por cima das
+ * figuras da frente.
  */
-.bt-unit:nth-child(even) .bt-unit__stage {
-    translate: 0 -9%;
-    scale: 0.95;
-    transform-origin: 50% 100%;
+.bt-unit {
+    --bt-rank: 0;
 }
 
-.bt-unit:nth-child(even) .bt-unit__sprite {
-    z-index: 1;
+.bt-unit:nth-child(2) {
+    --bt-rank: 1;
+}
+
+.bt-unit:nth-child(3) {
+    --bt-rank: 2;
+}
+
+.bt-unit:nth-child(4) {
+    --bt-rank: 3;
+}
+
+.bt-unit:nth-child(5) {
+    --bt-rank: 4;
+}
+
+.bt-unit:nth-child(6) {
+    --bt-rank: 5;
 }
 
 .bt-unit:focus-visible {
@@ -339,11 +372,15 @@
     outline-offset: 3px;
 }
 
-/* Palco: reserva a altura da figura. A figura em si transborda para os lados. */
+/*
+ * Palco: reserva a altura da figura. A figura em si transborda para os lados.
+ * A cada posição para trás na fila ele sobe um degrau (--bt-rise) e fica 4% menor.
+ */
 .bt-unit__stage {
     position: relative;
+    bottom: calc(var(--bt-rank) * var(--bt-unit) * var(--bt-rise));
     width: 100%;
-    height: var(--bt-unit);
+    height: calc(var(--bt-unit) * (1 - var(--bt-rank) * 0.04));
 }
 
 .bt-unit__sprite {
@@ -353,7 +390,8 @@
     width: auto;
     max-width: none;
     height: 100%;
-    z-index: 2;
+    /* Quem está na frente da fila fica por cima. */
+    z-index: calc(6 - var(--bt-rank));
     translate: -50% 0;
     transform-origin: 50% 100%;
     pointer-events: none;
@@ -401,7 +439,7 @@
 /* Placa com nome e vida. Os selos de status ficam pendurados embaixo dela. */
 .bt-unit__plate {
     position: relative;
-    z-index: 5;
+    z-index: 8;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -528,7 +566,7 @@
     height: 14px;
     margin-left: -7px;
     border: 2px solid var(--bt-ink);
-    z-index: 6;
+    z-index: 9;
     rotate: 45deg;
     background: var(--bt-gold-bright);
     box-shadow: 0 0 10px var(--bt-gold-bright);
@@ -650,7 +688,7 @@
 
 .bt-unit__floaters {
     position: absolute;
-    z-index: 6;
+    z-index: 10;
     top: 14%;
     left: 50%;
     pointer-events: none;
@@ -719,7 +757,7 @@
 /* Faixa com o nome da habilidade */
 .bt-banner {
     position: absolute;
-    z-index: 4;
+    z-index: 11;
     top: 84px;
     left: 50%;
     margin: 0;
@@ -739,7 +777,7 @@
 /* Fim da batalha */
 .bt-result {
     position: absolute;
-    z-index: 5;
+    z-index: 13;
     inset: 0;
     display: grid;
     place-items: center;
@@ -1703,7 +1741,7 @@
 /* Camada por cima do campo: projéteis e ataques em área (FxLayer.tsx). */
 .bt-fx {
     position: absolute;
-    z-index: 3;
+    z-index: 9;
     inset: 0;
     overflow: hidden;
     pointer-events: none;
@@ -1957,7 +1995,7 @@
  */
 .bt-impact {
     position: absolute;
-    z-index: 3;
+    z-index: 9;
     top: 44%;
     left: 50%;
     width: calc(var(--bt-unit) * 0.6);
@@ -2226,7 +2264,7 @@
 
 .bt-flash {
     position: absolute;
-    z-index: 3;
+    z-index: 9;
     inset: 0;
     background: #fff;
     opacity: 0;
@@ -2237,7 +2275,7 @@
 /* Aviso de começo da batalha */
 .bt-announce {
     position: absolute;
-    z-index: 6;
+    z-index: 12;
     top: 46%;
     left: 50%;
     margin: 0;
@@ -2312,12 +2350,6 @@
     flex: 0 1 var(--bt-slot);
     width: auto;
     min-width: 0;
-}
-
-/* Quem está nas posições pares recua mais: vira uma segunda fileira. */
-.bt-arena--crowd .bt-unit:nth-child(even) .bt-unit__stage {
-    translate: 0 -15%;
-    scale: 0.92;
 }
 
 .bt-arena--crowd .bt-unit:nth-child(4) .bt-unit__sprite {
@@ -2399,6 +2431,7 @@
  */
 @media (max-width: 640px) {
     .bt {
+        --bt-rise: 0.09;
         --bt-unit: clamp(120px, 42vw, 190px);
         --bt-slot: calc(var(--bt-unit) * 0.62);
     }
