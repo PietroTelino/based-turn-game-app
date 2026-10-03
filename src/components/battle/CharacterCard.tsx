@@ -9,6 +9,8 @@ interface CharacterCardProps {
     position: number;
     /** O time já está completo e este personagem não faz parte dele. */
     isLocked: boolean;
+    /** O time já foi confirmado (sala do multiplayer): a carta ainda vira, mas não dá para escolher nem tirar. */
+    isReadOnly?: boolean;
     onToggle: (characterId: string) => void;
 }
 
@@ -17,7 +19,7 @@ interface CharacterCardProps {
  * atributos; o verso, as habilidades. Com mouse, a carta vira ao passar por
  * cima; no toque e no teclado, vira pelo botão do canto.
  */
-export function CharacterCard({ character, position, isLocked, onToggle }: CharacterCardProps) {
+export function CharacterCard({ character, position, isLocked, isReadOnly = false, onToggle }: CharacterCardProps) {
     const { t } = useTranslation();
     const [isFlipped, setIsFlipped] = useState(false);
     const isSelected = position !== -1;
@@ -30,7 +32,7 @@ export function CharacterCard({ character, position, isLocked, onToggle }: Chara
         >
             {isSelected && <span className='bt-card__order'>{position + 1}</span>}
 
-            <button type='button' className='bt-card__pick' aria-pressed={isSelected} disabled={isLocked} onClick={() => onToggle(character.id)}>
+            <button type='button' className='bt-card__pick' aria-pressed={isSelected} disabled={isLocked || isReadOnly} onClick={() => onToggle(character.id)}>
                 <span className='bt-card__face bt-card__face--front'>
                     <span className='bt-card__art'>
                         <CharacterArt characterId={character.id} kind='card' className='bt-card__sprite' />

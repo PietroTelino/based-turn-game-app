@@ -16,6 +16,7 @@
     "nav": {
         "dashboard": "Dashboard",
         "play": "Play",
+        "multiplayer": "Multiplayer",
         "profile": "Profile",
         "sessions": "Sessions",
         "users": "Users",
@@ -304,7 +305,8 @@
             "atk": "Attack",
             "def": "Defense",
             "speed": "Speed"
-        }
+        },
+        "versusPlayer": "Versus player"
     },
     "battle": {
         "title": "Battle",
@@ -411,7 +413,56 @@
             "enemySurrendered": "The enemy surrendered the battle.",
             "won": "You won the battle.",
             "lost": "You lost the battle."
-        }
+        },
+        "waitingOpponent": "Waiting for the opponent's move...",
+        "waitingOpponentLong": "It's the other player's turn. As soon as they play, the move shows up here.",
+        "enemySurrenderedText": "The opponent surrendered on turn {{turn}}."
+    },
+    "multiplayer": {
+        "title": "Multiplayer",
+        "subtitle": "Play against another person. Create a room and share the code, or join a room that already exists.",
+        "createTitle": "Create a room",
+        "createText": "You get a code to share with the other player. The room also shows up in the list of open rooms.",
+        "create": "Create room",
+        "createError": "Could not create the room. Try again.",
+        "joinTitle": "Join with a code",
+        "codeLabel": "Room code",
+        "join": "Join",
+        "joinError": "Could not join the room. Check the code and try again.",
+        "openRooms": "Open rooms",
+        "loading": "Looking for rooms...",
+        "loadError": "Could not load the rooms. Check that the API is running.",
+        "noRooms": "No open rooms right now. Create yours and share the code with someone.",
+        "roomOf": "{{name}}'s room",
+        "enter": "Join"
+    },
+    "room": {
+        "title": "Battle room",
+        "subtitle": "Pick {{size}} characters and press Play. The other player only sees your team when the battle starts, and you only see theirs.",
+        "loading": "Joining the room...",
+        "loadError": "Could not join this room.",
+        "backToLobby": "Back to rooms",
+        "closed": "The player who created this room left, and it was closed.",
+        "closedByYou": "You closed this room.",
+        "statusLabel": "Room code and players",
+        "actionsLabel": "Confirm your team",
+        "code": "Room code",
+        "copy": "Copy",
+        "copied": "Copied!",
+        "shareHint": "Share this code with the other player.",
+        "you": "You",
+        "versus": "vs",
+        "nobody": "Nobody yet",
+        "waitingOpponent": "Waiting for someone to join",
+        "choosing": "Picking a team",
+        "ready": "Ready",
+        "play": "Play",
+        "changeTeam": "Change team",
+        "leave": "Leave room",
+        "teamComplete": "{{count}} of {{max}} picked. Press Play to confirm your team.",
+        "waitingJoin": "Team confirmed. The battle starts when someone joins the room and also presses Play.",
+        "waitingReady": "Team confirmed. Waiting for {{name}} to press Play.",
+        "starting": "Both players are ready. Starting the battle..."
     },
     "errors": {
         "required": "{{field}} is required",

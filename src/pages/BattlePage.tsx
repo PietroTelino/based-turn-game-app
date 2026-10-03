@@ -68,9 +68,17 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
     let hint: string;
 
     const playerSurrendered = state.surrenderedBy === playerTeam;
+    const enemySurrendered = state.surrenderedBy === enemyTeam;
+    const isVersus = view.mode === 'pvp';
+    /** Batalha entre jogadores, na vez do outro: não há jogada para escolher, só esperar. */
+    const isWaitingOpponent = isVersus && view.status === 'in_progress' && actions.length === 0;
+    /** Para onde o jogador volta quando a batalha acaba. */
+    const lobbyPath = isVersus ? '/multiplayer' : '/play';
 
     if (isOver) {
         hint = playerSurrendered ? t('battle.log.surrendered') : playerWon ? t('battle.log.won') : t('battle.log.lost');
+    } else if (isWaitingOpponent && !isAnimating) {
+        hint = t('battle.waitingOpponent');
     } else if (!canAct || !selected) {
         hint = t('battle.resolving');
     } else if (selected.requiresTarget) {
@@ -151,7 +159,13 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
                             <p className='bt-result__title'>{playerWon ? t('battle.victory') : t('battle.defeat')}</p>
                             <p className='bt-result__text'>
                                 {t(
-                                    playerSurrendered ? 'battle.surrenderedText' : playerWon ? 'battle.victoryText' : 'battle.defeatText',
+                                    playerSurrendered
+                                        ? 'battle.surrenderedText'
+                                        : enemySurrendered
+                                          ? 'battle.enemySurrenderedText'
+                                          : playerWon
+                                            ? 'battle.victoryText'
+                                            : 'battle.defeatText',
                                     { turn: state.turn },
                                 )}
                             </p>
@@ -172,7 +186,7 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
                                         </li>
                                     ))}
                             </ul>
-                            <Link to='/play' className='bt-btn'>
+                            <Link to={lobbyPath} className='bt-btn'>
                                 {t('battle.newBattle')}
                             </Link>
                         </div>
@@ -196,13 +210,17 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
                     </div>
                 </div>
 
-                <SkillBar
-                    actions={actions}
-                    selectedSkillId={selected?.skill.id ?? null}
-                    disabled={!canAct}
-                    berserk={berserk > 0}
-                    onSelect={selectSkill}
-                />
+                {isWaitingOpponent ? (
+                    <p className='bt-hud__waiting'>{t('battle.waitingOpponentLong')}</p>
+                ) : (
+                    <SkillBar
+                        actions={actions}
+                        selectedSkillId={selected?.skill.id ?? null}
+                        disabled={!canAct}
+                        berserk={berserk > 0}
+                        onSelect={selectSkill}
+                    />
+                )}
 
                 <div className='bt-hud__foot'>
                     <p className='bt-hud__hint' aria-live='polite'>

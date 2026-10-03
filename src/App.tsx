@@ -15,6 +15,8 @@ import { ForbiddenPage } from './pages/ForbiddenPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { PlayPage } from '@/pages/PlayPage';
 import { BattlePage } from '@/pages/BattlePage';
+import { MultiplayerPage } from '@/pages/MultiplayerPage';
+import { RoomPage } from '@/pages/RoomPage';
 
 export default function App() {
     return (
@@ -32,6 +34,8 @@ export default function App() {
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/play" element={<PlayPage />} />
                 <Route path="/battle/:id" element={<BattlePage />} />
+                <Route path="/multiplayer" element={<MultiplayerPage />} />
+                <Route path="/room/:code" element={<RoomPage />} />
                 <Route path="/sessions" element={<SessionsPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
 

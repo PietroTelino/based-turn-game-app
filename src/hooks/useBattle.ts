@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import { getBattle, sendBattleAction, surrenderBattle } from '@/api/battles';
+import { getBattle, getBattleEvents, sendBattleAction, surrenderBattle } from '@/api/battles';
 import { sfx } from '@/audio/sfx';
 import { impactsOf, skillFxOf } from '@/battle/fx';
 import type { Impact, SkillFx } from '@/battle/fx';
@@ -68,6 +68,10 @@ const NO_EFFECTS: BattleEffects = {
 const MAX_LOG_ENTRIES = 60;
 /** Quanto tempo o aviso de começo da batalha fica na tela, em ms. */
 const INTRO_DURATION = 1300;
+/** Batalha entre jogadores: de quanto em quanto tempo a tela pergunta o que o outro fez, em ms. */
+const POLL_INTERVAL = 1200;
+/** `state.step` de uma batalha recém-criada, em que ninguém jogou ainda. */
+const FIRST_STEP = 1;
 
 function sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -293,6 +297,11 @@ function effectsOf(
  *
  * `opening` é a resposta de quando a batalha foi criada. Se a IA jogou
  * primeiro, os eventos dela são animados ao abrir a tela.
+ *
+ * Batalha entre dois jogadores (`view.mode === 'pvp'`): a resposta de uma
+ * jogada traz só o que ela causou, e a vez pode passar para o outro. Enquanto
+ * a tela está parada, ela pergunta à API pelos eventos que vieram depois dos
+ * que já mostrou (`view.cursor`) e os anima do mesmo jeito.
  */
 export function useBattle(battleId: string, opening?: BattleResponse) {
     const { t } = useTranslation();
@@ -305,6 +314,8 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
     const [effects, setEffects] = useState<BattleEffects>(NO_EFFECTS);
     const [log, setLog] = useState<LogEntry[]>([]);
     const [selectedSkillId, setSelectedSkillId] = useState<string | null>(null);
+    /** A pergunta "quer mesmo desistir?" está aberta. */
+    const [isConfirming, setIsConfirming] = useState(false);
 
     // Cada carregamento da tela ganha um número. Uma animação antiga que ainda
     // esteja rodando percebe que o número mudou e para sozinha.
@@ -375,13 +386,24 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
                 // Só anima a abertura se a batalha ainda está como foi criada
                 // (ao recarregar a página no meio do jogo, não). `step` sobe
                 // a cada vez jogada, então é ele que diz se algo já mudou.
-                const isFresh = opening?.battle.id === fetched.id && opening.battle.state.step === fetched.state.step;
+                let first: BattleResponse | null = null;
 
-                if (isFresh) {
+                if (opening?.battle.id === fetched.id && opening.battle.state.step === fetched.state.step) {
+                    first = { battle: fetched, events: opening.events };
+                } else if (fetched.mode === 'pvp' && fetched.status === 'in_progress' && fetched.state.step === FIRST_STEP) {
+                    // Entre jogadores a tela chega aqui vinda da sala, sem a resposta da
+                    // criação: os eventos da abertura são os primeiros da batalha. Se o
+                    // outro jogou nesse meio-tempo, a jogada dele vem junto e é animada.
+                    first = await getBattleEvents(battleId, 0);
+
+                    if (runRef.current !== run) return;
+                }
+
+                if (first) {
                     // Batalha recém-criada: os times entram e o aviso aparece.
-                    const start = openingState(fetched, opening.events);
+                    const start = openingState(first.battle, first.events);
 
-                    setView(fetched);
+                    setView(first.battle);
                     setState(start);
                     setPhase('busy');
                     setEffects({ ...NO_EFFECTS, announce: { text: t('battle.begin'), big: true } });
@@ -390,7 +412,7 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
 
                     if (runRef.current !== run) return;
 
-                    await play(run, start, { battle: fetched, events: opening.events });
+                    await play(run, start, first);
                 } else {
                     setView(fetched);
                     setState(fetched.state);
@@ -410,6 +432,52 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
         };
     }, [battleId, opening, play, t]);
 
+    // Batalha entre jogadores: enquanto a tela está parada, pergunta o que o
+    // outro fez. Vale também na própria vez, porque o outro pode desistir. Com
+    // a pergunta de desistir aberta a tela não se mexe, para a resposta valer
+    // para o que o jogador está vendo.
+    const isWatching = phase === 'idle' && !isConfirming && view?.mode === 'pvp' && view.status === 'in_progress';
+    const cursor = view?.cursor ?? 0;
+
+    useEffect(() => {
+        if (!isWatching || !state) return;
+
+        const run = runRef.current;
+        const from = state;
+        let cancelled = false;
+        let timer: number | undefined;
+
+        async function check() {
+            try {
+                const response = await getBattleEvents(battleId, cursor);
+
+                // Se o jogador jogou ou desistiu enquanto a consulta estava a
+                // caminho, ela é descartada: a resposta da jogada já traz o estado.
+                if (cancelled || runRef.current !== run) return;
+
+                if (response.events.length > 0) {
+                    setPhase('busy');
+                    await play(run, from, response);
+
+                    if (runRef.current === run) setPhase('idle');
+
+                    return;
+                }
+            } catch {
+                // Sem conexão por um instante: tenta de novo na próxima volta.
+            }
+
+            if (!cancelled) timer = window.setTimeout(check, POLL_INTERVAL);
+        }
+
+        timer = window.setTimeout(check, POLL_INTERVAL);
+
+        return () => {
+            cancelled = true;
+            window.clearTimeout(timer);
+        };
+    }, [isWatching, battleId, cursor, state, play]);
+
     const actions: AvailableAction[] = view?.availableActions ?? [];
     const selected = actions.find((a) => a.skill.id === selectedSkillId && a.usable) ?? actions.find((a) => a.usable) ?? null;
     const activeUnit = state?.units.find((unit) => unit.id === state.activeUnitId) ?? null;
@@ -427,7 +495,14 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
         setPhase('busy');
 
         try {
-            const response = await request(view.id);
+            let response = await request(view.id);
+
+            // Entre jogadores: se o outro fez algo que esta tela ainda não tinha
+            // visto, a resposta não começa de onde a tela está. Busca tudo o que
+            // falta, para animar na ordem certa.
+            if (response.battle.mode === 'pvp' && response.battle.cursor - response.events.length !== view.cursor) {
+                response = await getBattleEvents(view.id, view.cursor);
+            }
 
             await play(run, state, response);
         } catch (error) {
@@ -467,6 +542,8 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
     async function surrender() {
         if (!canSurrender) return;
 
+        setIsConfirming(true);
+
         const confirmed = await confirm({
             title: t('battle.surrenderTitle'),
             message: t('battle.surrenderMessage'),
@@ -474,6 +551,8 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
             cancelLabel: t('battle.surrenderCancel'),
             variant: 'danger',
         });
+
+        setIsConfirming(false);
 
         if (confirmed) {
             await submit(surrenderBattle);

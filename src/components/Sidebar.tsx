@@ -12,6 +12,7 @@ interface NavItem {
 const navItems: NavItem[] = [
     { key: 'dashboard', label: 'Dashboard', path: '/dashboard' },
     { key: 'play', label: 'Jogar', path: '/play' },
+    { key: 'multiplayer', label: 'Multiplayer', path: '/multiplayer' },
     { key: 'profile', label: 'Perfil', path: '/profile' },
     { key: 'sessions', label: 'Sessões', path: '/sessions' },
     { key: 'users', label: 'Usuários', path: '/users', roles: ['administrator', 'god'] },

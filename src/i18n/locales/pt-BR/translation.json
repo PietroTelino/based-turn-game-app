@@ -16,6 +16,7 @@
     "nav": {
         "dashboard": "Dashboard",
         "play": "Jogar",
+        "multiplayer": "Multiplayer",
         "profile": "Perfil",
         "sessions": "Sessões",
         "users": "Usuários",
@@ -304,7 +305,8 @@
             "atk": "Ataque",
             "def": "Defesa",
             "speed": "Velocidade"
-        }
+        },
+        "versusPlayer": "Contra jogador"
     },
     "battle": {
         "title": "Batalha",
@@ -411,7 +413,56 @@
             "enemySurrendered": "O inimigo desistiu da batalha.",
             "won": "Você venceu a batalha.",
             "lost": "Você perdeu a batalha."
-        }
+        },
+        "waitingOpponent": "Esperando a jogada do adversário...",
+        "waitingOpponentLong": "É a vez do outro jogador. Assim que ele jogar, a jogada aparece aqui.",
+        "enemySurrenderedText": "O adversário desistiu no turno {{turn}}."
+    },
+    "multiplayer": {
+        "title": "Multiplayer",
+        "subtitle": "Jogue contra outra pessoa. Crie uma sala e passe o código, ou entre em uma sala que já existe.",
+        "createTitle": "Criar uma sala",
+        "createText": "Você recebe um código para passar ao outro jogador. A sala também aparece na lista de salas abertas.",
+        "create": "Criar sala",
+        "createError": "Não foi possível criar a sala. Tente de novo.",
+        "joinTitle": "Entrar com um código",
+        "codeLabel": "Código da sala",
+        "join": "Entrar",
+        "joinError": "Não foi possível entrar na sala. Confira o código e tente de novo.",
+        "openRooms": "Salas abertas",
+        "loading": "Procurando salas...",
+        "loadError": "Não foi possível buscar as salas. Confira se a API está no ar.",
+        "noRooms": "Nenhuma sala aberta agora. Crie a sua e passe o código para alguém.",
+        "roomOf": "Sala de {{name}}",
+        "enter": "Entrar"
+    },
+    "room": {
+        "title": "Sala de batalha",
+        "subtitle": "Escolha {{size}} personagens e aperte Jogar. O outro jogador só vê o seu time quando a batalha começar, e você só vê o dele.",
+        "loading": "Entrando na sala...",
+        "loadError": "Não foi possível entrar nessa sala.",
+        "backToLobby": "Voltar para as salas",
+        "closed": "Quem criou esta sala saiu, e ela foi fechada.",
+        "closedByYou": "Você fechou esta sala.",
+        "statusLabel": "Código e jogadores da sala",
+        "actionsLabel": "Confirmar o time",
+        "code": "Código da sala",
+        "copy": "Copiar",
+        "copied": "Copiado!",
+        "shareHint": "Passe este código para o outro jogador entrar.",
+        "you": "Você",
+        "versus": "contra",
+        "nobody": "Ninguém ainda",
+        "waitingOpponent": "Esperando alguém entrar",
+        "choosing": "Escolhendo o time",
+        "ready": "Pronto",
+        "play": "Jogar",
+        "changeTeam": "Trocar time",
+        "leave": "Sair da sala",
+        "teamComplete": "{{count}} de {{max}} escolhidos. Aperte Jogar para confirmar o time.",
+        "waitingJoin": "Time confirmado. A batalha começa quando alguém entrar na sala e também apertar Jogar.",
+        "waitingReady": "Time confirmado. Esperando {{name}} apertar Jogar.",
+        "starting": "Os dois estão prontos. Começando a batalha..."
     },
     "errors": {
         "required": "{{field}} é obrigatório",

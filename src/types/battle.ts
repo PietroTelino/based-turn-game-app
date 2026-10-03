@@ -147,13 +147,24 @@ export interface AvailableAction {
 
 export type BattleStatus = 'in_progress' | 'finished';
 
+/** ai: contra o computador. pvp: entre dois jogadores, criada a partir de uma sala. */
+export type BattleMode = 'ai' | 'pvp';
+
 export interface BattleView {
     id: string;
     status: BattleStatus;
     winner: TeamId | null;
+    mode: BattleMode;
+    /** De que lado está quem pediu. Contra a IA é sempre "A"; entre jogadores, quem entrou na sala é "B". */
     playerTeam: TeamId;
     state: BattleState;
+    /** As jogadas da unidade da vez. Vazio quando a vez é do outro jogador. */
     availableActions: AvailableAction[];
+    /**
+     * Quantos eventos a batalha já teve. Entre jogadores, é a partir daqui que
+     * a tela pergunta pelo que o outro fez (`getBattleEvents`). Contra a IA é 0.
+     */
+    cursor: number;
     createdAt: string;
     updatedAt: string;
     finishedAt: string | null;
@@ -168,6 +179,8 @@ export interface BattleSummary {
     id: string;
     status: BattleStatus;
     winner: TeamId | null;
+    mode: BattleMode;
+    playerTeam: TeamId;
     turn: number;
     createdAt: string;
     updatedAt: string;

@@ -961,6 +961,20 @@
     font-weight: 700;
 }
 
+/* Batalha entre jogadores, na vez do outro: ocupa o lugar das habilidades. */
+.bt-hud__waiting {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 92px;
+    margin: 0;
+    padding: 10px 16px;
+    border: 2px dashed var(--bt-stone-dark);
+    border-radius: 6px;
+    font-weight: 700;
+    text-align: center;
+}
+
 .bt-skills {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -1656,6 +1670,244 @@
 .bt-link {
     color: #1f4f9a;
     font-weight: 800;
+}
+
+/* ------------------------------------------------------------ Multiplayer */
+
+/* Painel de pergaminho: o mesmo papel do painel de jogadas, para blocos fora da arena. */
+.bt-panel {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: 10px;
+    padding: 16px 20px 18px;
+    border: 3px solid var(--bt-ink);
+    border-radius: 10px;
+    box-shadow: inset 0 0 0 1px var(--bt-gold), inset 0 0 36px rgb(124 111 87 / 0.28), 0 6px 16px rgb(28 26 43 / 0.25);
+    background: linear-gradient(var(--bt-paper-light), var(--bt-paper));
+}
+
+.bt-panel .bt-subtitle {
+    margin: 0;
+}
+
+.bt-panel__text {
+    max-width: 46ch;
+    margin: 0;
+}
+
+/* Botão menor, para linhas de lista e para ficar ao lado de um campo. */
+.bt-btn--small {
+    min-height: 38px;
+    padding: 3px 16px 4px;
+    font-size: 17px;
+}
+
+/* Ação secundária sem o vermelho de "desistir": trocar o time. */
+.bt-btn--plain {
+    border-color: var(--bt-ink);
+    box-shadow: 0 3px 0 var(--bt-ink);
+    background: var(--bt-paper-light);
+    color: var(--bt-ink);
+}
+
+.bt-btn--plain:hover:not(:disabled) {
+    background: #fff8e2;
+}
+
+.bt-btn--plain:active:not(:disabled) {
+    box-shadow: 0 1px 0 var(--bt-ink);
+}
+
+.bt-field-label {
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #4a3b2a;
+}
+
+.bt-input {
+    min-height: 44px;
+    padding: 4px 12px;
+    border: 2px solid var(--bt-ink);
+    border-radius: 6px;
+    background: #fffdf5;
+    color: var(--bt-ink);
+    font: inherit;
+    font-weight: 700;
+}
+
+.bt-input:focus-visible {
+    outline: 3px solid var(--bt-ally);
+    outline-offset: 2px;
+}
+
+/* O código da sala: letras grandes e espaçadas, fáceis de conferir. */
+.bt-input--code {
+    width: 9.5em;
+    font-size: 22px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+}
+
+.bt-lobby {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: 16px;
+}
+
+.bt-lobby__join {
+    display: grid;
+    gap: 6px;
+}
+
+.bt-lobby__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.bt-history__tag {
+    margin-left: 10px;
+    padding: 1px 8px 2px;
+    border: 1px solid var(--bt-ally);
+    border-radius: 999px;
+    color: var(--bt-ally);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+/* ------------------------------------------------------------------- Sala */
+
+.bt-room__top {
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    justify-items: stretch;
+    gap: 14px 28px;
+}
+
+.bt-room__code {
+    display: grid;
+    gap: 2px;
+}
+
+.bt-room__code-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.bt-room__code-value {
+    font-family: var(--bt-display);
+    font-size: clamp(32px, 5vw, 44px);
+    line-height: 1.1;
+    letter-spacing: 0.14em;
+}
+
+.bt-room__share {
+    font-size: 15px;
+}
+
+.bt-room__players {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.bt-room__player {
+    display: grid;
+    gap: 1px;
+    min-width: 0;
+    padding: 8px 14px 9px;
+    border: 2px solid var(--bt-stone-dark);
+    border-radius: 8px;
+    background: rgb(255 255 255 / 0.45);
+}
+
+.bt-room__who {
+    overflow: hidden;
+    font-family: var(--bt-display);
+    font-weight: 700;
+    font-size: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.bt-room__state {
+    font-size: 15px;
+    font-weight: 700;
+    color: #5b4d39;
+}
+
+.bt-room__player--ready {
+    border-color: #3d6f25;
+    background: #e3efcf;
+}
+
+/* Não é só a cor que diz "pronto": o texto muda e ganha um sinal de visto. */
+.bt-room__player--ready .bt-room__state {
+    color: #2f5a1b;
+}
+
+.bt-room__player--ready .bt-room__state::before {
+    content: '\2713\00a0';
+}
+
+.bt-room__player--empty {
+    border-style: dashed;
+    background: transparent;
+}
+
+.bt-room__versus {
+    font-family: var(--bt-display);
+    font-weight: 700;
+    font-size: 18px;
+    color: #5b4d39;
+}
+
+/*
+ * A barra de confirmar acompanha a rolagem: com doze cartas na tela, o botão
+ * de jogar e o aviso do que falta ficam sempre à vista.
+ */
+.bt-room__bar {
+    position: sticky;
+    bottom: 12px;
+    z-index: 6;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    justify-items: stretch;
+    gap: 10px 20px;
+    padding: 12px 18px 14px;
+}
+
+.bt-room__note {
+    margin: 0;
+    font-weight: 700;
+}
+
+.bt-room__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+@media (max-width: 640px) {
+    .bt-room__top,
+    .bt-room__bar {
+        grid-template-columns: 1fr;
+    }
+
+    .bt-room__buttons {
+        justify-content: flex-start;
+    }
 }
 
 /* ------------------------------------------------------- Efeitos de golpe */

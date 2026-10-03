@@ -9,8 +9,8 @@ import '@/styles/battle.css';
 function battleLabelKey(battle: BattleSummary): string {
     if (battle.status === 'in_progress') return 'play.inProgress';
 
-    // O jogador é sempre o time A.
-    return battle.winner === 'A' ? 'play.won' : 'play.lost';
+    // Contra a IA o jogador é o time A; entre jogadores, pode ser qualquer um dos dois.
+    return battle.winner === battle.playerTeam ? 'play.won' : 'play.lost';
 }
 
 export function PlayPage() {
@@ -67,6 +67,7 @@ export function PlayPage() {
                                         <li key={battle.id} className='bt-history__item'>
                                             <span>
                                                 <b>{t(battleLabelKey(battle), { turn: battle.turn })}</b>
+                                                {battle.mode === 'pvp' && <span className='bt-history__tag'>{t('play.versusPlayer')}</span>}
                                                 <span className='bt-history__date'>
                                                     {new Date(battle.createdAt).toLocaleString(i18n.language)}
                                                 </span>

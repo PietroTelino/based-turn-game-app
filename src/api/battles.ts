@@ -21,6 +21,15 @@ export async function getBattle(id: string): Promise<BattleView> {
     return data;
 }
 
+/**
+ * O que aconteceu depois dos `after` primeiros eventos da batalha. É assim que,
+ * numa batalha entre jogadores, a tela fica sabendo das jogadas do outro.
+ */
+export async function getBattleEvents(id: string, after: number): Promise<BattleResponse> {
+    const { data } = await api.get<BattleResponse>(`/battles/${id}/events`, { params: { after } });
+    return data;
+}
+
 export async function sendBattleAction(id: string, action: BattleActionInput): Promise<BattleResponse> {
     const { data } = await api.post<BattleResponse>(`/battles/${id}/actions`, action);
     return data;
