@@ -98,7 +98,7 @@ export function FxLayer({ skill }: { skill: SkillFx | null }) {
                 ))}
 
             {skill?.delivery === 'area' && (
-                <span key={skill.id} className={`bt-area bt-area--${skill.element} bt-el--${skill.element}`}>
+                <span key={skill.id} className={`bt-area bt-area--${skill.rain ? 'rain' : skill.element} bt-el--${skill.element}`}>
                     {AREA_PARTICLES.map((index) => (
                         <i key={index} style={{ '--i': index } as CSSProperties} />
                     ))}

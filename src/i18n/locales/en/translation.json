@@ -327,6 +327,8 @@
         "free": "No cost",
         "cost": "{{count}} energy",
         "notEnoughEnergy": "Not enough energy right now.",
+        "baseDamage": "Base damage",
+        "baseHeal": "Base heal",
         "hp": "{{hp}} of {{max}} health",
         "banner": "{{unit}} uses {{skill}}!",
         "victory": "Victory!",

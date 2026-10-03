@@ -40,12 +40,12 @@ export interface StatusEffect {
 }
 
 export type SkillEffect =
-    | { type: 'damage'; power: number }
+    | { type: 'damage'; power: number; drain?: number }
     | { type: 'heal'; power: number }
     | { type: 'status'; status: StatusKind; turns: number; power: number; chance?: number; to?: 'target' | 'self' };
 
 /** Só escolhe o efeito visual e o som; não entra em nenhuma conta. */
-export type SkillElement = 'physical' | 'fire' | 'ice' | 'lightning' | 'nature' | 'light';
+export type SkillElement = 'physical' | 'fire' | 'ice' | 'lightning' | 'nature' | 'light' | 'shadow';
 
 export interface Skill {
     id: string;
@@ -56,7 +56,7 @@ export interface Skill {
     effects: SkillEffect[];
     /** Ausente em batalhas gravadas antes de os elementos existirem. */
     element?: SkillElement;
-    /** Golpe à distância: a tela mostra um projétil em vez de a unidade avançar. */
+    /** Golpe à distância: num alvo só, um projétil; em área, uma chuva de projéteis. */
     ranged?: boolean;
 }
 
@@ -123,8 +123,18 @@ export type BattleEvent =
     | { type: 'surrendered'; team: TeamId }
     | { type: 'battle_ended'; winner: TeamId };
 
+/**
+ * Os números da habilidade para quem está na vez: dano e cura "base", com o
+ * ataque atual de quem usa, sem contar a defesa do alvo nem o crítico.
+ */
+export interface SkillPreview {
+    damage: number | null;
+    heal: number | null;
+}
+
 export interface AvailableAction {
     skill: Skill;
+    preview: SkillPreview;
     usable: boolean;
     requiresTarget: boolean;
     targetIds: string[];

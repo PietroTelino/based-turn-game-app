@@ -186,6 +186,7 @@ function effectsOf(
         impacts: impactsOf(events, skillFx, nextId),
         floaters: [],
     };
+    const healed = new Map<string, { floater: Floater; total: number }>();
 
     for (const event of events) {
         if (event.type === 'skill_used') {
@@ -244,8 +245,18 @@ function effectsOf(
         }
 
         if (event.type === 'heal' && event.amount > 0) {
-            effects.healedUnitIds.push(event.targetId);
-            effects.floaters.push({ id: nextId(), unitId: event.targetId, text: `+${event.amount}`, kind: 'heal' });
+            // Roubo de vida em vários alvos cura quem bateu várias vezes: aparece um número só, com a soma.
+            let entry = healed.get(event.targetId);
+
+            if (!entry) {
+                entry = { floater: { id: nextId(), unitId: event.targetId, text: '', kind: 'heal' }, total: 0 };
+                healed.set(event.targetId, entry);
+                effects.healedUnitIds.push(event.targetId);
+                effects.floaters.push(entry.floater);
+            }
+
+            entry.total += event.amount;
+            entry.floater.text = `+${entry.total}`;
         }
     }
 

@@ -22,6 +22,7 @@ export const SOUND_NAMES = [
     'lightning',
     'nature',
     'light',
+    'shadow',
     'heal',
     'shield',
     'boon',
@@ -210,6 +211,14 @@ const RECIPES: Record<SoundName, (voice: Voice) => void> = {
         voice.tone({ type: 'sine', from: 2093, at: 0.15, duration: 0.6, gain: 0.06 });
     },
 
+    // Sombra: um lamento que desce, duas vozes quase na mesma nota, e um sopro grave.
+    shadow(voice) {
+        voice.tone({ type: 'sine', from: 466, to: 233, duration: 0.5, gain: 0.16, attack: 0.05 });
+        voice.tone({ type: 'sine', from: 494, to: 247, duration: 0.5, gain: 0.12, attack: 0.05 });
+        voice.tone({ type: 'triangle', from: 110, to: 62, duration: 0.45, gain: 0.3, attack: 0.02 });
+        voice.noise({ filter: 'bandpass', from: 1400, to: 350, q: 1.5, duration: 0.5, gain: 0.22, attack: 0.08 });
+    },
+
     // Suporte e status
     heal(voice) {
         [659, 831, 988, 1319].forEach((frequency, index) => {
@@ -283,6 +292,7 @@ const MIX: Partial<Record<SoundName, number>> = {
     fire: 1.9,
     nature: 1.7,
     light: 1.6,
+    shadow: 1.5,
     heal: 1.5,
     boon: 1.3,
     bane: 1.3,

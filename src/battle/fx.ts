@@ -14,6 +14,8 @@ export interface SkillFx {
     id: number;
     element: SkillElement;
     delivery: Delivery;
+    /** Ataque em área feito de projéteis (chuva de flechas): cai do alto em vez de usar o desenho do elemento. */
+    rain: boolean;
     sourceId: string;
     targetIds: string[];
 }
@@ -39,10 +41,13 @@ export function deliveryOf(skill: Skill | undefined): Delivery {
 export function skillFxOf(event: Extract<BattleEvent, { type: 'skill_used' }>, units: Map<string, BattleUnit>, id: number): SkillFx {
     const skill = units.get(event.unitId)?.skills.find((s) => s.id === event.skillId);
 
+    const delivery = deliveryOf(skill);
+
     return {
         id,
         element: skill?.element ?? 'physical',
-        delivery: deliveryOf(skill),
+        delivery,
+        rain: delivery === 'area' && skill?.ranged === true,
         sourceId: event.unitId,
         targetIds: event.targetIds,
     };

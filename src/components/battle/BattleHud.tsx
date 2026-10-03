@@ -101,7 +101,7 @@ export function SkillBar({ actions, selectedSkillId, disabled, onSelect }: Skill
 
     return (
         <div className='bt-skills'>
-            {actions.map(({ skill, usable }) => {
+            {actions.map(({ skill, preview, usable }) => {
                 const isSelected = !disabled && skill.id === selectedSkillId;
 
                 return (
@@ -120,6 +120,21 @@ export function SkillBar({ actions, selectedSkillId, disabled, onSelect }: Skill
                             </span>
                         </span>
                         <span className='bt-skill__text'>{!usable && !disabled ? t('battle.notEnoughEnergy') : skill.description}</span>
+                        {/* Dano e cura base: sem a defesa do alvo, com o ataque atual de quem usa. */}
+                        {(preview.damage !== null || preview.heal !== null) && (
+                            <span className='bt-skill__numbers'>
+                                {preview.damage !== null && (
+                                    <span className='bt-skill__number bt-skill__number--damage'>
+                                        {t('battle.baseDamage')} <b>{preview.damage}</b>
+                                    </span>
+                                )}
+                                {preview.heal !== null && (
+                                    <span className='bt-skill__number bt-skill__number--heal'>
+                                        {t('battle.baseHeal')} <b>{preview.heal}</b>
+                                    </span>
+                                )}
+                            </span>
+                        )}
                     </button>
                 );
             })}

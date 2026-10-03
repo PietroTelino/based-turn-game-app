@@ -327,6 +327,8 @@
         "free": "Sem custo",
         "cost": "{{count}} de energia",
         "notEnoughEnergy": "Falta energia para usar agora.",
+        "baseDamage": "Dano base",
+        "baseHeal": "Cura base",
         "hp": "{{hp}} de {{max}} de vida",
         "banner": "{{unit}} usa {{skill}}!",
         "victory": "Vitória!",
