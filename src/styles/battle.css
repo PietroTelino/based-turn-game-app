@@ -1910,6 +1910,248 @@
     }
 }
 
+/* --------------------------------------------------------------- Tutorial */
+
+/* Convite para o treino, na tela de montar o time de quem nunca jogou. */
+.bt-callout {
+    max-width: 62ch;
+    margin: 0;
+    padding: 10px 16px;
+    border: 2px solid var(--bt-gold);
+    border-left-width: 8px;
+    border-radius: 6px;
+    background: var(--bt-paper-light);
+    font-weight: 700;
+}
+
+.bt-training__team {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 22px;
+    margin: 4px 0 6px;
+    padding: 0;
+    list-style: none;
+}
+
+.bt-training__member {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    column-gap: 10px;
+}
+
+.bt-training__member .bt-result__face {
+    grid-row: span 2;
+}
+
+.bt-training__name {
+    align-self: end;
+    font-family: var(--bt-display);
+    font-weight: 700;
+    font-size: 19px;
+    line-height: 1.1;
+}
+
+.bt-training__role {
+    align-self: start;
+    font-size: 14px;
+    font-weight: 700;
+    color: #6b4a12;
+}
+
+.bt-rules {
+    justify-items: stretch;
+}
+
+.bt-rules__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: 14px 28px;
+    margin: 0;
+}
+
+.bt-rules__item dt {
+    font-family: var(--bt-display);
+    font-weight: 700;
+    font-size: 19px;
+}
+
+.bt-rules__item dd {
+    margin: 0;
+}
+
+/*
+ * O guia da batalha de treino: uma faixa entre a arena e o painel de jogadas.
+ * Tem altura mínima fixa, para a tela não pular quando uma dica entra ou sai.
+ */
+.bt-coach {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 8px 16px;
+    /* Cabem o título e três linhas de texto, que é o tamanho da dica mais longa. */
+    min-height: 126px;
+    margin-top: 18px;
+    padding: 10px 18px 12px;
+    border: 3px solid var(--bt-ink);
+    border-left-width: 10px;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgb(28 26 43 / 0.25);
+    background: var(--bt-paper-light);
+}
+
+.bt-coach--tip {
+    border-color: #8a6a1c;
+    box-shadow: 0 0 0 2px var(--bt-gold-bright), 0 6px 16px rgb(28 26 43 / 0.25);
+}
+
+.bt-coach__badge {
+    padding: 2px 10px 3px;
+    border-radius: 999px;
+    background: var(--bt-ink);
+    color: var(--bt-gold-bright);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.bt-coach__body {
+    display: grid;
+    gap: 2px;
+    animation: bt-coach-in 0.25s ease-out;
+}
+
+.bt-coach__title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 12px;
+    margin: 0;
+    font-family: var(--bt-display);
+    font-weight: 700;
+    font-size: 21px;
+    line-height: 1.15;
+}
+
+.bt-coach__step {
+    font-family: var(--bt-body);
+    font-size: 14px;
+    font-weight: 700;
+    color: #5b4d39;
+}
+
+.bt-coach__text {
+    max-width: 78ch;
+    margin: 0;
+}
+
+.bt-coach__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+@keyframes bt-coach-in {
+    from {
+        opacity: 0;
+        translate: 0 4px;
+    }
+}
+
+/*
+ * A parte da tela de que o guia está falando ganha um contorno dourado que
+ * pulsa. Quem diz qual é a parte é o atributo data-coach na raiz (.bt).
+ */
+.bt[data-coach='queue'] .bt-queue,
+.bt[data-coach='energy'] .bt-hud__energy,
+.bt[data-coach='skills'] .bt-skills,
+.bt[data-coach='statuses'] .bt-statuses:not(:empty),
+.bt[data-coach='berserk'] .bt-chip--berserk {
+    border-radius: 8px;
+    outline: 3px solid var(--bt-gold-bright);
+    outline-offset: 5px;
+    animation: bt-coach-ring 1.3s ease-in-out infinite;
+}
+
+.bt[data-coach='queue'] .bt-queue {
+    border-radius: 999px;
+}
+
+.bt[data-coach='statuses'] .bt-statuses:not(:empty) {
+    outline-offset: 2px;
+}
+
+@keyframes bt-coach-ring {
+    50% {
+        outline-color: #b3261e;
+        box-shadow: 0 0 0 9px rgb(236 208 122 / 0.45);
+    }
+}
+
+/* "Seu time" e "Time inimigo", embaixo das placas de cada time, na primeira dica. */
+.bt-team {
+    position: relative;
+}
+
+.bt-coach-label {
+    position: absolute;
+    z-index: 8;
+    top: calc(100% + 5px);
+    left: 50%;
+    padding: 1px 14px 2px;
+    border: 2px solid var(--bt-paper-light);
+    border-radius: 999px;
+    box-shadow: 0 2px 8px rgb(28 26 43 / 0.5);
+    color: #fff;
+    font-family: var(--bt-display);
+    font-weight: 700;
+    font-size: 18px;
+    white-space: nowrap;
+    translate: -50% 0;
+    animation: bt-coach-fade 0.25s ease-out;
+}
+
+@keyframes bt-coach-fade {
+    from {
+        opacity: 0;
+    }
+}
+
+.bt-coach-label--left {
+    background: var(--bt-ally);
+}
+
+.bt-coach-label--right {
+    background: var(--bt-enemy);
+}
+
+@media (max-width: 640px) {
+    .bt-coach {
+        grid-template-columns: 1fr;
+        justify-items: start;
+        min-height: 232px;
+        align-content: start;
+    }
+
+    .bt-coach__actions {
+        justify-content: flex-start;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bt-coach__body,
+    .bt-coach-label,
+    .bt[data-coach] .bt-queue,
+    .bt[data-coach] .bt-hud__energy,
+    .bt[data-coach] .bt-skills,
+    .bt[data-coach] .bt-statuses,
+    .bt[data-coach] .bt-chip--berserk {
+        animation: none;
+    }
+}
+
 /* ------------------------------------------------------- Efeitos de golpe */
 
 /*

@@ -11,8 +11,13 @@ export async function listBattles(): Promise<BattleSummary[]> {
     return data;
 }
 
-export async function createBattle(team: string[]): Promise<BattleResponse> {
-    const { data } = await api.post<BattleResponse>('/battles', { team });
+/**
+ * Cria uma batalha contra a IA. Sem `enemyTeam` o time inimigo é sorteado.
+ * O tutorial informa o time inimigo e pede `training`: a batalha de treino é
+ * sempre a mesma e nela a IA joga fraco de propósito.
+ */
+export async function createBattle(team: string[], options: { enemyTeam?: string[]; training?: boolean } = {}): Promise<BattleResponse> {
+    const { data } = await api.post<BattleResponse>('/battles', { team, ...options });
     return data;
 }
 

@@ -5,9 +5,11 @@ import { BattleLog, EnergyPips, SkillBar, TurnQueue } from '@/components/battle/
 import { CharacterArt } from '@/components/battle/CharacterArt';
 import { FxLayer } from '@/components/battle/FxLayer';
 import { SoundControl } from '@/components/battle/SoundControl';
+import { TutorialGuide } from '@/components/battle/TutorialGuide';
 import { UnitToken } from '@/components/battle/UnitToken';
 import { toPercent } from '@/battle/playback';
 import { useBattle } from '@/hooks/useBattle';
+import { useTutorial } from '@/hooks/useTutorial';
 import type { BattleResponse, TeamId } from '@/types/battle';
 import '@/styles/battle.css';
 
@@ -15,6 +17,9 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
     const { t } = useTranslation();
     const { view, state, phase, effects, log, actions, selected, activeUnit, canAct, targetIds, selectSkill, act, canSurrender, surrender } =
         useBattle(battleId, opening);
+    /** Batalha de treino: mostra o guia e destaca a parte da tela de que ele fala. */
+    const isTutorial = view?.state.training === true;
+    const tutorial = useTutorial(isTutorial, { view, state, canAct, actions, selected });
 
     if (phase === 'loading') {
         return <p className='bt-message'>{t('battle.loading')}</p>;
@@ -58,9 +63,13 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
                             isTargetable={targetIds.includes(unit.id)}
                             impact={effects.impacts.find((impact) => impact.unitId === unit.id) ?? null}
                             floaters={effects.floaters.filter((floater) => floater.unitId === unit.id)}
-                            onSelect={(unitId) => act(unitId)}
+                            onSelect={(unitId) => play(unitId)}
                         />
                     ))}
+                {/* Depois das unidades, para não mudar a posição delas na fila (nth-child). */}
+                {coachFocus === 'teams' && (
+                    <span className={`bt-coach-label bt-coach-label--${side}`}>{t(side === 'left' ? 'tutorial.yourTeam' : 'tutorial.enemyTeam')}</span>
+                )}
             </div>
         );
     };
@@ -74,6 +83,14 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
     const isWaitingOpponent = isVersus && view.status === 'in_progress' && actions.length === 0;
     /** Para onde o jogador volta quando a batalha acaba. */
     const lobbyPath = isVersus ? '/multiplayer' : '/play';
+    /** A parte da tela que o guia do treino está explicando agora. */
+    const coachFocus = tutorial?.guide.focus ?? null;
+
+    /** No treino, a primeira jogada encerra a lição do começo. */
+    const play = (targetId?: string) => {
+        tutorial?.noteAction();
+        act(targetId);
+    };
 
     if (isOver) {
         hint = playerSurrendered ? t('battle.log.surrendered') : playerWon ? t('battle.log.won') : t('battle.log.lost');
@@ -88,7 +105,7 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
     }
 
     return (
-        <div className='bt'>
+        <div className='bt' {...(coachFocus && { 'data-coach': coachFocus })}>
             <div
                 className={['bt-arena', isCrowded && 'bt-arena--crowd', effects.quake && 'bt-arena--quake', isOver && !playerWon && 'bt-arena--lost']
                     .filter(Boolean)
@@ -187,12 +204,14 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
                                     ))}
                             </ul>
                             <Link to={lobbyPath} className='bt-btn'>
-                                {t('battle.newBattle')}
+                                {t(isTutorial ? 'tutorial.buildTeam' : 'battle.newBattle')}
                             </Link>
                         </div>
                     </div>
                 )}
             </div>
+
+            {tutorial && <TutorialGuide guide={tutorial.guide} unitName={activeUnit?.name ?? ''} onAdvance={tutorial.advance} />}
 
             <section className='bt-hud' aria-label={t('battle.hudLabel')}>
                 <div className='bt-hud__head'>
@@ -228,7 +247,7 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
                     </p>
                     <div className='bt-hud__buttons'>
                         {canAct && selected && !selected.requiresTarget && (
-                            <button type='button' className='bt-btn' onClick={() => act()}>
+                            <button type='button' className='bt-btn' onClick={() => play()}>
                                 {t('battle.useSkill', { skill: selected.skill.name })}
                             </button>
                         )}

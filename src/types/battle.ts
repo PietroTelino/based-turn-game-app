@@ -106,6 +106,8 @@ export interface BattleState {
     winner: TeamId | null;
     /** Preenchido quando a batalha acabou porque um time desistiu. */
     surrenderedBy?: TeamId;
+    /** Batalha de treino (o tutorial): a IA joga fraco e a tela mostra o guia. */
+    training?: boolean;
 }
 
 export type BattleEvent =

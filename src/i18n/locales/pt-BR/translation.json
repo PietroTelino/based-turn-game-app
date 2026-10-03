@@ -17,6 +17,7 @@
         "dashboard": "Dashboard",
         "play": "Jogar",
         "multiplayer": "Multiplayer",
+        "tutorial": "Tutorial",
         "profile": "Perfil",
         "sessions": "Sessões",
         "users": "Usuários",
@@ -306,7 +307,9 @@
             "def": "Defesa",
             "speed": "Velocidade"
         },
-        "versusPlayer": "Contra jogador"
+        "versusPlayer": "Contra jogador",
+        "firstTime": "Primeira vez por aqui?",
+        "firstTimeLink": "Faça a batalha de treino antes de montar o seu time."
     },
     "battle": {
         "title": "Batalha",
@@ -463,6 +466,105 @@
         "waitingJoin": "Time confirmado. A batalha começa quando alguém entrar na sala e também apertar Jogar.",
         "waitingReady": "Time confirmado. Esperando {{name}} apertar Jogar.",
         "starting": "Os dois estão prontos. Começando a batalha..."
+    },
+    "tutorial": {
+        "title": "Tutorial",
+        "subtitle": "Uma batalha de treino contra o computador, com um guia que explica cada parte da tela enquanto você joga. O guiado é o começo; o resto da batalha é para praticar.",
+        "teamTitle": "Seu time de treino",
+        "teamText": "No treino o time já vem montado, o adversário é sempre o mesmo e o computador pega leve. Depois você escolhe os seus cinco.",
+        "start": "Começar o treino",
+        "rulesTitle": "O básico em um minuto",
+        "rules": {
+            "goal": {
+                "title": "Objetivo",
+                "text": "Cada lado leva 5 personagens. Vence quem derrubar todos os do outro time."
+            },
+            "turns": {
+                "title": "Turnos",
+                "text": "Em cada turno todo personagem age uma vez, do mais rápido para o mais lento."
+            },
+            "energy": {
+                "title": "Energia",
+                "text": "O time divide a mesma energia: 3 no primeiro turno e 1 a mais a cada turno, até 10. A que sobra não acumula."
+            },
+            "skills": {
+                "title": "Habilidades",
+                "text": "Todo personagem tem um ataque sem custo e habilidades mais fortes, que gastam energia."
+            },
+            "effects": {
+                "title": "Efeitos",
+                "text": "Algumas habilidades deixam efeitos por alguns turnos: queimadura, veneno, atordoamento, escudo e mudanças de ataque, defesa e velocidade."
+            },
+            "berserk": {
+                "title": "Berserk",
+                "text": "A partir do turno 9 o dano de todas as habilidades cresce 50% a cada turno, para os dois times."
+            }
+        },
+        "guide": "Guia",
+        "step": "Passo {{current}} de {{total}}",
+        "next": "Próximo",
+        "gotIt": "Entendi",
+        "yourTeam": "Seu time",
+        "enemyTeam": "Time inimigo",
+        "opening": "A batalha vai começar. O guia fala com você assim que for a sua vez.",
+        "idle": "Continue jogando. Uma dica nova aparece quando acontecer algo que você ainda não viu.",
+        "doneTitle": "Treino concluído",
+        "done": "Você já viu o básico. Agora monte o seu próprio time contra o computador ou chame alguém para o multiplayer.",
+        "buildTeam": "Montar meu time",
+        "tips": {
+            "welcome": {
+                "title": "Bem-vindo ao treino",
+                "text": "Os dois times estão marcados na arena: o seu e o inimigo. Vence quem derrubar os cinco personagens do outro lado."
+            },
+            "queue": {
+                "title": "Ordem de ação",
+                "text": "A fila no topo mostra quem age neste turno, do mais rápido para o mais lento. Cada personagem age uma vez por turno, e o retrato maior é de quem está na vez."
+            },
+            "energy": {
+                "title": "Energia",
+                "text": "O time inteiro divide a mesma energia. São 3 no primeiro turno e 1 a mais a cada turno, até 10. A que sobra não passa para o turno seguinte."
+            },
+            "skills": {
+                "title": "Habilidades",
+                "text": "É a vez de {{unit}}. Cada carta mostra o custo em energia, o que a habilidade faz e o dano ou a cura base. Todo personagem tem um ataque sem custo. Clique em uma carta para escolher."
+            },
+            "target": {
+                "title": "Alvo",
+                "text": "Os alvos possíveis ficam marcados na arena. Clique em um inimigo para atacar. Se a habilidade atingir todos de uma vez, confirme no botão Usar."
+            },
+            "damage": {
+                "title": "Primeiro golpe",
+                "text": "O número que sobe é o dano, e a barra embaixo de cada personagem é a vida dele. Agora os outros agem, cada um na sua vez; o computador joga pelo inimigo."
+            },
+            "area": {
+                "title": "Golpe em área",
+                "text": "Esta habilidade não pede alvo: atinge todos os que estão marcados. Confirme no botão Usar."
+            },
+            "allySkill": {
+                "title": "Habilidade de apoio",
+                "text": "Esta habilidade é para o seu time: os marcados agora são seus aliados. Clique em quem deve receber."
+            },
+            "noEnergy": {
+                "title": "Faltou energia",
+                "text": "As cartas apagadas custam mais energia do que o time tem agora. O ataque sem custo está sempre disponível, e no próximo turno a energia volta cheia."
+            },
+            "status": {
+                "title": "Efeitos",
+                "text": "Os selos embaixo de um personagem são efeitos que duram alguns turnos, como queimadura, atordoamento e escudo. O número é quantos turnos faltam; passe o mouse no selo para ver o que ele faz."
+            },
+            "newTurn": {
+                "title": "Turno novo",
+                "text": "Todos já agiram, então começou outro turno. A energia voltou cheia, com 1 a mais, e a fila foi montada de novo pela velocidade."
+            },
+            "defeated": {
+                "title": "Personagem derrotado",
+                "text": "Quem chega a 0 de vida cai e sai da fila. A batalha acaba quando um dos times fica sem ninguém de pé."
+            },
+            "berserk": {
+                "title": "Berserk",
+                "text": "A partir do turno 9 o dano de todas as habilidades aumenta 50% a cada turno, para os dois times. É o que impede uma batalha de durar para sempre."
+            }
+        }
     },
     "errors": {
         "required": "{{field}} é obrigatório",

@@ -17,6 +17,7 @@
         "dashboard": "Dashboard",
         "play": "Play",
         "multiplayer": "Multiplayer",
+        "tutorial": "Tutorial",
         "profile": "Profile",
         "sessions": "Sessions",
         "users": "Users",
@@ -306,7 +307,9 @@
             "def": "Defense",
             "speed": "Speed"
         },
-        "versusPlayer": "Versus player"
+        "versusPlayer": "Versus player",
+        "firstTime": "First time here?",
+        "firstTimeLink": "Play the training battle before building your team."
     },
     "battle": {
         "title": "Battle",
@@ -463,6 +466,105 @@
         "waitingJoin": "Team confirmed. The battle starts when someone joins the room and also presses Play.",
         "waitingReady": "Team confirmed. Waiting for {{name}} to press Play.",
         "starting": "Both players are ready. Starting the battle..."
+    },
+    "tutorial": {
+        "title": "Tutorial",
+        "subtitle": "A training battle against the computer, with a guide that explains each part of the screen while you play. The guided part is the beginning; the rest of the battle is for practice.",
+        "teamTitle": "Your training team",
+        "teamText": "In training the team is already built, the opponent is always the same and the computer goes easy on you. Afterwards you pick your own five.",
+        "start": "Start training",
+        "rulesTitle": "The basics in one minute",
+        "rules": {
+            "goal": {
+                "title": "Goal",
+                "text": "Each side brings 5 characters. Whoever takes down the whole other team wins."
+            },
+            "turns": {
+                "title": "Turns",
+                "text": "Each turn every character acts once, from fastest to slowest."
+            },
+            "energy": {
+                "title": "Energy",
+                "text": "The team shares one energy pool: 3 on the first turn and 1 more each turn, up to 10. Leftover energy does not carry over."
+            },
+            "skills": {
+                "title": "Skills",
+                "text": "Every character has a free attack and stronger skills that cost energy."
+            },
+            "effects": {
+                "title": "Effects",
+                "text": "Some skills leave effects for a few turns: burn, poison, stun, shield and changes to attack, defense and speed."
+            },
+            "berserk": {
+                "title": "Berserk",
+                "text": "From turn 9 on, the damage of every skill grows 50% each turn, for both teams."
+            }
+        },
+        "guide": "Guide",
+        "step": "Step {{current}} of {{total}}",
+        "next": "Next",
+        "gotIt": "Got it",
+        "yourTeam": "Your team",
+        "enemyTeam": "Enemy team",
+        "opening": "The battle is about to start. The guide will talk to you as soon as it is your turn.",
+        "idle": "Keep playing. A new tip shows up when something you have not seen yet happens.",
+        "doneTitle": "Training complete",
+        "done": "You have seen the basics. Now build your own team against the computer or invite someone to multiplayer.",
+        "buildTeam": "Build my team",
+        "tips": {
+            "welcome": {
+                "title": "Welcome to training",
+                "text": "Both teams are labelled in the arena: yours and the enemy. Whoever takes down all five characters on the other side wins."
+            },
+            "queue": {
+                "title": "Action order",
+                "text": "The queue at the top shows who acts this turn, from fastest to slowest. Each character acts once per turn, and the bigger portrait is the one acting now."
+            },
+            "energy": {
+                "title": "Energy",
+                "text": "The whole team shares one energy pool. It is 3 on the first turn and 1 more each turn, up to 10. Leftover energy does not carry over to the next turn."
+            },
+            "skills": {
+                "title": "Skills",
+                "text": "It is {{unit}}'s turn. Each card shows the energy cost, what the skill does and its base damage or healing. Every character has a free attack. Click a card to choose it."
+            },
+            "target": {
+                "title": "Target",
+                "text": "Possible targets are marked in the arena. Click an enemy to attack. If the skill hits everyone at once, confirm with the Use button."
+            },
+            "damage": {
+                "title": "First strike",
+                "text": "The number that floats up is the damage, and the bar under each character is their health. Now the others act, each on their turn; the computer plays for the enemy."
+            },
+            "area": {
+                "title": "Area skill",
+                "text": "This skill needs no target: it hits everyone that is marked. Confirm with the Use button."
+            },
+            "allySkill": {
+                "title": "Support skill",
+                "text": "This skill is for your team: the marked characters are your allies. Click the one who should receive it."
+            },
+            "noEnergy": {
+                "title": "Out of energy",
+                "text": "Dimmed cards cost more energy than the team has right now. The free attack is always available, and next turn the energy is full again."
+            },
+            "status": {
+                "title": "Effects",
+                "text": "The badges under a character are effects that last a few turns, such as burn, stun and shield. The number is how many turns are left; hover a badge to see what it does."
+            },
+            "newTurn": {
+                "title": "New turn",
+                "text": "Everyone has acted, so another turn started. Energy is full again, with 1 more, and the queue was rebuilt by speed."
+            },
+            "defeated": {
+                "title": "Character defeated",
+                "text": "A character that reaches 0 health falls and leaves the queue. The battle ends when one team has nobody standing."
+            },
+            "berserk": {
+                "title": "Berserk",
+                "text": "From turn 9 on, the damage of every skill increases 50% each turn, for both teams. It is what keeps a battle from lasting forever."
+            }
+        }
     },
     "errors": {
         "required": "{{field}} is required",

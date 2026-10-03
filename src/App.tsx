@@ -17,6 +17,7 @@ import { PlayPage } from '@/pages/PlayPage';
 import { BattlePage } from '@/pages/BattlePage';
 import { MultiplayerPage } from '@/pages/MultiplayerPage';
 import { RoomPage } from '@/pages/RoomPage';
+import { TutorialPage } from '@/pages/TutorialPage';
 
 export default function App() {
     return (
@@ -36,6 +37,7 @@ export default function App() {
                 <Route path="/battle/:id" element={<BattlePage />} />
                 <Route path="/multiplayer" element={<MultiplayerPage />} />
                 <Route path="/room/:code" element={<RoomPage />} />
+                <Route path="/tutorial" element={<TutorialPage />} />
                 <Route path="/sessions" element={<SessionsPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
 

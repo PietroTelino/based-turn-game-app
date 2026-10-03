@@ -25,6 +25,16 @@ export function PlayPage() {
                     <p className='bt-lead'>{t('play.subtitle', { size: TEAM_SIZE })}</p>
                 </header>
 
+                {/* Quem nunca jogou é convidado a começar pelo treino. */}
+                {!isLoading && !hasError && battles.length === 0 && (
+                    <p className='bt-callout'>
+                        {t('play.firstTime')}{' '}
+                        <Link to='/tutorial' className='bt-link'>
+                            {t('play.firstTimeLink')}
+                        </Link>
+                    </p>
+                )}
+
                 {isLoading && <p className='bt-message'>{t('play.loading')}</p>}
                 {hasError && <p className='bt-message bt-message--error'>{t('play.loadError')}</p>}
 
