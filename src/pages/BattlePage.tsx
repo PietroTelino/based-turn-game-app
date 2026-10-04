@@ -7,7 +7,7 @@ import { FxLayer } from '@/components/battle/FxLayer';
 import { SoundControl } from '@/components/battle/SoundControl';
 import { TutorialGuide } from '@/components/battle/TutorialGuide';
 import { UnitToken } from '@/components/battle/UnitToken';
-import { bonusOf } from '@/battle/passives';
+import { bonusOf, corpsesOf } from '@/battle/passives';
 import { toPercent } from '@/battle/playback';
 import { useBattle } from '@/hooks/useBattle';
 import { useTutorial } from '@/hooks/useTutorial';
@@ -60,6 +60,7 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
                             acting={effects.skill?.sourceId === unit.id ? effects.skill : null}
                             isHit={effects.hitUnitIds.includes(unit.id)}
                             isHealed={effects.healedUnitIds.includes(unit.id)}
+                            isMorphing={effects.morphingUnitIds.includes(unit.id)}
                             isFalling={effects.fallingUnitIds.includes(unit.id)}
                             isTargetable={targetIds.includes(unit.id)}
                             impact={effects.impacts.find((impact) => impact.unitId === unit.id) ?? null}
@@ -104,6 +105,8 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
         hint = t('battle.resolving');
     } else if (selected.requiresTarget) {
         hint = t('battle.chooseTarget', { skill: selected.skill.name });
+    } else if (selected.skill.target === 'corpse') {
+        hint = t('battle.raisesCorpse', { skill: selected.skill.name, unit: state.units.find((unit) => unit.id === selected.targetIds[0])?.name });
     } else {
         hint = t('battle.hitsAll', { skill: selected.skill.name });
     }
@@ -200,7 +203,7 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
                                             className={`bt-result__face ${unit.hp <= 0 ? 'bt-result__face--down' : ''}`}
                                             title={unit.name}
                                         >
-                                            <CharacterArt characterId={unit.characterId} kind='face' className='bt-queue__sprite' />
+                                            <CharacterArt characterId={unit.characterId} form={unit.form} kind='face' className='bt-queue__sprite' />
                                             <span className='bt-visually-hidden'>
                                                 {t(unit.hp > 0 ? 'battle.survived' : 'battle.fell', { unit: unit.name })}
                                             </span>
@@ -239,7 +242,8 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
                     <SkillBar
                         actions={actions}
                         passives={actingPassives}
-                        charge={bonusOf(actingUnit)}
+                        // Quem conta cadáveres mostra a conta mesmo zerada.
+                        charge={corpsesOf(actingUnit) ?? bonusOf(actingUnit)}
                         selectedSkillId={selected?.skill.id ?? null}
                         disabled={!canAct}
                         berserk={berserk > 0}

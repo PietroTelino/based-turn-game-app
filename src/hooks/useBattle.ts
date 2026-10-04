@@ -3,8 +3,9 @@ import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { getBattle, getBattleEvents, sendBattleAction, surrenderBattle } from '@/api/battles';
 import { sfx } from '@/audio/sfx';
+import { findPassive, findSkill } from '@/battle/forms';
 import { impactsOf, passiveFxOf, skillFxOf } from '@/battle/fx';
-import { chargeOf } from '@/battle/passives';
+import { stacksOf } from '@/battle/passives';
 import type { Impact, SkillFx } from '@/battle/fx';
 import { applyEvents, openingState, toBeats, toPercent } from '@/battle/playback';
 import { cuesOf } from '@/battle/sounds';
@@ -35,6 +36,8 @@ export interface BattleEffects {
     announce: { text: string; big: boolean; detail?: string; berserk?: boolean } | null;
     hitUnitIds: string[];
     healedUnitIds: string[];
+    /** Quem mudou de forma neste instante: a figura nova surge num clarão. */
+    morphingUnitIds: string[];
     /** Quem foi derrotado neste instante: anima a queda. */
     fallingUnitIds: string[];
     impacts: Impact[];
@@ -60,6 +63,7 @@ const NO_EFFECTS: BattleEffects = {
     announce: null,
     hitUnitIds: [],
     healedUnitIds: [],
+    morphingUnitIds: [],
     fallingUnitIds: [],
     impacts: [],
     quake: false,
@@ -87,7 +91,7 @@ function describe(
     switch (event.type) {
         case 'skill_used': {
             const unit = units.get(event.unitId);
-            const skill = unit?.skills.find((s) => s.id === event.skillId);
+            const skill = findSkill(unit, event.skillId);
 
             return { text: t('battle.log.skill', { unit: unit?.name, skill: skill?.name }), team: event.team };
         }
@@ -111,6 +115,34 @@ function describe(
                     target: units.get(event.targetId)?.name,
                     status: t(`battle.status.${event.status}`),
                     turns: t('battle.turns', { count: event.turns }),
+                }),
+                team: units.get(event.sourceId)?.team ?? null,
+            };
+
+        case 'transformed': {
+            const unit = units.get(event.unitId);
+            const form = unit?.forms?.find((item) => item.id === event.form);
+
+            return {
+                text: form ? t('battle.log.transformed', { unit: unit?.name, form: form.name }) : t('battle.log.reverted', { unit: unit?.name }),
+                team: unit?.team ?? null,
+            };
+        }
+
+        case 'extra_action': {
+            const unit = units.get(event.unitId);
+
+            return { text: t('battle.log.extraAction', { unit: unit?.name }), team: unit?.team ?? null };
+        }
+
+        case 'summoned':
+            return { text: t('battle.log.summoned', { unit: units.get(event.sourceId)?.name, summon: event.unit.name }), team: event.unit.team };
+
+        case 'cleansed':
+            return {
+                text: t('battle.log.cleansed', {
+                    target: units.get(event.targetId)?.name,
+                    statuses: event.statuses.map((status) => t(`battle.status.${status}`)).join(', '),
                 }),
                 team: units.get(event.sourceId)?.team ?? null,
             };
@@ -167,8 +199,16 @@ function describe(
 
         case 'passive_triggered': {
             const unit = units.get(event.unitId);
-            const passive = unit?.passives?.find((p) => p.id === event.passiveId);
-            const charge = chargeOf(unit, event.stacks ?? 0);
+            const passive = findPassive(unit, event.passiveId);
+            const charge = event.stacks === undefined ? null : stacksOf(unit, event.stacks);
+
+            // Passiva que conta cadáveres: a linha diz quantos há agora.
+            if (charge?.kind === 'corpses') {
+                return {
+                    text: charge.count === 0 ? t('battle.log.corpsesNone', { unit: unit?.name }) : t('battle.log.corpses', { unit: unit?.name, count: charge.count }),
+                    team: unit?.team ?? null,
+                };
+            }
 
             // Passiva que acumula: a linha diz quanto ela vale agora.
             if (charge) {
@@ -200,6 +240,10 @@ function isAftermath(event: BattleEvent): boolean {
         event.type === 'damage' ||
         event.type === 'heal' ||
         event.type === 'status_applied' ||
+        event.type === 'cleansed' ||
+        event.type === 'transformed' ||
+        event.type === 'summoned' ||
+        event.type === 'extra_action' ||
         event.type === 'unit_defeated' ||
         event.type === 'status_expired' ||
         event.type === 'statuses_changed' ||
@@ -223,6 +267,7 @@ function effectsOf(
         skill: skillFx,
         hitUnitIds: [],
         healedUnitIds: [],
+        morphingUnitIds: [],
         fallingUnitIds: [],
         impacts: impactsOf(events, skillFx, nextId),
         floaters: [],
@@ -232,7 +277,7 @@ function effectsOf(
     for (const event of events) {
         if (event.type === 'skill_used') {
             const unit = units.get(event.unitId);
-            const skill = unit?.skills.find((s) => s.id === event.skillId);
+            const skill = findSkill(unit, event.skillId);
 
             effects.banner = t('battle.banner', { unit: unit?.name, skill: skill?.name });
         }
@@ -258,10 +303,18 @@ function effectsOf(
 
         if (event.type === 'passive_triggered') {
             const unit = units.get(event.unitId);
-            const name = unit?.passives?.find((p) => p.id === event.passiveId)?.name;
-            const charge = chargeOf(unit, event.stacks ?? 0);
+            const name = findPassive(unit, event.passiveId)?.name;
+            const charge = event.stacks === undefined ? null : stacksOf(unit, event.stacks);
 
-            if (charge) {
+            if (charge?.kind === 'corpses') {
+                // Passiva que conta cadáveres: sobe a conta nova.
+                effects.floaters.push({
+                    id: nextId(),
+                    unitId: event.unitId,
+                    text: charge.count === 0 ? t('battle.corpsesNone') : t('battle.corpses', { count: charge.count }),
+                    kind: 'passive',
+                });
+            } else if (charge) {
                 // Passiva que acumula: sobe o nome dela com o quanto vale agora.
                 effects.floaters.push({
                     id: nextId(),
@@ -289,6 +342,28 @@ function effectsOf(
         if (event.type === 'status_damage') {
             effects.hitUnitIds.push(event.targetId);
             effects.floaters.push({ id: nextId(), unitId: event.targetId, text: String(event.amount), kind: 'damage' });
+        }
+
+        if (event.type === 'transformed') {
+            const unit = units.get(event.unitId);
+            const form = unit?.forms?.find((item) => item.id === event.form);
+
+            effects.morphingUnitIds.push(event.unitId);
+            effects.floaters.push({ id: nextId(), unitId: event.unitId, text: form ? form.name : t('battle.reverted'), kind: 'passive' });
+        }
+
+        if (event.type === 'summoned') {
+            // A invocação surge no lugar do cadáver, com o mesmo clarão de uma transformação.
+            effects.morphingUnitIds.push(event.unitId);
+            effects.floaters.push({ id: nextId(), unitId: event.unitId, text: event.unit.name, kind: 'passive' });
+        }
+
+        if (event.type === 'extra_action') {
+            effects.floaters.push({ id: nextId(), unitId: event.unitId, text: t('battle.extraAction'), kind: 'passive' });
+        }
+
+        if (event.type === 'cleansed') {
+            effects.floaters.push({ id: nextId(), unitId: event.targetId, text: t('battle.cleansed'), kind: 'status' });
         }
 
         if (event.type === 'status_applied') {
@@ -375,7 +450,6 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
 
     const play = useCallback(
         async (run: number, from: BattleState, response: BattleResponse) => {
-            const units = new Map(from.units.map((unit) => [unit.id, unit]));
             const nextId = () => ++idRef.current;
             let current = from;
             let skillFx: SkillFx | null = null;
@@ -386,6 +460,9 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
                 const previousFury = current.fury;
 
                 current = applyEvents(current, beat.events);
+
+                // Quem se transformou neste beat já aparece com a forma nova (cargas, passivas).
+                const units = new Map(current.units.map((unit) => [unit.id, unit]));
 
                 // A habilidade vale do anúncio até o impacto; qualquer outro
                 // acontecimento (a vez de outra unidade, vez perdida, fim) a encerra.

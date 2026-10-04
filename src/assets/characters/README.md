@@ -9,6 +9,17 @@ Cada personagem usa três arquivos, nomeados com o `id` dele (o mesmo de
 | `<id>-face.webp` | Rosto, quadrado, fundo transparente. Aparece na fila de turnos. | 160 x 160 |
 | `<id>-card.webp` | Busto, quadrado, fundo transparente. Aparece na escolha de time. | 560 x 560 |
 
+Quem se transforma (o Druida) tem também os arquivos de cada forma, com o id
+da forma depois do id do personagem: `druida-urso.webp` e `druida-urso-face.webp`,
+`druida-lobo.webp` e `druida-lobo-face.webp`. A forma não precisa de `-card`
+(na escolha de time aparece a forma original). Se faltar o arquivo de uma
+forma, a tela usa o do personagem. Bicho de quatro patas fica mais baixo que
+uma pessoa, mas o arquivo tem os mesmos 840 de altura, com o espaço de cima vazio.
+
+Uma invocação (o Guerreiro Esqueleto do Necromante) é uma unidade com id
+próprio: usa `esqueleto.webp` e `esqueleto-face.webp`, sem `-card`, porque não
+aparece na escolha de time.
+
 Para acrescentar um personagem, salve os arquivos aqui com o id certo. Não é
 preciso mexer em código. Também vale `.png`.
 

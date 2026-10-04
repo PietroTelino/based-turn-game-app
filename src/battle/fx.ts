@@ -1,3 +1,4 @@
+import { findPassive, findSkill } from '@/battle/forms';
 import type { BattleEvent, BattleUnit, Skill, SkillElement, StatusKind } from '@/types/battle';
 
 /**
@@ -41,7 +42,7 @@ export function deliveryOf(skill: Skill | undefined): Delivery {
 }
 
 export function skillFxOf(event: Extract<BattleEvent, { type: 'skill_used' }>, units: Map<string, BattleUnit>, id: number): SkillFx {
-    const skill = units.get(event.unitId)?.skills.find((s) => s.id === event.skillId);
+    const skill = findSkill(units.get(event.unitId), event.skillId);
 
     const delivery = deliveryOf(skill);
 
@@ -63,7 +64,7 @@ export function skillFxOf(event: Extract<BattleEvent, { type: 'skill_used' }>, u
  * novo a desenhar, e a função devolve null.
  */
 export function passiveFxOf(event: Extract<BattleEvent, { type: 'passive_triggered' }>, units: Map<string, BattleUnit>, id: number): SkillFx | null {
-    const passive = units.get(event.unitId)?.passives?.find((p) => p.id === event.passiveId);
+    const passive = findPassive(units.get(event.unitId), event.passiveId);
 
     if (!passive || passive.effect.type !== 'turn_start' || event.targetIds.length === 0) {
         return null;
@@ -82,8 +83,8 @@ export function passiveFxOf(event: Extract<BattleEvent, { type: 'passive_trigger
     };
 }
 
-const STATUS_ELEMENT: Partial<Record<StatusKind, SkillElement>> = { burn: 'fire', poison: 'nature' };
-const GOOD_STATUS: StatusKind[] = ['atk_up', 'def_up', 'speed_up', 'passive_up'];
+const STATUS_ELEMENT: Partial<Record<StatusKind, SkillElement>> = { burn: 'fire', poison: 'nature', bleed: 'physical' };
+const GOOD_STATUS: StatusKind[] = ['atk_up', 'def_up', 'speed_up', 'passive_up', 'taunt'];
 
 /** Quando várias coisas atingem a mesma unidade no mesmo instante, a mais forte aparece. */
 const PRIORITY: ImpactKind[] = ['hit', 'tick', 'heal', 'shield', 'boon', 'bane'];
@@ -106,6 +107,12 @@ export function impactsOf(events: BattleEvent[], skill: SkillFx | null, nextId: 
             add(event.targetId, 'tick', STATUS_ELEMENT[event.status] ?? 'physical');
         } else if (event.type === 'heal' && event.amount > 0) {
             add(event.targetId, 'heal', skill?.element ?? 'light');
+        } else if (event.type === 'cleansed') {
+            add(event.targetId, 'boon', skill?.element ?? 'light');
+        } else if (event.type === 'transformed') {
+            add(event.unitId, 'boon', 'nature');
+        } else if (event.type === 'summoned') {
+            add(event.unitId, 'boon', skill?.element ?? 'shadow');
         } else if (event.type === 'status_applied') {
             if (event.status === 'shield') add(event.targetId, 'shield', 'light');
             else if (GOOD_STATUS.includes(event.status)) add(event.targetId, 'boon', skill?.element ?? 'light');

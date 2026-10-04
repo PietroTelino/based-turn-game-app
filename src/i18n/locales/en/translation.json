@@ -299,7 +299,8 @@
             "support": "Support",
             "assassin": "Assassin",
             "mage": "Mage",
-            "fighter": "Fighter"
+            "fighter": "Fighter",
+            "shapeshifter": "Shapeshifter"
         },
         "stats": {
             "hp": "Health",
@@ -380,7 +381,11 @@
             "def_down": "Defense −",
             "speed_up": "Speed +",
             "speed_down": "Speed −",
-            "passive_up": "Passive +"
+            "passive_up": "Passive +",
+            "taunt": "Taunt",
+            "bleed": "Bleed",
+            "heal_down": "Reduced healing",
+            "form": "Transformed"
         },
         "statusHelp": {
             "growing": "The damage rises by {{amount}} each turn while the effect lasts.",
@@ -394,7 +399,11 @@
             "def_down": "Defense {{percent}}% lower.",
             "speed_up": "Speed {{percent}}% higher.",
             "speed_down": "Speed {{percent}}% lower.",
-            "passive_up": "The start-of-turn passive heals and deals {{percent}}% more."
+            "passive_up": "The start-of-turn passive heals and deals {{percent}}% more.",
+            "taunt": "Enemies' single-target attacks can only aim here.",
+            "bleed": "Takes {{value}} damage at the start of each turn.",
+            "heal_down": "Receives {{percent}}% less healing.",
+            "form": "In another form. Returns to the original form when it ends."
         },
         "statShort": {
             "atk": "Atk",
@@ -414,6 +423,14 @@
             "shielded": "{{target}} took {{amount}} damage (the shield held {{absorbed}})",
             "statusApplied": "{{target}}: {{status}} for {{turns}}",
             "statusDamage": "{{target}} took {{amount}} damage from {{status}}",
+            "cleansed": "{{target}} was cleansed: {{statuses}}",
+            "transformed": "{{unit}} turned into {{form}}",
+            "reverted": "{{unit}} returned to the original form",
+            "extraAction": "{{unit}} acts again",
+            "summoned": "{{unit}} raised {{summon}}",
+            "corpses_one": "{{unit}}: {{count}} corpse to raise",
+            "corpses_other": "{{unit}}: {{count}} corpses to raise",
+            "corpsesNone": "{{unit}}: no corpses to raise",
             "skipped": "{{unit}} lost the turn: {{status}}",
             "surrendered": "You surrendered the battle.",
             "enemySurrendered": "The enemy surrendered the battle.",
@@ -430,6 +447,17 @@
         "passive": "Passive",
         "passiveBanner": "{{unit}}: {{passive}}",
         "energyFloater": "+{{count}} energy",
+        "corpses_one": "{{count}} corpse",
+        "corpses_other": "{{count}} corpses",
+        "corpsesHelp_one": "{{passive}}: {{count}} fallen ally to raise",
+        "corpsesHelp_other": "{{passive}}: {{count}} fallen allies to raise",
+        "corpsesNow": "Corpses now",
+        "corpsesNone": "No corpses",
+        "noCorpse": "No fallen ally to raise.",
+        "raisesCorpse": "{{skill}} raises a skeleton in place of {{unit}}.",
+        "extraAction": "Extra action!",
+        "reverted": "Original form",
+        "cleansed": "Cleansed",
         "passiveCharge": "{{passive}}: +{{percent}}% damage",
         "passiveNow": "Damage now"
     },

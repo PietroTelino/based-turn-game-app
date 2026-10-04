@@ -7,7 +7,7 @@ import type { ReactNode } from 'react';
  * inimigo é espelhado pelo CSS.
  *
  * Os nomes abaixo são os ids antigos dos personagens (hoje piromante,
- * cavaleiro, clérigo, bárbaro, criomante e guardião). Todos já têm
+ * cavaleiro, sacerdote, bárbaro, criomante e guardião). Todos já têm
  * ilustração, então estes desenhos só aparecem se um arquivo de imagem
  * for apagado.
  */

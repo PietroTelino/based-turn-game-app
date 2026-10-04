@@ -299,7 +299,8 @@
             "support": "Suporte",
             "assassin": "Assassino",
             "mage": "Mago",
-            "fighter": "Lutador"
+            "fighter": "Lutador",
+            "shapeshifter": "Metamorfo"
         },
         "stats": {
             "hp": "Vida",
@@ -380,7 +381,11 @@
             "def_down": "Defesa −",
             "speed_up": "Velocidade +",
             "speed_down": "Velocidade −",
-            "passive_up": "Passiva +"
+            "passive_up": "Passiva +",
+            "taunt": "Provocação",
+            "bleed": "Sangramento",
+            "heal_down": "Cura reduzida",
+            "form": "Transformado"
         },
         "statusHelp": {
             "growing": "Esse dano sobe {{amount}} a cada turno enquanto o efeito durar.",
@@ -394,7 +399,11 @@
             "def_down": "Defesa {{percent}}% menor.",
             "speed_up": "Velocidade {{percent}}% maior.",
             "speed_down": "Velocidade {{percent}}% menor.",
-            "passive_up": "A passiva de começo de vez cura e causa {{percent}}% a mais."
+            "passive_up": "A passiva de começo de vez cura e causa {{percent}}% a mais.",
+            "taunt": "Os golpes de alvo único dos inimigos só podem mirar aqui.",
+            "bleed": "Leva {{value}} de dano no começo de cada turno.",
+            "heal_down": "Recebe {{percent}}% a menos de cura.",
+            "form": "Está em outra forma. Quando acabar, volta à forma original."
         },
         "statShort": {
             "atk": "Atq",
@@ -414,6 +423,14 @@
             "shielded": "{{target}} levou {{amount}} de dano (o escudo segurou {{absorbed}})",
             "statusApplied": "{{target}}: {{status}} por {{turns}}",
             "statusDamage": "{{target}} sofreu {{amount}} de dano de {{status}}",
+            "cleansed": "{{target}} foi purificado: {{statuses}}",
+            "transformed": "{{unit}} virou {{form}}",
+            "reverted": "{{unit}} voltou à forma original",
+            "extraAction": "{{unit}} age de novo",
+            "summoned": "{{unit}} ergueu {{summon}}",
+            "corpses_one": "{{unit}}: {{count}} cadáver para erguer",
+            "corpses_other": "{{unit}}: {{count}} cadáveres para erguer",
+            "corpsesNone": "{{unit}}: nenhum cadáver para erguer",
             "skipped": "{{unit}} perdeu a vez: {{status}}",
             "surrendered": "Você desistiu da batalha.",
             "enemySurrendered": "O inimigo desistiu da batalha.",
@@ -430,6 +447,17 @@
         "passive": "Passiva",
         "passiveBanner": "{{unit}}: {{passive}}",
         "energyFloater": "+{{count}} de energia",
+        "corpses_one": "{{count}} cadáver",
+        "corpses_other": "{{count}} cadáveres",
+        "corpsesHelp_one": "{{passive}}: {{count}} aliado caído para erguer",
+        "corpsesHelp_other": "{{passive}}: {{count}} aliados caídos para erguer",
+        "corpsesNow": "Cadáveres agora",
+        "corpsesNone": "Nenhum cadáver",
+        "noCorpse": "Nenhum aliado caído para erguer.",
+        "raisesCorpse": "{{skill}} ergue um esqueleto no lugar de {{unit}}.",
+        "extraAction": "Ação extra!",
+        "reverted": "Forma original",
+        "cleansed": "Purificado",
         "passiveCharge": "{{passive}}: +{{percent}}% de dano",
         "passiveNow": "Dano agora"
     },

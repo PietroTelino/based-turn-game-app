@@ -18,7 +18,7 @@ const ELEMENT_SOUND: Record<SkillElement, SoundName> = {
     shadow: 'shadow',
 };
 
-const GOOD_STATUS: StatusKind[] = ['atk_up', 'def_up', 'speed_up', 'passive_up'];
+const GOOD_STATUS: StatusKind[] = ['atk_up', 'def_up', 'speed_up', 'passive_up', 'taunt'];
 
 /**
  * Os sons de um beat. Os tempos acompanham as animações de battle.css:
@@ -70,6 +70,17 @@ export function cuesOf(events: BattleEvent[], skill: SkillFx | null, playerTeam:
                 else add(GOOD_STATUS.includes(event.status) ? 'boon' : 'bane', 150);
                 break;
 
+            // Purificação e transformação: o mesmo som de um bônus chegando.
+            case 'cleansed':
+            case 'transformed':
+                add('boon', 150);
+                break;
+
+            // Um cadáver se ergue: o som do elemento da habilidade (sombra).
+            case 'summoned':
+                add(ELEMENT_SOUND[skill?.element ?? 'shadow']);
+                break;
+
             case 'unit_skipped':
                 add('stun');
                 break;
@@ -100,6 +111,7 @@ export function cuesOf(events: BattleEvent[], skill: SkillFx | null, playerTeam:
                 break;
 
             case 'surrendered':
+            case 'extra_action':
             case 'status_expired':
             case 'statuses_changed':
                 break;

@@ -17,7 +17,7 @@ import type { AvailableAction, BattleState, TeamId } from '@/types/battle';
  *
  * A ordem é a de entrada em campo: o primeiro fica na frente.
  */
-export const TUTORIAL_TEAM = ['cavaleiro', 'barbaro', 'piromante', 'arqueiro', 'clerigo'];
+export const TUTORIAL_TEAM = ['cavaleiro', 'barbaro', 'piromante', 'arqueiro', 'sacerdote'];
 export const TUTORIAL_ENEMY_TEAM = ['guardiao', 'vampiro', 'espadachim', 'criomante', 'driade'];
 
 /** A parte da tela que a dica aponta: ela ganha um contorno enquanto a dica está aberta. */

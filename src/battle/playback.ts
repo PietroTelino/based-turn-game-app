@@ -1,3 +1,4 @@
+import { withForm } from '@/battle/forms';
 import type { BattleEvent, BattleState, BattleView } from '@/types/battle';
 
 /**
@@ -34,6 +35,10 @@ function isEffect(event: BattleEvent): boolean {
         event.type === 'heal' ||
         event.type === 'unit_defeated' ||
         event.type === 'status_applied' ||
+        event.type === 'cleansed' ||
+        event.type === 'transformed' ||
+        event.type === 'summoned' ||
+        event.type === 'extra_action' ||
         event.type === 'status_damage' ||
         // No meio de uma habilidade, a passiva e a energia que ela devolve aparecem junto com o golpe.
         event.type === 'passive_triggered' ||
@@ -174,6 +179,23 @@ export function applyEvents(state: BattleState, events: BattleEvent[]): BattleSt
                 }
                 break;
 
+            // Mudou de forma: a unidade passa a ter os atributos, as habilidades e as passivas da forma.
+            case 'transformed':
+                next = {
+                    ...next,
+                    units: next.units.map((unit) => (unit.id === event.unitId ? withForm(unit, event.form, event.hp) : unit)),
+                };
+                break;
+
+            // Um cadáver foi erguido: a invocação entra no lugar da unidade derrotada.
+            case 'summoned':
+                next = { ...next, units: next.units.map((unit) => (unit.id === event.unitId ? event.unit : unit)) };
+                break;
+
+            // Ação extra: a unidade continua na vez, nada muda no estado. Purificação:
+            // os status que saíram chegam na lista de statuses_changed, logo depois.
+            case 'extra_action':
+            case 'cleansed':
             case 'unit_defeated':
             case 'status_applied':
             case 'status_expired':

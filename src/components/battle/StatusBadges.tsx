@@ -11,6 +11,39 @@ const ICONS: Partial<Record<StatusKind, ReactNode>> = {
     burn: <path d='M12 2 C14 7 19 9.5 19 15 C19 19.5 15.5 22 12 22 C8.5 22 5 19.5 5 15 C5 11.5 7.5 10.5 8.5 7.5 C9.8 9.5 10.8 9.2 12 2 Z' fill='#ff6b3d' />,
     poison: <path d='M12 2.5 C15.5 8 19 11.5 19 15.5 C19 19.5 15.8 22 12 22 C8.2 22 5 19.5 5 15.5 C5 11.5 8.5 8 12 2.5 Z' fill='#a565e8' />,
     shield: <path d='M12 2 L20 5 L20 12 C20 17 16.5 20.5 12 22 C7.5 20.5 4 17 4 12 L4 5 Z' fill='#5aa2ff' />,
+    // Sangramento: três cortes de garra.
+    bleed: (
+        <>
+            <path d='M6 3 L9.5 3 L6.5 21 L3 21 Z' fill='#c2352b' />
+            <path d='M12 3 L15.5 3 L12.5 21 L9 21 Z' fill='#c2352b' />
+            <path d='M18 3 L21.5 3 L18.5 21 L15 21 Z' fill='#c2352b' />
+        </>
+    ),
+    // Cura reduzida: uma cruz de cura riscada.
+    heal_down: (
+        <>
+            <path d='M9 3 L15 3 L15 9 L21 9 L21 15 L15 15 L15 21 L9 21 L9 15 L3 15 L3 9 L9 9 Z' fill='#7fb069' />
+            <path d='M4 20 L20 4' fill='none' stroke='#c2352b' strokeWidth={3.4} strokeLinecap='round' />
+        </>
+    ),
+    // Transformado: uma pegada.
+    form: (
+        <>
+            <path d='M12 11 C16 11 19.5 14.5 19.5 18 C19.5 21 16.5 21.5 12 21.5 C7.5 21.5 4.5 21 4.5 18 C4.5 14.5 8 11 12 11 Z' fill='#8a6a3a' />
+            <circle cx='5' cy='9.5' r='2.4' fill='#8a6a3a' />
+            <circle cx='9.5' cy='5' r='2.4' fill='#8a6a3a' />
+            <circle cx='14.5' cy='5' r='2.4' fill='#8a6a3a' />
+            <circle cx='19' cy='9.5' r='2.4' fill='#8a6a3a' />
+        </>
+    ),
+    // Provocação: um alvo, porque é nela que os inimigos têm de mirar.
+    taunt: (
+        <>
+            <circle cx='12' cy='12' r='9.5' fill='#e0503a' />
+            <circle cx='12' cy='12' r='5.2' fill='#fff4dc' stroke='none' />
+            <circle cx='12' cy='12' r='2.2' fill='#e0503a' stroke='none' />
+        </>
+    ),
     // Passiva fortalecida: um brilho de quatro pontas.
     passive_up: <path d='M12 1.5 L14.6 9.4 L22.5 12 L14.6 14.6 L12 22.5 L9.4 14.6 L1.5 12 L9.4 9.4 Z' fill='#ecd07a' />,
 };
@@ -25,7 +58,7 @@ const ARROWS: Partial<Record<StatusKind, { stat: 'atk' | 'def' | 'speed'; up: bo
 };
 
 /** Status que ajudam quem os carrega. Os outros atrapalham. */
-const HELPFUL: StatusKind[] = ['shield', 'atk_up', 'def_up', 'speed_up', 'passive_up'];
+const HELPFUL: StatusKind[] = ['shield', 'atk_up', 'def_up', 'speed_up', 'passive_up', 'taunt', 'form'];
 
 /**
  * Quanto um status de dano por turno vai causar na próxima vez. Num status
@@ -40,7 +73,7 @@ function StatusBadge({ status }: { status: StatusEffect }) {
     const { t } = useTranslation();
     const arrow = ARROWS[status.kind];
     const name = t(`battle.status.${status.kind}`);
-    const dealsDamage = status.kind === 'burn' || status.kind === 'poison';
+    const dealsDamage = status.kind === 'burn' || status.kind === 'poison' || status.kind === 'bleed';
     const help = t(`battle.statusHelp.${status.kind}`, {
         value: dealsDamage ? tickDamageOf(status) : status.value,
         percent: Math.round(status.value * 100),
@@ -87,7 +120,19 @@ export function StatusBadges({ statuses, charge = null }: StatusBadgesProps) {
 
     return (
         <span className='bt-statuses'>
-            {charge && (
+            {charge?.kind === 'corpses' && (
+                <span className='bt-status bt-status--good bt-status--charge' title={t('battle.corpsesHelp', { passive: charge.passive.name, count: charge.count })}>
+                    <svg viewBox='0 0 24 24' className='bt-status__icon' stroke={INK} strokeWidth={2.4} strokeLinejoin='round' aria-hidden='true'>
+                        {/* Caveira: os aliados caídos que ainda podem ser erguidos. */}
+                        <path d='M12 2.5 C6.5 2.5 3.5 6.5 3.5 11 C3.5 14 5 16 7 17 L7 21 L17 21 L17 17 C19 16 20.5 14 20.5 11 C20.5 6.5 17.5 2.5 12 2.5 Z' fill='#e9e2cf' />
+                        <circle cx='8.5' cy='11.5' r='2.2' fill={INK} stroke='none' />
+                        <circle cx='15.5' cy='11.5' r='2.2' fill={INK} stroke='none' />
+                    </svg>
+                    <span aria-hidden='true'>{charge.count}</span>
+                    <span className='bt-visually-hidden'>{t('battle.corpsesHelp', { passive: charge.passive.name, count: charge.count })}</span>
+                </span>
+            )}
+            {charge && charge.kind !== 'corpses' && (
                 <span className='bt-status bt-status--good bt-status--charge' title={t('battle.passiveCharge', { passive: charge.passive.name, percent: charge.percent })}>
                     <svg viewBox='0 0 24 24' className='bt-status__icon' stroke={INK} strokeWidth={2.4} strokeLinejoin='round' aria-hidden='true'>
                         {charge.kind === 'stacks' ? (

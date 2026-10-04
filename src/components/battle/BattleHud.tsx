@@ -79,7 +79,7 @@ export function TurnQueue({ order, activeUnitId, units, isOver, justChanged }: T
                         className={`bt-queue__item bt-queue__item--${unit.team} bt-queue__item--${status}`}
                         title={unit.name}
                     >
-                        <CharacterArt characterId={unit.characterId} kind='face' className='bt-queue__sprite' />
+                        <CharacterArt characterId={unit.characterId} form={unit.form} kind='face' className='bt-queue__sprite' />
                         <span className='bt-visually-hidden'>
                             {unit.name}: {t(`battle.queueStatus.${status}`)}
                         </span>
@@ -108,8 +108,10 @@ export function SkillBar({ actions, passives, charge, selectedSkillId, disabled,
 
     return (
         <div className='bt-skills'>
-            {actions.map(({ skill, preview, usable }) => {
+            {actions.map(({ skill, preview, usable, targetIds }) => {
                 const isSelected = !disabled && skill.id === selectedSkillId;
+                // Por que não dá para usar agora: sem alvo (nenhum cadáver para erguer) ou sem energia.
+                const blocked = targetIds.length === 0 ? t('battle.noCorpse') : t('battle.notEnoughEnergy');
 
                 return (
                     <button
@@ -126,7 +128,7 @@ export function SkillBar({ actions, passives, charge, selectedSkillId, disabled,
                                 {skill.energyCost === 0 ? t('battle.free') : t('battle.cost', { count: skill.energyCost })}
                             </span>
                         </span>
-                        <span className='bt-skill__text'>{!usable && !disabled ? t('battle.notEnoughEnergy') : skill.description}</span>
+                        <span className='bt-skill__text'>{!usable && !disabled ? blocked : skill.description}</span>
                         {/* Dano e cura base: sem a defesa do alvo, com o ataque atual de quem usa. */}
                         {(preview.damage !== null || preview.heal !== null) && (
                             <span className='bt-skill__numbers'>
@@ -159,7 +161,15 @@ export function SkillBar({ actions, passives, charge, selectedSkillId, disabled,
                     {charge?.passive.id === passive.id && (
                         <span className='bt-skill__numbers'>
                             <span className='bt-skill__number bt-skill__number--damage'>
-                                {t('battle.passiveNow')} <b>+{charge.percent}%</b>
+                                {charge.kind === 'corpses' ? (
+                                    <>
+                                        {t('battle.corpsesNow')} <b>{charge.count}</b>
+                                    </>
+                                ) : (
+                                    <>
+                                        {t('battle.passiveNow')} <b>+{charge.percent}%</b>
+                                    </>
+                                )}
                             </span>
                         </span>
                     )}

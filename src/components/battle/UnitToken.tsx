@@ -14,6 +14,8 @@ interface UnitTokenProps {
     acting: SkillFx | null;
     isHit: boolean;
     isHealed: boolean;
+    /** Acabou de mudar de forma: a figura nova surge num clarão. */
+    isMorphing: boolean;
     /** Acabou de ser derrotada: anima a queda. */
     isFalling: boolean;
     isTargetable: boolean;
@@ -29,7 +31,7 @@ function hpColor(ratio: number): string {
 }
 
 /** Uma unidade no campo: desenho, nome, barra de vida e os números que sobem. */
-export function UnitToken({ unit, isActive, acting, isHit, isHealed, isFalling, isTargetable, impact, floaters, onSelect }: UnitTokenProps) {
+export function UnitToken({ unit, isActive, acting, isHit, isHealed, isMorphing, isFalling, isTargetable, impact, floaters, onSelect }: UnitTokenProps) {
     const { t } = useTranslation();
     const ratio = unit.hp / unit.stats.maxHp;
     const isDown = unit.hp <= 0;
@@ -44,6 +46,7 @@ export function UnitToken({ unit, isActive, acting, isHit, isHealed, isFalling, 
         acting && (acting.delivery === 'melee' ? 'bt-unit--acting' : `bt-unit--casting bt-el--${acting.element}`),
         isHit && 'bt-unit--hit',
         isHealed && 'bt-unit--healed',
+        isMorphing && 'bt-unit--morphing',
         isTargetable && 'bt-unit--target',
         isDown && 'bt-unit--down',
         isFalling && 'bt-unit--falling',
@@ -64,13 +67,19 @@ export function UnitToken({ unit, isActive, acting, isHit, isHealed, isFalling, 
                 unit.name,
                 t('battle.hp', { hp: unit.hp, max: unit.stats.maxHp }),
                 ...statuses.map((status) => t(`battle.status.${status.kind}`)),
-                ...(charge ? [t('battle.passiveCharge', { passive: charge.passive.name, percent: charge.percent })] : []),
+                ...(charge
+                    ? [
+                          charge.kind === 'corpses'
+                              ? t('battle.corpsesHelp', { passive: charge.passive.name, count: charge.count })
+                              : t('battle.passiveCharge', { passive: charge.passive.name, percent: charge.percent }),
+                      ]
+                    : []),
             ].join('. ')}
         >
             {/* A figura é maior que a área clicável e passa por cima das vizinhas. */}
             <span className='bt-unit__stage'>
                 <span className='bt-unit__shadow' aria-hidden='true' />
-                <CharacterArt characterId={unit.characterId} kind='figure' className='bt-unit__sprite' />
+                <CharacterArt characterId={unit.characterId} form={unit.form} kind='figure' className='bt-unit__sprite' />
 
                 {impact && <ImpactFx key={impact.id} impact={impact} />}
 
@@ -87,7 +96,8 @@ export function UnitToken({ unit, isActive, acting, isHit, isHealed, isFalling, 
             </span>
 
             <span className='bt-unit__plate'>
-                <span className='bt-unit__name'>{unit.name}</span>
+                {/* Nome comprido (Guerreiro Esqueleto) quebra em duas linhas menores em vez de ser cortado. */}
+                <span className={unit.name.length > 12 ? 'bt-unit__name bt-unit__name--long' : 'bt-unit__name'}>{unit.name}</span>
                 <span className='bt-hp'>
                     <span className='bt-hp__fill' style={{ width: `${Math.max(0, ratio) * 100}%`, background: hpColor(ratio) }} />
                 </span>
