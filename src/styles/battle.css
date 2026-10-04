@@ -38,6 +38,14 @@
      * fração da altura da figura. Em tela estreita o degrau é menor.
      */
     --bt-rise: 0.125;
+    /*
+     * Fila: quanto cada um é menor que quem está na frente dele, como fração
+     * da altura da figura. Sai do degrau, para a perspectiva fechar: quem sobe
+     * na tela está mais longe e encolhe na mesma proporção, como se o
+     * horizonte ficasse a 1,4 figura de altura do chão da frente. Com o degrau
+     * de 0,125, são 9% por posição: o quinto tem 64% da altura do primeiro.
+     */
+    --bt-shrink: calc(var(--bt-rise) / 1.4);
     /* Largura que cada unidade ocupa na fileira (a figura é mais larga e se sobrepõe). */
     --bt-slot: calc(var(--bt-unit) * 0.5);
 
@@ -267,8 +275,8 @@
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    /* Espaço para quem está no fim da fila (o quinto), que fica mais alto que o primeiro. */
-    padding-top: calc(var(--bt-unit) * (var(--bt-rise) * 4 - 0.16) + 14px);
+    /* Espaço para quem está no fim da fila (o quinto), que sobe quatro degraus e é menor que o primeiro. */
+    padding-top: calc(var(--bt-unit) * (var(--bt-rise) - var(--bt-shrink)) * 4 + 14px);
 }
 
 /*
@@ -302,10 +310,12 @@
 }
 
 /*
- * Formação em fila. O primeiro do time fica na frente; cada um dos seguintes
- * fica um passo atrás do anterior: um pouco mais alto na tela, um pouco menor
- * e por baixo de quem está na frente dele. Vistos juntos, os dois times são
- * duas filas viradas uma para a outra, que se afastam de quem olha.
+ * Formação em fila, com profundidade. O primeiro do time fica na frente, na
+ * borda do campo: é o mais perto de quem olha, então é o maior e o que fica
+ * mais embaixo. Cada um dos seguintes fica um passo atrás do anterior: mais
+ * para o centro, mais alto na tela, menor (--bt-shrink) e por baixo de quem
+ * está na frente dele. Vistos juntos, os dois times são duas filas viradas
+ * uma para a outra, que se afastam de quem olha.
  *
  * --bt-rank é a posição na fila (0 = o da frente). As placas de nome ficam
  * todas na mesma linha, embaixo, cada uma sob a sua figura.
@@ -355,13 +365,14 @@
 
 /*
  * Palco: reserva a altura da figura. A figura em si transborda para os lados.
- * A cada posição para trás na fila ele sobe um degrau (--bt-rise) e fica 4% menor.
+ * A cada posição para trás na fila ele sobe um degrau (--bt-rise) e encolhe
+ * uma fração da altura (--bt-shrink): quem está mais atrás parece menor.
  */
 .bt-unit__stage {
     position: relative;
     bottom: calc(var(--bt-rank) * var(--bt-unit) * var(--bt-rise));
     width: 100%;
-    height: calc(var(--bt-unit) * (1 - var(--bt-rank) * 0.04));
+    height: calc(var(--bt-unit) * (1 - var(--bt-rank) * var(--bt-shrink)));
 }
 
 .bt-unit__sprite {
