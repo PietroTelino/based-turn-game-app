@@ -4,6 +4,7 @@ import type { TFunction } from 'i18next';
 import { getBattle, getBattleEvents, sendBattleAction, surrenderBattle } from '@/api/battles';
 import { sfx } from '@/audio/sfx';
 import { impactsOf, passiveFxOf, skillFxOf } from '@/battle/fx';
+import { chargeOf } from '@/battle/passives';
 import type { Impact, SkillFx } from '@/battle/fx';
 import { applyEvents, openingState, toBeats, toPercent } from '@/battle/playback';
 import { cuesOf } from '@/battle/sounds';
@@ -167,6 +168,15 @@ function describe(
         case 'passive_triggered': {
             const unit = units.get(event.unitId);
             const passive = unit?.passives?.find((p) => p.id === event.passiveId);
+            const charge = chargeOf(unit, event.stacks ?? 0);
+
+            // Passiva que acumula: a linha diz quanto ela vale agora.
+            if (charge) {
+                return {
+                    text: t('battle.log.passiveCharge', { unit: unit?.name, passive: charge.passive.name, percent: charge.percent }),
+                    team: unit?.team ?? null,
+                };
+            }
 
             return { text: t('battle.log.passive', { unit: unit?.name, passive: passive?.name }), team: unit?.team ?? null };
         }
@@ -249,8 +259,17 @@ function effectsOf(
         if (event.type === 'passive_triggered') {
             const unit = units.get(event.unitId);
             const name = unit?.passives?.find((p) => p.id === event.passiveId)?.name;
+            const charge = chargeOf(unit, event.stacks ?? 0);
 
-            if (name && skillFx?.passive) {
+            if (charge) {
+                // Passiva que acumula: sobe o nome dela com o quanto vale agora.
+                effects.floaters.push({
+                    id: nextId(),
+                    unitId: event.unitId,
+                    text: t('battle.passiveCharge', { passive: charge.passive.name, percent: charge.percent }),
+                    kind: 'passive',
+                });
+            } else if (name && skillFx?.passive) {
                 // Passiva de começo de vez, que age sozinha: é anunciada na faixa, como uma habilidade.
                 effects.banner = t('battle.passiveBanner', { unit: unit?.name, passive: name });
             } else if (name) {

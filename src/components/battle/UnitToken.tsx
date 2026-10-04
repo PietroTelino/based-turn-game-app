@@ -3,6 +3,7 @@ import { CharacterArt } from './CharacterArt';
 import { ImpactFx } from './ImpactFx';
 import { StatusBadges } from './StatusBadges';
 import type { Impact, SkillFx } from '@/battle/fx';
+import { bonusOf } from '@/battle/passives';
 import type { Floater } from '@/hooks/useBattle';
 import type { BattleUnit } from '@/types/battle';
 
@@ -34,6 +35,7 @@ export function UnitToken({ unit, isActive, acting, isHit, isHealed, isFalling, 
     const isDown = unit.hp <= 0;
     const statuses = unit.statuses ?? [];
     const shield = statuses.find((status) => status.kind === 'shield');
+    const charge = isDown ? null : bonusOf(unit);
 
     const classes = [
         'bt-unit',
@@ -62,6 +64,7 @@ export function UnitToken({ unit, isActive, acting, isHit, isHealed, isFalling, 
                 unit.name,
                 t('battle.hp', { hp: unit.hp, max: unit.stats.maxHp }),
                 ...statuses.map((status) => t(`battle.status.${status.kind}`)),
+                ...(charge ? [t('battle.passiveCharge', { passive: charge.passive.name, percent: charge.percent })] : []),
             ].join('. ')}
         >
             {/* A figura é maior que a área clicável e passa por cima das vizinhas. */}
@@ -92,7 +95,7 @@ export function UnitToken({ unit, isActive, acting, isHit, isHealed, isFalling, 
                     {unit.hp}/{unit.stats.maxHp}
                     {shield && <span className='bt-hp__shield'> +{shield.value}</span>}
                 </span>
-                <StatusBadges statuses={statuses} />
+                <StatusBadges statuses={statuses} charge={charge} />
             </span>
         </button>
     );

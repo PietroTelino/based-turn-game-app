@@ -499,6 +499,11 @@
     animation: bt-pop 0.25s ease-out;
 }
 
+/* Passiva cujo bônus varia (cargas do Vampiro, vida perdida do Bárbaro): um selo sem prazo, com o bônus atual. */
+.bt-status--charge {
+    padding-right: 5px;
+}
+
 .bt-status--good {
     background: #cfe8c2;
 }
@@ -1605,31 +1610,53 @@
     }
 }
 
-/* Duas cartas por linha (celular): o verso fica mais compacto. */
+/*
+ * Duas cartas por linha (celular): o verso leva três habilidades e a passiva
+ * numa carta estreita. A arte fica mais alta, o que dá altura à carta, e o
+ * texto do verso fica mais compacto, para tudo caber sem rolar.
+ */
 @container (max-width: 559px) {
+    .bt-card__art {
+        aspect-ratio: 4 / 5;
+    }
+
     .bt-card__name {
         font-size: 21px;
+    }
+
+    .bt-card__back-title {
+        padding-block: 5px;
     }
 
     .bt-card__back-name {
         font-size: 16px;
     }
 
+    /* O nome já está no título; a palavra "Habilidades" cede o lugar. */
+    .bt-card__back-label {
+        display: none;
+    }
+
     .bt-card__skills {
-        padding: 0 10px 6px;
+        padding: 0 9px 4px;
     }
 
     .bt-card__skill {
-        padding: 6px 0;
+        gap: 1px;
+        padding: 4px 0;
     }
 
     .bt-card__skill-name {
-        font-size: 15px;
+        font-size: 14px;
+    }
+
+    .bt-card__cost {
+        font-size: 11px;
     }
 
     .bt-card__skill-text {
-        font-size: 12px;
-        line-height: 1.25;
+        font-size: 11.5px;
+        line-height: 1.2;
     }
 }
 

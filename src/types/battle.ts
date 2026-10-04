@@ -27,7 +27,9 @@ export type StatusKind =
     | 'def_up'
     | 'def_down'
     | 'speed_up'
-    | 'speed_down';
+    | 'speed_down'
+    /** A passiva de começo de vez da unidade cura e causa dano mais forte (0.8 = 80% a mais). */
+    | 'passive_up';
 
 export interface StatusEffect {
     kind: StatusKind;
@@ -36,11 +38,19 @@ export interface StatusEffect {
     /** Dano por turno, pontos de escudo ou fração do atributo, conforme o tipo. */
     value: number;
     sourceId: string;
+    /**
+     * Só no dano por turno que cresce (o veneno do Guardião): a fração do valor
+     * original que o dano sobe a cada turno, e quantas vezes ele já causou
+     * dano. O dano da próxima vez é `value x (1 + growth x ticks)`.
+     */
+    growth?: number;
+    ticks?: number;
     appliedOnStep: number;
 }
 
 export type SkillEffect =
-    | { type: 'damage'; power: number; drain?: number }
+    /** `perTargetMissingHp`: essa porcentagem a mais de dano para cada 1% de vida que o alvo já perdeu. */
+    | { type: 'damage'; power: number; drain?: number; perTargetMissingHp?: number }
     | { type: 'heal'; power: number }
     | { type: 'status'; status: StatusKind; turns: number; power: number; chance?: number; to?: 'target' | 'self' };
 
@@ -77,7 +87,15 @@ export type PassiveEffect =
     | { type: 'atk_from_def'; amount: number }
     | { type: 'lifesteal'; amount: number }
     | { type: 'energy_on_crit'; amount: number }
+    /** Todo golpe também aplica este status no alvo. */
+    | { type: 'status_on_hit'; status: StatusKind; turns: number; power: number; chance?: number }
+    /** Acumula cargas: cada cura por roubo de vida soma `amount` ao dano dos golpes (0.05 = +5%). */
+    | { type: 'damage_per_drain'; amount: number; max?: number }
+    /** Para cada 1% de vida perdida, `amount`% a mais de dano. */
+    | { type: 'damage_per_missing_hp'; amount: number }
     | { type: 'status_power'; statuses: StatusKind[]; amount: number }
+    /** O dano por turno desses status cresce `amount` do valor original a cada turno que o alvo segue com eles. */
+    | { type: 'status_growth'; statuses: StatusKind[]; amount: number }
     | { type: 'turn_start'; target: 'all-allies' | 'fastest-enemy'; effects: SkillEffect[] };
 
 /** Habilidade que ninguém usa: vale sozinha para o personagem que a tem. */
@@ -86,6 +104,8 @@ export interface Passive {
     name: string;
     description: string;
     effect: PassiveEffect;
+    /** Outros efeitos da mesma passiva, quando ela faz mais de uma coisa. */
+    also?: PassiveEffect[];
     element?: SkillElement;
     ranged?: boolean;
 }
@@ -113,6 +133,8 @@ export interface BattleUnit {
     skills: Skill[];
     /** Ausente em batalhas gravadas antes de as passivas existirem. */
     passives?: Passive[];
+    /** Cargas acumuladas pela passiva da unidade, nas passivas que acumulam. */
+    passiveStacks?: number;
 }
 
 export interface BattleState {
@@ -164,7 +186,7 @@ export type BattleEvent =
      * A passiva de uma unidade fez diferença agora. Numa passiva de começo de
      * vez, `targetIds` é quem ela atingiu; numa passiva de golpe, o alvo do golpe.
      */
-    | { type: 'passive_triggered'; unitId: string; passiveId: string; targetIds: string[] }
+    | { type: 'passive_triggered'; unitId: string; passiveId: string; targetIds: string[]; /** Passiva que acumula: quantas cargas ela tem agora. */ stacks?: number }
     /** O time recuperou energia no meio do turno, por causa de `unitId`. `energy` é quanto ele tem agora. */
     | { type: 'energy_gained'; team: TeamId; unitId: string; amount: number; energy: number }
     | { type: 'surrendered'; team: TeamId }

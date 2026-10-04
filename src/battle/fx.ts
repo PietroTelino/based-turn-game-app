@@ -83,7 +83,7 @@ export function passiveFxOf(event: Extract<BattleEvent, { type: 'passive_trigger
 }
 
 const STATUS_ELEMENT: Partial<Record<StatusKind, SkillElement>> = { burn: 'fire', poison: 'nature' };
-const GOOD_STATUS: StatusKind[] = ['atk_up', 'def_up', 'speed_up'];
+const GOOD_STATUS: StatusKind[] = ['atk_up', 'def_up', 'speed_up', 'passive_up'];
 
 /** Quando várias coisas atingem a mesma unidade no mesmo instante, a mais forte aparece. */
 const PRIORITY: ImpactKind[] = ['hit', 'tick', 'heal', 'shield', 'boon', 'bane'];

@@ -379,9 +379,11 @@
             "def_up": "Defesa +",
             "def_down": "Defesa −",
             "speed_up": "Velocidade +",
-            "speed_down": "Velocidade −"
+            "speed_down": "Velocidade −",
+            "passive_up": "Passiva +"
         },
         "statusHelp": {
+            "growing": "Esse dano sobe {{amount}} a cada turno enquanto o efeito durar.",
             "stun": "Perde a próxima vez.",
             "burn": "Leva {{value}} de dano no começo de cada turno.",
             "poison": "Leva {{value}} de dano no começo de cada turno.",
@@ -391,7 +393,8 @@
             "def_up": "Defesa {{percent}}% maior.",
             "def_down": "Defesa {{percent}}% menor.",
             "speed_up": "Velocidade {{percent}}% maior.",
-            "speed_down": "Velocidade {{percent}}% menor."
+            "speed_down": "Velocidade {{percent}}% menor.",
+            "passive_up": "A passiva de começo de vez cura e causa {{percent}}% a mais."
         },
         "statShort": {
             "atk": "Atq",
@@ -418,14 +421,17 @@
             "lost": "Você perdeu a batalha.",
             "passive": "Passiva de {{unit}}: {{passive}}",
             "energyGained": "Seu time recuperou {{count}} de energia",
-            "enemyEnergyGained": "O inimigo recuperou {{count}} de energia"
+            "enemyEnergyGained": "O inimigo recuperou {{count}} de energia",
+            "passiveCharge": "Passiva de {{unit}}: {{passive}} (+{{percent}}% de dano)"
         },
         "waitingOpponent": "Esperando a jogada do adversário...",
         "waitingOpponentLong": "É a vez do outro jogador. Assim que ele jogar, a jogada aparece aqui.",
         "enemySurrenderedText": "O adversário desistiu no turno {{turn}}.",
         "passive": "Passiva",
         "passiveBanner": "{{unit}}: {{passive}}",
-        "energyFloater": "+{{count}} de energia"
+        "energyFloater": "+{{count}} de energia",
+        "passiveCharge": "{{passive}}: +{{percent}}% de dano",
+        "passiveNow": "Dano agora"
     },
     "multiplayer": {
         "title": "Multiplayer",

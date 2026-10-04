@@ -379,9 +379,11 @@
             "def_up": "Defense +",
             "def_down": "Defense −",
             "speed_up": "Speed +",
-            "speed_down": "Speed −"
+            "speed_down": "Speed −",
+            "passive_up": "Passive +"
         },
         "statusHelp": {
+            "growing": "The damage rises by {{amount}} each turn while the effect lasts.",
             "stun": "Loses the next turn.",
             "burn": "Takes {{value}} damage at the start of each turn.",
             "poison": "Takes {{value}} damage at the start of each turn.",
@@ -391,7 +393,8 @@
             "def_up": "Defense {{percent}}% higher.",
             "def_down": "Defense {{percent}}% lower.",
             "speed_up": "Speed {{percent}}% higher.",
-            "speed_down": "Speed {{percent}}% lower."
+            "speed_down": "Speed {{percent}}% lower.",
+            "passive_up": "The start-of-turn passive heals and deals {{percent}}% more."
         },
         "statShort": {
             "atk": "Atk",
@@ -418,14 +421,17 @@
             "lost": "You lost the battle.",
             "passive": "{{unit}}'s passive: {{passive}}",
             "energyGained": "Your team recovered {{count}} energy",
-            "enemyEnergyGained": "The enemy recovered {{count}} energy"
+            "enemyEnergyGained": "The enemy recovered {{count}} energy",
+            "passiveCharge": "{{unit}}'s passive: {{passive}} (+{{percent}}% damage)"
         },
         "waitingOpponent": "Waiting for the opponent's move...",
         "waitingOpponentLong": "It's the other player's turn. As soon as they play, the move shows up here.",
         "enemySurrenderedText": "The opponent surrendered on turn {{turn}}.",
         "passive": "Passive",
         "passiveBanner": "{{unit}}: {{passive}}",
-        "energyFloater": "+{{count}} energy"
+        "energyFloater": "+{{count}} energy",
+        "passiveCharge": "{{passive}}: +{{percent}}% damage",
+        "passiveNow": "Damage now"
     },
     "multiplayer": {
         "title": "Multiplayer",

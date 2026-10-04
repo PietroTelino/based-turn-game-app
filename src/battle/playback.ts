@@ -162,11 +162,22 @@ export function applyEvents(state: BattleState, events: BattleEvent[]): BattleSt
                 next = { ...next, winner: event.winner, activeUnitId: null };
                 break;
 
+            // Passiva que acumula cargas: o aviso traz o total novo.
+            case 'passive_triggered':
+                if (event.stacks !== undefined) {
+                    const stacks = event.stacks;
+
+                    next = {
+                        ...next,
+                        units: next.units.map((unit) => (unit.id === event.unitId ? { ...unit, passiveStacks: stacks } : unit)),
+                    };
+                }
+                break;
+
             case 'unit_defeated':
             case 'status_applied':
             case 'status_expired':
             case 'unit_skipped':
-            case 'passive_triggered':
                 break;
         }
     }
@@ -188,7 +199,7 @@ export function openingState(view: BattleView, events: BattleEvent[]): BattleSta
         ...view.state,
         energy: { A: energy, B: energy },
         turnEnergy: energy,
-        units: view.state.units.map((unit) => ({ ...unit, hp: unit.stats.maxHp, statuses: [] })),
+        units: view.state.units.map((unit) => ({ ...unit, hp: unit.stats.maxHp, statuses: [], passiveStacks: 0 })),
         activeUnitId: null,
         turn: 1,
         fury: 0,
