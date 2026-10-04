@@ -385,6 +385,8 @@
             "taunt": "Provocação",
             "bleed": "Sangramento",
             "heal_down": "Cura reduzida",
+            "stealth": "Escondido",
+            "counter": "Contra-ataque",
             "form": "Transformado"
         },
         "statusHelp": {
@@ -403,6 +405,8 @@
             "taunt": "Os golpes de alvo único dos inimigos só podem mirar aqui.",
             "bleed": "Leva {{value}} de dano no começo de cada turno.",
             "heal_down": "Recebe {{percent}}% a menos de cura.",
+            "stealth": "Não pode ser escolhido como alvo. Golpes em área ainda acertam. Acaba quando agir ou levar dano.",
+            "counter": "Revida com o ataque básico todo golpe que levar de um inimigo (se algum inimigo provoca, o revide vai nele). Dano de veneno, queimadura e sangramento não conta.",
             "form": "Está em outra forma. Quando acabar, volta à forma original."
         },
         "statShort": {
@@ -416,6 +420,7 @@
             "orderChanged": "A ordem de ação mudou",
             "berserkTurn": "Turno {{turn}} · Berserk +{{percent}}%",
             "skill": "{{unit}} usou {{skill}}",
+            "counter": "{{unit}} contra-atacou {{target}}",
             "damage": "{{target}} levou {{amount}} de dano",
             "critical": "{{target}} levou {{amount}} de dano crítico",
             "heal": "{{target}} recuperou {{amount}} de vida",
@@ -446,6 +451,7 @@
         "enemySurrenderedText": "O adversário desistiu no turno {{turn}}.",
         "passive": "Passiva",
         "passiveBanner": "{{unit}}: {{passive}}",
+        "counterBanner": "{{unit}} contra-ataca!",
         "energyFloater": "+{{count}} de energia",
         "corpses_one": "{{count}} cadáver",
         "corpses_other": "{{count}} cadáveres",

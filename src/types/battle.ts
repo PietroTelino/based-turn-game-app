@@ -37,6 +37,10 @@ export type StatusKind =
     | 'bleed'
     /** A unidade recebe menos cura, de qualquer origem (0.6 = 60% a menos). */
     | 'heal_down'
+    /** Escondida: os inimigos não podem escolhê-la como alvo até ela agir ou levar dano. */
+    | 'stealth'
+    /** Contra-ataque: todo golpe que a unidade leva de um inimigo é revidado com o ataque básico dela. */
+    | 'counter'
     /** A unidade está transformada; quando acaba, ela volta à forma original. */
     | 'form';
 
@@ -93,7 +97,8 @@ export type PassiveCondition =
 
 /**
  * O que a passiva faz. Quem aplica é a API; a tela só precisa saber se é uma
- * passiva de começo de vez (`turn_start`), para animar o golpe ou a cura dela.
+ * passiva que age sozinha (`turn_start`, no começo da vez, ou `battle_start`,
+ * no começo da batalha), para animar o golpe ou a cura dela.
  */
 export type PassiveEffect =
     | { type: 'damage_bonus'; amount: number; when?: PassiveCondition }
@@ -108,6 +113,8 @@ export type PassiveEffect =
     | { type: 'damage_per_drain'; amount: number; max?: number }
     /** Para cada 1% de vida perdida, `amount`% a mais de dano. */
     | { type: 'damage_per_missing_hp'; amount: number }
+    /** `amount` a mais de dano para cada inimigo vivo com algum dos `statuses` (0.1 = +10% por inimigo). */
+    | { type: 'damage_per_enemy_status'; statuses: StatusKind[]; amount: number }
     | { type: 'status_power'; statuses: StatusKind[]; amount: number }
     /** O dano por turno desses status cresce `amount` do valor original a cada turno que o alvo segue com eles. */
     | { type: 'status_growth'; statuses: StatusKind[]; amount: number }
@@ -115,6 +122,10 @@ export type PassiveEffect =
     | { type: 'extra_action_on_transform' }
     /** Conta os cadáveres do time; o número vem em `passiveStacks`. */
     | { type: 'count_corpses' }
+    /** Todo turno a unidade começa escondida (status `stealth`). */
+    | { type: 'stealth_each_turn' }
+    /** No começo da batalha (só no turno 1), aplica os efeitos em todos os inimigos. */
+    | { type: 'battle_start'; target: 'all-enemies'; effects: SkillEffect[] }
     | { type: 'turn_start'; target: 'all-allies' | 'fastest-enemy'; effects: SkillEffect[] };
 
 /** Habilidade que ninguém usa: vale sozinha para o personagem que a tem. */
@@ -221,6 +232,8 @@ export type BattleEvent =
     /** Chegou a vez de uma unidade. */
     | { type: 'unit_activated'; unitId: string; team: TeamId }
     | { type: 'skill_used'; unitId: string; skillId: string; targetIds: string[]; team: TeamId; energy: number }
+    /** `unitId` (com o status `counter`) revida o golpe de `targetIds[0]` com o ataque básico `skillId`, fora da vez. */
+    | { type: 'counter_attack'; unitId: string; skillId: string; targetIds: string[] }
     | { type: 'damage'; sourceId: string; targetId: string; amount: number; absorbed: number; critical: boolean; hp: number }
     | { type: 'heal'; sourceId: string; targetId: string; amount: number; hp: number }
     | { type: 'status_applied'; sourceId: string; targetId: string; status: StatusKind; turns: number; value: number }

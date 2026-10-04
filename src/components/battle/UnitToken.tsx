@@ -9,6 +9,8 @@ import type { BattleUnit } from '@/types/battle';
 
 interface UnitTokenProps {
     unit: BattleUnit;
+    /** Todas as unidades da batalha: há passiva que conta o que acontece no outro time. */
+    units: BattleUnit[];
     isActive: boolean;
     /** A habilidade que esta unidade está usando agora, se for ela a da vez. */
     acting: SkillFx | null;
@@ -31,13 +33,13 @@ function hpColor(ratio: number): string {
 }
 
 /** Uma unidade no campo: desenho, nome, barra de vida e os números que sobem. */
-export function UnitToken({ unit, isActive, acting, isHit, isHealed, isMorphing, isFalling, isTargetable, impact, floaters, onSelect }: UnitTokenProps) {
+export function UnitToken({ unit, units, isActive, acting, isHit, isHealed, isMorphing, isFalling, isTargetable, impact, floaters, onSelect }: UnitTokenProps) {
     const { t } = useTranslation();
     const ratio = unit.hp / unit.stats.maxHp;
     const isDown = unit.hp <= 0;
     const statuses = unit.statuses ?? [];
     const shield = statuses.find((status) => status.kind === 'shield');
-    const charge = isDown ? null : bonusOf(unit);
+    const charge = isDown ? null : bonusOf(unit, units);
 
     const classes = [
         'bt-unit',
@@ -52,6 +54,8 @@ export function UnitToken({ unit, isActive, acting, isHit, isHealed, isMorphing,
         isFalling && 'bt-unit--falling',
         shield && 'bt-unit--shielded',
         statuses.some((status) => status.kind === 'stun') && 'bt-unit--stunned',
+        // Escondida: a figura fica quase transparente até ela agir ou levar dano.
+        statuses.some((status) => status.kind === 'stealth') && 'bt-unit--hidden',
     ]
         .filter(Boolean)
         .join(' ');

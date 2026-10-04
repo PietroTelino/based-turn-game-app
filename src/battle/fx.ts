@@ -41,7 +41,8 @@ export function deliveryOf(skill: Skill | undefined): Delivery {
     return 'cast';
 }
 
-export function skillFxOf(event: Extract<BattleEvent, { type: 'skill_used' }>, units: Map<string, BattleUnit>, id: number): SkillFx {
+/** Vale para a habilidade usada na vez e para o contra-ataque, que é um ataque básico fora da vez. */
+export function skillFxOf(event: Extract<BattleEvent, { type: 'skill_used' | 'counter_attack' }>, units: Map<string, BattleUnit>, id: number): SkillFx {
     const skill = findSkill(units.get(event.unitId), event.skillId);
 
     const delivery = deliveryOf(skill);
@@ -58,24 +59,27 @@ export function skillFxOf(event: Extract<BattleEvent, { type: 'skill_used' }>, u
 }
 
 /**
- * Uma passiva de começo de vez é animada como uma habilidade: a cura em área
- * como um feitiço, o golpe num inimigo como projétil ou investida. As outras
- * passivas mudam um golpe que já está sendo animado: para elas não há nada
- * novo a desenhar, e a função devolve null.
+ * Uma passiva que age sozinha é animada como uma habilidade. A de começo de
+ * vez: a cura em área como um feitiço, o golpe num inimigo como projétil ou
+ * investida. A de começo de batalha (a nuvem de esporos do Guardião): como um
+ * golpe em área no time inimigo. As outras passivas mudam um golpe que já
+ * está sendo animado: para elas não há nada novo a desenhar, e a função
+ * devolve null.
  */
 export function passiveFxOf(event: Extract<BattleEvent, { type: 'passive_triggered' }>, units: Map<string, BattleUnit>, id: number): SkillFx | null {
     const passive = findPassive(units.get(event.unitId), event.passiveId);
 
-    if (!passive || passive.effect.type !== 'turn_start' || event.targetIds.length === 0) {
+    if (!passive || (passive.effect.type !== 'turn_start' && passive.effect.type !== 'battle_start') || event.targetIds.length === 0) {
         return null;
     }
 
-    const onAllies = passive.effect.target === 'all-allies';
+    const delivery: Delivery =
+        passive.effect.target === 'all-enemies' ? 'area' : passive.effect.target === 'all-allies' ? 'cast' : passive.ranged ? 'projectile' : 'melee';
 
     return {
         id,
         element: passive.element ?? 'physical',
-        delivery: onAllies ? 'cast' : passive.ranged ? 'projectile' : 'melee',
+        delivery,
         rain: false,
         sourceId: event.unitId,
         targetIds: event.targetIds,
@@ -84,7 +88,7 @@ export function passiveFxOf(event: Extract<BattleEvent, { type: 'passive_trigger
 }
 
 const STATUS_ELEMENT: Partial<Record<StatusKind, SkillElement>> = { burn: 'fire', poison: 'nature', bleed: 'physical' };
-const GOOD_STATUS: StatusKind[] = ['atk_up', 'def_up', 'speed_up', 'passive_up', 'taunt'];
+const GOOD_STATUS: StatusKind[] = ['atk_up', 'def_up', 'speed_up', 'passive_up', 'taunt', 'counter'];
 
 /** Quando várias coisas atingem a mesma unidade no mesmo instante, a mais forte aparece. */
 const PRIORITY: ImpactKind[] = ['hit', 'tick', 'heal', 'shield', 'boon', 'bane'];

@@ -9,12 +9,13 @@ import type { BattleUnit, Passive } from '@/types/battle';
 export interface PassiveCharge {
     passive: Passive;
     /**
-     * O que o número é: cargas acumuladas (Vampiro) e vida perdida (Bárbaro)
-     * somam dano; cadáveres (Necromante) são quantos aliados caídos ele ainda
-     * pode erguer.
+     * O que o número é: cargas acumuladas (Vampiro), vida perdida (Bárbaro) e
+     * inimigos com um status (os que sangram, para o lobo do Druida) somam
+     * dano; cadáveres (Necromante) são quantos aliados caídos ele ainda pode
+     * erguer.
      */
-    kind: 'stacks' | 'wounded' | 'corpses';
-    /** 'stacks' e 'wounded': quanto a passiva soma ao dano dos golpes agora, em porcentagem (15 = +15%). */
+    kind: 'stacks' | 'wounded' | 'hunt' | 'corpses';
+    /** 'stacks', 'wounded' e 'hunt': quanto a passiva soma ao dano dos golpes agora, em porcentagem (15 = +15%). */
     percent: number;
     /** 'corpses': quantos cadáveres há. */
     count: number;
@@ -61,9 +62,38 @@ function woundedOf(unit: BattleUnit | undefined): PassiveCharge | null {
     return percent > 0 ? { passive, percent, count: 0, kind: 'wounded' } : null;
 }
 
-/** O número que a passiva da unidade está mostrando agora: bônus de dano ou cadáveres (só quando há algum). */
-export function bonusOf(unit: BattleUnit | undefined): PassiveCharge | null {
+/**
+ * O bônus da passiva "mais dano para cada inimigo com o status" (o lobo e os
+ * inimigos sangrando), pelos inimigos vivos de agora. Mesma conta da API. O
+ * efeito pode estar em `effect` ou em `also`.
+ */
+function huntOf(unit: BattleUnit | undefined, units: BattleUnit[]): PassiveCharge | null {
+    if (!unit) {
+        return null;
+    }
+
+    for (const passive of unit.passives ?? []) {
+        for (const effect of [passive.effect, ...(passive.also ?? [])]) {
+            if (effect.type !== 'damage_per_enemy_status') continue;
+
+            const count = units.filter(
+                (enemy) => enemy.team !== unit.team && enemy.hp > 0 && (enemy.statuses ?? []).some((status) => effect.statuses.includes(status.kind)),
+            ).length;
+
+            return count > 0 ? { passive, percent: toPercent(effect.amount * count), count, kind: 'hunt' } : null;
+        }
+    }
+
+    return null;
+}
+
+/**
+ * O número que a passiva da unidade está mostrando agora: bônus de dano ou
+ * cadáveres (só quando há algum). `units` são todas as unidades da batalha,
+ * para as passivas que olham o outro time.
+ */
+export function bonusOf(unit: BattleUnit | undefined, units: BattleUnit[] = []): PassiveCharge | null {
     const corpses = corpsesOf(unit);
 
-    return chargeOf(unit) ?? (corpses && corpses.count > 0 ? corpses : null) ?? woundedOf(unit);
+    return chargeOf(unit) ?? (corpses && corpses.count > 0 ? corpses : null) ?? woundedOf(unit) ?? huntOf(unit, units);
 }

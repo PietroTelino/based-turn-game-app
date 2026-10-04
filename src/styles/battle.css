@@ -654,6 +654,24 @@
     animation: bt-morph 0.7s ease-out;
 }
 
+/*
+ * Escondida (furtividade): a figura fica quase transparente e sem cor, para
+ * os dois lados verem que ela está ali mas não pode ser alvo. Volta ao normal
+ * quando ela age ou leva dano.
+ */
+.bt-unit__sprite {
+    transition: opacity 0.35s ease-out;
+}
+
+.bt-unit.bt-unit--hidden .bt-unit__sprite {
+    opacity: 0.38;
+    filter: saturate(0.25) brightness(0.75) drop-shadow(0 0 6px rgb(120 96 190 / 0.7));
+}
+
+.bt-unit--hidden .bt-unit__shadow {
+    opacity: 0.4;
+}
+
 /* Derrotada: a figura sai de campo; ficam a placa apagada e o lugar vazio. */
 .bt-unit.bt-unit--down .bt-unit__sprite {
     animation: none;

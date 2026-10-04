@@ -19,6 +19,14 @@ const ICONS: Partial<Record<StatusKind, ReactNode>> = {
             <path d='M18 3 L21.5 3 L18.5 21 L15 21 Z' fill='#c2352b' />
         </>
     ),
+    // Escondido: um olho riscado.
+    stealth: (
+        <>
+            <path d='M1.5 12 C5 6 9 4.5 12 4.5 C15 4.5 19 6 22.5 12 C19 18 15 19.5 12 19.5 C9 19.5 5 18 1.5 12 Z' fill='#cfc7e8' />
+            <circle cx='12' cy='12' r='3.4' fill={INK} stroke='none' />
+            <path d='M4 20.5 L20 3.5' fill='none' stroke={INK} strokeWidth={3} strokeLinecap='round' />
+        </>
+    ),
     // Cura reduzida: uma cruz de cura riscada.
     heal_down: (
         <>
@@ -44,6 +52,13 @@ const ICONS: Partial<Record<StatusKind, ReactNode>> = {
             <circle cx='12' cy='12' r='2.2' fill='#e0503a' stroke='none' />
         </>
     ),
+    // Contra-ataque: duas espadas cruzadas.
+    counter: (
+        <>
+            <path d='M4 3 L7.5 3 L20.5 16 L20.5 20.5 L16 20.5 L3 7.5 Z' fill='#d9dde6' />
+            <path d='M20 3 L16.5 3 L3.5 16 L3.5 20.5 L8 20.5 L21 7.5 Z' fill='#f1c75b' />
+        </>
+    ),
     // Passiva fortalecida: um brilho de quatro pontas.
     passive_up: <path d='M12 1.5 L14.6 9.4 L22.5 12 L14.6 14.6 L12 22.5 L9.4 14.6 L1.5 12 L9.4 9.4 Z' fill='#ecd07a' />,
 };
@@ -58,7 +73,7 @@ const ARROWS: Partial<Record<StatusKind, { stat: 'atk' | 'def' | 'speed'; up: bo
 };
 
 /** Status que ajudam quem os carrega. Os outros atrapalham. */
-const HELPFUL: StatusKind[] = ['shield', 'atk_up', 'def_up', 'speed_up', 'passive_up', 'taunt', 'form'];
+const HELPFUL: StatusKind[] = ['shield', 'atk_up', 'def_up', 'speed_up', 'passive_up', 'taunt', 'form', 'stealth', 'counter'];
 
 /**
  * Quanto um status de dano por turno vai causar na próxima vez. Num status
@@ -138,6 +153,13 @@ export function StatusBadges({ statuses, charge = null }: StatusBadgesProps) {
                         {charge.kind === 'stacks' ? (
                             // Gota de sangue: cargas acumuladas com roubo de vida.
                             <path d='M12 2.5 C15.5 8 19 11.5 19 15.5 C19 19.5 15.8 22 12 22 C8.2 22 5 19.5 5 15.5 C5 11.5 8.5 8 12 2.5 Z' fill='#c2352b' />
+                        ) : charge.kind === 'hunt' ? (
+                            // Garras: um tanto a mais para cada inimigo sangrando.
+                            <>
+                                <path d='M6 3 L9.5 3 L6.5 21 L3 21 Z' fill='#ffb020' />
+                                <path d='M12 3 L15.5 3 L12.5 21 L9 21 Z' fill='#ffb020' />
+                                <path d='M18 3 L21.5 3 L18.5 21 L15 21 Z' fill='#ffb020' />
+                            </>
                         ) : (
                             // Raio: quanto mais ferido, mais forte.
                             <path d='M13.5 1.5 L4.5 13.5 L11 13.5 L9.5 22.5 L19.5 9.5 L13 9.5 Z' fill='#ffb020' />

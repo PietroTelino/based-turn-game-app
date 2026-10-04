@@ -20,6 +20,8 @@ const BEAT_DURATION = {
     berserk_turn: 1300,
     unit_activated: 450,
     skill_used: 700,
+    /** Contra-ataque: um ataque básico fora da vez, com o mesmo tempo de uma habilidade. */
+    counter_attack: 700,
     /** Passiva de começo de vez: o mesmo tempo de uma habilidade, porque usa a mesma animação. */
     passive_triggered: 700,
     unit_skipped: 1000,
@@ -195,6 +197,7 @@ export function applyEvents(state: BattleState, events: BattleEvent[]): BattleSt
             // Ação extra: a unidade continua na vez, nada muda no estado. Purificação:
             // os status que saíram chegam na lista de statuses_changed, logo depois.
             case 'extra_action':
+            case 'counter_attack':
             case 'cleansed':
             case 'unit_defeated':
             case 'status_applied':

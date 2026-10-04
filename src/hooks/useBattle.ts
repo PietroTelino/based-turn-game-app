@@ -96,6 +96,12 @@ function describe(
             return { text: t('battle.log.skill', { unit: unit?.name, skill: skill?.name }), team: event.team };
         }
 
+        case 'counter_attack': {
+            const unit = units.get(event.unitId);
+
+            return { text: t('battle.log.counter', { unit: unit?.name, target: units.get(event.targetIds[0] ?? '')?.name }), team: unit?.team ?? null };
+        }
+
         case 'damage': {
             const key = event.absorbed > 0 ? 'battle.log.shielded' : event.critical ? 'battle.log.critical' : 'battle.log.damage';
 
@@ -282,6 +288,10 @@ function effectsOf(
             effects.banner = t('battle.banner', { unit: unit?.name, skill: skill?.name });
         }
 
+        if (event.type === 'counter_attack') {
+            effects.banner = t('battle.counterBanner', { unit: units.get(event.unitId)?.name });
+        }
+
         if (event.type === 'damage') {
             const lost = event.amount - event.absorbed;
 
@@ -466,7 +476,8 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
 
                 // A habilidade vale do anúncio até o impacto; qualquer outro
                 // acontecimento (a vez de outra unidade, vez perdida, fim) a encerra.
-                const used = beat.events.find((event) => event.type === 'skill_used');
+                // O contra-ataque é um golpe novo, de outra unidade: troca a animação como uma habilidade.
+                const used = beat.events.find((event) => event.type === 'skill_used' || event.type === 'counter_attack');
                 const triggered = beat.events.find((event) => event.type === 'passive_triggered');
 
                 if (used) {

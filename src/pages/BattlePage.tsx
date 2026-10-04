@@ -56,6 +56,7 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
                         <UnitToken
                             key={unit.id}
                             unit={unit}
+                            units={state.units}
                             isActive={state.activeUnitId === unit.id}
                             acting={effects.skill?.sourceId === unit.id ? effects.skill : null}
                             isHit={effects.hitUnitIds.includes(unit.id)}
@@ -243,7 +244,7 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
                         actions={actions}
                         passives={actingPassives}
                         // Quem conta cadáveres mostra a conta mesmo zerada.
-                        charge={corpsesOf(actingUnit) ?? bonusOf(actingUnit)}
+                        charge={corpsesOf(actingUnit) ?? bonusOf(actingUnit, state.units)}
                         selectedSkillId={selected?.skill.id ?? null}
                         disabled={!canAct}
                         berserk={berserk > 0}

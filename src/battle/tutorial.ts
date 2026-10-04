@@ -10,7 +10,9 @@ import type { AvailableAction, BattleState, TeamId } from '@/types/battle';
  * - o Bárbaro é mais rápido que todos os inimigos, então a primeira vez da
  *   batalha é do jogador, e a lição começa com ele no comando;
  * - o time do jogador tem tanque, cura, golpe em área e efeito de queimadura,
- *   para as dicas de cada coisa terem onde aparecer.
+ *   para as dicas de cada coisa terem onde aparecer;
+ * - o Guardião ficou de fora do time inimigo: o veneno dele, que já começa em
+ *   todo mundo e cresce a cada turno, derrubava quem só usa o ataque básico.
  *
  * A API tem um teste com estes mesmos times (ai.test.ts): quem só usa o
  * ataque básico vence a IA de treino. Se mudar os times aqui, mude lá.
@@ -18,7 +20,7 @@ import type { AvailableAction, BattleState, TeamId } from '@/types/battle';
  * A ordem é a de entrada em campo: o primeiro fica na frente.
  */
 export const TUTORIAL_TEAM = ['cavaleiro', 'barbaro', 'piromante', 'arqueiro', 'sacerdote'];
-export const TUTORIAL_ENEMY_TEAM = ['guardiao', 'vampiro', 'espadachim', 'criomante', 'driade'];
+export const TUTORIAL_ENEMY_TEAM = ['banshee', 'vampiro', 'espadachim', 'criomante', 'driade'];
 
 /** A parte da tela que a dica aponta: ela ganha um contorno enquanto a dica está aberta. */
 export type TutorialFocus = 'teams' | 'queue' | 'energy' | 'skills' | 'targets' | 'passive' | 'statuses' | 'berserk';

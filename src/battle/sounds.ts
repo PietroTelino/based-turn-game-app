@@ -18,7 +18,7 @@ const ELEMENT_SOUND: Record<SkillElement, SoundName> = {
     shadow: 'shadow',
 };
 
-const GOOD_STATUS: StatusKind[] = ['atk_up', 'def_up', 'speed_up', 'passive_up', 'taunt'];
+const GOOD_STATUS: StatusKind[] = ['atk_up', 'def_up', 'speed_up', 'passive_up', 'taunt', 'counter'];
 
 /**
  * Os sons de um beat. Os tempos acompanham as animações de battle.css:
@@ -41,7 +41,9 @@ export function cuesOf(events: BattleEvent[], skill: SkillFx | null, playerTeam:
                 if (event.team === playerTeam) add('turn');
                 break;
 
+            // O contra-ataque soa como a habilidade que ele é: um ataque básico.
             case 'skill_used':
+            case 'counter_attack':
                 if (skill?.delivery === 'melee') {
                     add('whoosh', 420);
                 } else {

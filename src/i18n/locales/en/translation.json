@@ -385,6 +385,8 @@
             "taunt": "Taunt",
             "bleed": "Bleed",
             "heal_down": "Reduced healing",
+            "stealth": "Hidden",
+            "counter": "Counterattack",
             "form": "Transformed"
         },
         "statusHelp": {
@@ -403,6 +405,8 @@
             "taunt": "Enemies' single-target attacks can only aim here.",
             "bleed": "Takes {{value}} damage at the start of each turn.",
             "heal_down": "Receives {{percent}}% less healing.",
+            "stealth": "Cannot be chosen as a target. Area attacks still hit. Ends when it acts or takes damage.",
+            "counter": "Strikes back with the basic attack whenever an enemy hits it (if an enemy is taunting, the counter goes there). Poison, burn and bleed damage does not count.",
             "form": "In another form. Returns to the original form when it ends."
         },
         "statShort": {
@@ -416,6 +420,7 @@
             "orderChanged": "The action order changed",
             "berserkTurn": "Turn {{turn}} · Berserk +{{percent}}%",
             "skill": "{{unit}} used {{skill}}",
+            "counter": "{{unit}} counterattacked {{target}}",
             "damage": "{{target}} took {{amount}} damage",
             "critical": "{{target}} took {{amount}} critical damage",
             "heal": "{{target}} recovered {{amount}} health",
@@ -446,6 +451,7 @@
         "enemySurrenderedText": "The opponent surrendered on turn {{turn}}.",
         "passive": "Passive",
         "passiveBanner": "{{unit}}: {{passive}}",
+        "counterBanner": "{{unit}} counterattacks!",
         "energyFloater": "+{{count}} energy",
         "corpses_one": "{{count}} corpse",
         "corpses_other": "{{count}} corpses",
