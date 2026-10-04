@@ -99,7 +99,8 @@ function StatusBadge({ status }: { status: StatusEffect }) {
     const tone = HELPFUL.includes(status.kind) ? 'good' : 'bad';
 
     return (
-        <span className={`bt-status bt-status--${tone}`} title={`${name}. ${help}${growing} ${turns}.`}>
+        // Selo de atributo tem texto e seta: ocupa duas casas da grade.
+        <span className={`bt-status bt-status--${tone}${arrow ? ' bt-status--wide' : ''}`} title={`${name}. ${help}${growing} ${turns}.`}>
             {arrow ? (
                 <>
                     <span className='bt-status__stat'>{t(`battle.statShort.${arrow.stat}`)}</span>
@@ -121,7 +122,7 @@ function StatusBadge({ status }: { status: StatusEffect }) {
 }
 
 /**
- * A fileira de status embaixo da barra de vida de uma unidade.
+ * A coluna de status embaixo da placa de uma unidade: uma grade de selos da largura da placa.
  * Fica no lugar mesmo vazia, para o desenho não pular quando um status chega.
  */
 interface StatusBadgesProps {
@@ -148,7 +149,10 @@ export function StatusBadges({ statuses, charge = null }: StatusBadgesProps) {
                 </span>
             )}
             {charge && charge.kind !== 'corpses' && (
-                <span className='bt-status bt-status--good bt-status--charge' title={t('battle.passiveCharge', { passive: charge.passive.name, percent: charge.percent })}>
+                <span
+                    className={`bt-status bt-status--good bt-status--charge ${charge.percent >= 100 ? 'bt-status--xwide' : 'bt-status--wide'}`}
+                    title={t('battle.passiveCharge', { passive: charge.passive.name, percent: charge.percent })}
+                >
                     <svg viewBox='0 0 24 24' className='bt-status__icon' stroke={INK} strokeWidth={2.4} strokeLinejoin='round' aria-hidden='true'>
                         {charge.kind === 'stacks' ? (
                             // Gota de sangue: cargas acumuladas com roubo de vida.

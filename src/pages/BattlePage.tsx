@@ -113,7 +113,7 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
     }
 
     return (
-        <div className='bt' {...(coachFocus && { 'data-coach': coachFocus })}>
+        <div className='bt bt--battle' {...(coachFocus && { 'data-coach': coachFocus })}>
             <div
                 className={['bt-arena', isCrowded && 'bt-arena--crowd', effects.quake && 'bt-arena--quake', isOver && !playerWon && 'bt-arena--lost']
                     .filter(Boolean)

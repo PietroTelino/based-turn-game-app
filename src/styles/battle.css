@@ -48,6 +48,18 @@
     --bt-shrink: calc(var(--bt-rise) / 1.4);
     /* Largura que cada unidade ocupa na fileira (a figura é mais larga e se sobrepõe). */
     --bt-slot: calc(var(--bt-unit) * 0.5);
+    /*
+     * Painel de efeitos: a faixa embaixo das placas onde ficam os selos de
+     * status, cada personagem com a sua coluna. Cabem quatro linhas de selos
+     * (18px cada, 2px entre elas) mais a folga de cima e de baixo.
+     */
+    --bt-shelf: 86px;
+    /*
+     * Quanto a arena cresceu para o painel caber. O painel é mais alto que o
+     * espaço que os selos tinham (44px); a diferença sai um pouco do céu (a
+     * cena sobe 14px) e o resto da altura da arena.
+     */
+    --bt-shelf-extra: calc(var(--bt-shelf) - 58px);
 
     max-width: 1080px;
     margin: 0 auto;
@@ -56,6 +68,15 @@
     font-weight: 500;
     font-size: 16px;
     line-height: 1.4;
+}
+
+/*
+ * A tela da batalha é mais larga que as outras: as placas dos personagens
+ * ficam maiores e cabem mais selos de status em cada linha. 1200px é o
+ * máximo que a pintura da arena cobre sem ampliar.
+ */
+.bt--battle {
+    max-width: 1200px;
 }
 
 .bt-visually-hidden {
@@ -79,18 +100,33 @@
      * não o tamanho das figuras: com cinco por time elas encolhem e a arena
      * continua do mesmo tamanho.
      */
-    min-height: calc(var(--bt-arena-unit) * 1.1 + 236px);
+    min-height: calc(var(--bt-arena-unit) * 1.1 + 236px + var(--bt-shelf-extra));
     overflow: hidden;
     border: 3px solid var(--bt-ink);
     border-radius: 10px;
-    box-shadow: inset 0 0 0 1px var(--bt-gold), 0 10px 24px rgb(28 26 43 / 0.35);
+    box-shadow: 0 10px 24px rgb(28 26 43 / 0.35);
     /*
      * Cenário: a pintura da muralha (src/assets/scenery/muralha.webp). Ela é
-     * presa pela base e um pouco ampliada, para a linha onde o piso começa
-     * ficar na metade da arena: é ali que pisa o último de cada fila. A cor
-     * de baixo só aparece enquanto a imagem carrega.
+     * um pouco ampliada, para a linha onde o piso começa ficar onde pisa o
+     * último de cada fila, e termina onde acabavam os selos de status antes
+     * de o painel de efeitos existir (44px abaixo das placas): dali para
+     * baixo quem aparece é o painel. A altura é a da arena sem o que ela
+     * cresceu para o painel, para a pintura não mudar de tamanho. A cor de
+     * baixo só aparece enquanto a imagem carrega.
      */
-    background: #7d6a52 url('../assets/scenery/muralha.webp') center bottom / auto 108% no-repeat;
+    background: #7d6a52 url('../assets/scenery/muralha.webp') center bottom calc(var(--bt-shelf) - 44px) / auto
+        calc((100% - var(--bt-shelf-extra)) * 1.08) no-repeat;
+}
+
+/* O filete dourado por dentro da borda, por cima de tudo (o painel de efeitos o cobriria). */
+.bt-arena::after {
+    content: '';
+    position: absolute;
+    z-index: 14;
+    inset: 0;
+    border-radius: 7px;
+    box-shadow: inset 0 0 0 1px var(--bt-gold);
+    pointer-events: none;
 }
 
 .bt-topbar {
@@ -267,8 +303,8 @@
     grid-template-columns: 1fr 1fr;
     align-items: end;
     gap: clamp(4px, 3vw, 40px);
-    /* O espaço de baixo é onde os selos de status aparecem, sob as placas. */
-    padding: 10px clamp(6px, 2vw, 24px) 40px;
+    /* O espaço de baixo é o painel de efeitos: os selos de status ficam nele, sob as placas. */
+    padding: 10px clamp(6px, 2vw, 24px) var(--bt-shelf);
 }
 
 .bt-team {
@@ -277,6 +313,26 @@
     justify-content: center;
     /* Espaço para quem está no fim da fila (o quinto), que sobe quatro degraus e é menor que o primeiro. */
     padding-top: calc(var(--bt-unit) * (var(--bt-rise) - var(--bt-shrink)) * 4 + 14px);
+}
+
+/*
+ * Painel de efeitos: uma faixa escura sob as placas do time, de um lado ao
+ * outro da arena (a arena corta o que passa da borda). Começa atrás da metade
+ * de baixo das placas, que ficam apoiadas nela. Em tela larga as faixas dos
+ * dois times caem uma em cima da outra e formam uma só; em tela estreita, com
+ * um time em cima do outro, cada time tem a sua.
+ */
+.bt-team::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    top: calc(100% - 14px);
+    right: -100vmax;
+    left: -100vmax;
+    height: calc(var(--bt-shelf) + 14px);
+    border-top: 1px solid rgb(200 162 75 / 0.8);
+    box-shadow: 0 -8px 14px rgb(28 26 43 / 0.4);
+    background: linear-gradient(#2d2946, #1c1a2b 55%);
 }
 
 /*
@@ -480,39 +536,73 @@
     color: #9cc8ff;
 }
 
-/* Status: selos pendurados embaixo da placa, sem empurrar a figura */
+/*
+ * Status: a coluna de efeitos do personagem, pendurada embaixo da placa (sem
+ * empurrar a figura) e da mesma largura dela, dentro do painel de efeitos.
+ * Os selos nunca passam para a coluna do vizinho: ficam numa grade de casas
+ * iguais e, quando a linha enche, descem para a seguinte. Um selo com ícone
+ * ocupa uma casa; um com texto (atributo, bônus de passiva), duas. A grade
+ * preenche os buracos (dense), então a ordem dos selos pode mudar para as
+ * linhas ficarem cheias.
+ */
 .bt-statuses {
     position: absolute;
-    top: calc(100% + 4px);
-    left: 50%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 3px;
-    width: max-content;
-    max-width: 116%;
-    translate: -50% 0;
+    top: calc(100% + 3px);
+    right: -1px;
+    left: -1px;
+    display: grid;
+    /* Casas de 20px no mínimo: três por linha na placa mais estreita (celular), quatro ou cinco nas largas. */
+    grid-template-columns: repeat(auto-fill, minmax(20px, 1fr));
+    grid-auto-rows: 18px;
+    grid-auto-flow: row dense;
+    align-content: start;
+    gap: 2px 1px;
+    box-sizing: border-box;
+    min-height: calc(var(--bt-shelf) - 7px);
+    padding: 2px 1px;
+    border-radius: 0 0 6px 6px;
+    background: rgb(249 242 223 / 0.07);
+}
+
+/* A coluna de quem está na vez ganha o contorno dourado da placa. */
+.bt-unit--active .bt-statuses {
+    box-shadow: inset 0 0 0 1px rgb(236 208 122 / 0.6);
 }
 
 .bt-status {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 2px;
-    height: 20px;
-    padding: 0 5px 0 3px;
+    justify-content: center;
+    gap: 1px;
+    box-sizing: border-box;
+    min-width: 0;
+    height: 18px;
+    padding: 0;
     border: 1px solid var(--bt-ink);
     border-radius: 4px;
     background: #f1c9c0;
     color: var(--bt-ink);
-    font-size: 11.5px;
+    font-size: 10.5px;
     font-weight: 800;
     line-height: 1;
+    white-space: nowrap;
     animation: bt-pop 0.25s ease-out;
+}
+
+/* Selo com texto (atributo com seta, bônus de passiva): duas casas. Bônus de três dígitos: três. */
+.bt-status--wide {
+    grid-column: span 2;
+}
+
+.bt-status--xwide {
+    grid-column: span 3;
 }
 
 /* Passiva cujo bônus varia (cargas do Vampiro, vida perdida do Bárbaro): um selo sem prazo, com o bônus atual. */
 .bt-status--charge {
-    padding-right: 5px;
+    gap: 0;
+    font-size: 9.5px;
+    letter-spacing: -0.2px;
 }
 
 .bt-status--good {
@@ -520,18 +610,17 @@
 }
 
 .bt-status__icon {
-    width: 13px;
-    height: 13px;
+    flex: none;
+    width: 12px;
+    height: 12px;
     overflow: visible;
 }
 
-.bt-status__stat {
-    padding-left: 2px;
-}
-
 .bt-status__arrow {
-    width: 9px;
-    height: 9px;
+    flex: none;
+    width: 8px;
+    height: 8px;
+    margin-inline: 1px;
     color: #a1241b;
 }
 
@@ -540,7 +629,7 @@
 }
 
 .bt-status__turns {
-    min-width: 8px;
+    min-width: 6px;
     text-align: center;
     font-variant-numeric: tabular-nums;
 }
@@ -2909,15 +2998,6 @@
     --bt-unit: clamp(150px, 19vw, 236px);
 }
 
-.bt-arena--crowd .bt-field {
-    /*
-     * Espaço embaixo das placas para duas linhas de selos de status. Não dá
-     * para aumentar sem empurrar os times para trás: o último de cada fila
-     * sairia do piso da pintura e ficaria em cima da muralha.
-     */
-    padding-bottom: 44px;
-}
-
 .bt-arena--crowd .bt-unit {
     flex: 0 1 var(--bt-slot);
     width: auto;
@@ -2949,17 +3029,6 @@
 
 .bt-arena--crowd .bt-hp__text {
     font-size: 11.5px;
-}
-
-/* Mais largos que a placa, para caberem até quatro selos por linha. */
-.bt-arena--crowd .bt-statuses {
-    max-width: 165%;
-}
-
-.bt-arena--crowd .bt-status {
-    height: 18px;
-    padding: 0 3px 0 2px;
-    font-size: 10.5px;
 }
 
 /* Vizinhos mais próximos: os números sobem quase em linha reta e os avisos de status ficam menores. */
@@ -3042,9 +3111,34 @@
         top: -70px;
     }
 
+    /*
+     * Placas estreitas: a coluna de efeitos vai até a borda da placa e os
+     * selos são um pouco menores, para três caberem por linha. As colunas
+     * vizinhas se encostam, então um filete escuro de cada lado as separa.
+     */
+    .bt-statuses {
+        right: -2px;
+        left: -2px;
+        box-shadow: inset 1px 0 0 #1c1a2b, inset -1px 0 0 #1c1a2b;
+    }
+
+    .bt-status {
+        font-size: 10px;
+    }
+
+    .bt-status--charge {
+        font-size: 9px;
+    }
+
+    .bt-status__icon {
+        width: 11px;
+        height: 11px;
+    }
+
+    /* Um time em cima do outro: cada um com o seu painel de efeitos embaixo. */
     .bt-field {
         grid-template-columns: 1fr;
-        gap: 44px;
+        gap: calc(var(--bt-shelf) + 10px);
         padding-top: 26px;
     }
 
@@ -3071,11 +3165,8 @@
         --bt-unit: clamp(104px, 34vw, 150px);
     }
 
-    /* Aqui cabe um selo por linha: mais espaço embaixo de cada time. */
     .bt-arena--crowd .bt-field {
-        gap: 66px;
         padding-inline: 4px;
-        padding-bottom: 90px;
     }
 
     .bt-arena--crowd .bt-unit__plate {
