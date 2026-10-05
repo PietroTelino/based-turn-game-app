@@ -3839,3 +3839,382 @@
         animation: none !important;
     }
 }
+
+/* ------------------------------------------------- Ranqueada, painel e replay */
+
+/* Selos do topo da arena: "Ranqueada", "Replay" e o relógio da vez. */
+.bt-chip--tag {
+    white-space: nowrap;
+}
+
+.bt-chip--ranked {
+    border-color: #5a3d06;
+    background: linear-gradient(#f3d77b, #c8a24b);
+}
+
+/* O prazo de quem está na vez, na partida ranqueada. */
+.bt-chip--timer {
+    min-width: 3.6em;
+    justify-content: center;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.bt-chip--urgent {
+    border-color: #3a0a06;
+    background: linear-gradient(#d9483a, #8a1c12);
+    color: #fff3e0;
+    animation: bt-timer-pulse 1s ease-in-out infinite;
+}
+
+@keyframes bt-timer-pulse {
+    50% {
+        box-shadow: 0 0 0 4px rgb(217 72 58 / 0.35);
+    }
+}
+
+/* Resultado: os pontos que a partida ranqueada valeu, e os botões embaixo. */
+.bt-result__rating {
+    margin: 0;
+    padding: 2px 14px 3px;
+    border: 2px solid var(--bt-ink);
+    border-radius: 999px;
+    background: #f1c9c0;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
+.bt-result__rating--up {
+    background: #cfe8c2;
+}
+
+.bt-result__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Histórico: partida ranqueada, os pontos que ela valeu e os dois links (replay e resultado). */
+.bt-history__tag--ranked {
+    border-color: #8a6a1c;
+    background: #f7e7b0;
+    color: #5a3d06;
+}
+
+.bt-history__points {
+    margin-left: 8px;
+    color: #a1241b;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
+.bt-history__points--up {
+    color: #2c7023;
+}
+
+.bt-history__links {
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 4px 14px;
+}
+
+/* Emblema de rank: o escudo e, ao lado, o nome. */
+.bt-rank {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--bt-display);
+    font-weight: 700;
+}
+
+.bt-rank__icon {
+    flex: none;
+    width: 34px;
+    height: auto;
+    filter: drop-shadow(0 2px 2px rgb(28 26 43 / 0.35));
+}
+
+/* Cartão de rank: emblema grande, pontos, barra até o próximo rank e o placar. */
+.bt-rankcard {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 6px 20px;
+    width: 100%;
+}
+
+.bt-rankcard__badge .bt-rank__icon {
+    width: 78px;
+}
+
+.bt-rankcard__body {
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+}
+
+.bt-rankcard__rank {
+    margin: 0;
+    font-family: var(--bt-display);
+    font-weight: 700;
+    font-size: 30px;
+    line-height: 1.05;
+}
+
+.bt-rankcard__points,
+.bt-rankcard__next {
+    margin: 0;
+    font-weight: 700;
+}
+
+.bt-rankcard__next {
+    color: #4a3b2a;
+    font-size: 15px;
+}
+
+.bt-rankcard__track,
+.bt-replay__track,
+.bt-usage__track {
+    display: block;
+    height: 12px;
+    overflow: hidden;
+    border: 2px solid var(--bt-ink);
+    border-radius: 999px;
+    background: rgb(28 26 43 / 0.14);
+}
+
+.bt-rankcard__track {
+    max-width: 420px;
+    margin: 3px 0;
+}
+
+.bt-rankcard__fill,
+.bt-replay__fill,
+.bt-usage__fill {
+    display: block;
+    height: 100%;
+    background: linear-gradient(var(--bt-gold-bright), var(--bt-gold));
+    transition: width 0.4s ease-out;
+}
+
+.bt-rankcard__record {
+    display: flex;
+    gap: 18px;
+    margin: 0;
+    text-align: center;
+}
+
+.bt-rankcard__record dt {
+    color: #4a3b2a;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.bt-rankcard__record dd {
+    margin: 0;
+    font-family: var(--bt-display);
+    font-weight: 700;
+    font-size: 30px;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Tela da ranqueada: o cartão de rank e a escada com os seis ranks. */
+.bt-ranked__profile {
+    justify-items: stretch;
+    gap: 16px;
+}
+
+.bt-ranked__ladder {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 6px;
+    margin: 0;
+    padding: 12px 0 0;
+    border-top: 1px solid rgb(28 26 43 / 0.25);
+    list-style: none;
+}
+
+.bt-ranked__step {
+    display: grid;
+    justify-items: center;
+    gap: 2px;
+    padding: 6px 2px;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    opacity: 0.55;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.bt-ranked__step--current {
+    border-color: var(--bt-ink);
+    box-shadow: inset 0 0 0 1px var(--bt-gold);
+    background: #fff8e2;
+    opacity: 1;
+}
+
+.bt-ranked__step-name {
+    overflow-wrap: anywhere;
+}
+
+/* Procurando partida: um ponto que pulsa ao lado do texto. */
+.bt-ranked__pulse {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 10px;
+    border-radius: 50%;
+    background: var(--bt-good);
+    animation: bt-ranked-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes bt-ranked-pulse {
+    50% {
+        box-shadow: 0 0 0 7px rgb(92 154 60 / 0.3);
+        opacity: 0.6;
+    }
+}
+
+/* Painel inicial: o rank e as duas listas de personagens mais usados. */
+.bt-dashboard {
+    margin-top: 24px;
+}
+
+.bt-dashboard__rank {
+    justify-items: stretch;
+}
+
+.bt-dashboard__rank .bt-btn {
+    justify-self: start;
+}
+
+.bt-dashboard__usage {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    align-items: start;
+    gap: 16px;
+}
+
+.bt-usage {
+    justify-items: stretch;
+}
+
+.bt-usage__note,
+.bt-usage__total {
+    margin: 0;
+    color: #4a3b2a;
+    font-size: 15px;
+}
+
+.bt-usage__list {
+    display: grid;
+    gap: 8px;
+    margin: 4px 0;
+    padding: 0;
+    list-style: none;
+}
+
+.bt-usage__item {
+    display: grid;
+    grid-template-columns: 1.4em 40px minmax(0, 1fr);
+    align-items: center;
+    gap: 10px;
+}
+
+.bt-usage__place {
+    font-family: var(--bt-display);
+    font-weight: 700;
+    font-size: 20px;
+    text-align: center;
+}
+
+.bt-usage__face {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    overflow: hidden;
+    border: 2px solid var(--bt-ink);
+    border-radius: 50%;
+    background: var(--bt-paper);
+}
+
+.bt-usage__body {
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+}
+
+.bt-usage__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0 12px;
+}
+
+.bt-usage__name {
+    font-weight: 800;
+}
+
+.bt-usage__count {
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+}
+
+.bt-usage__track {
+    height: 9px;
+    border-width: 1px;
+}
+
+/* Replay: a barra de progresso e os controles, no lugar das habilidades. */
+.bt-replay {
+    display: grid;
+    gap: 12px;
+}
+
+.bt-replay__controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 14px;
+}
+
+.bt-replay__speeds {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: auto;
+}
+
+@media (max-width: 640px) {
+    .bt-rankcard {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .bt-rankcard__record {
+        grid-column: 1 / -1;
+        justify-content: flex-start;
+    }
+
+    .bt-rankcard__badge .bt-rank__icon {
+        width: 60px;
+    }
+
+    .bt-ranked__ladder {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bt-chip--urgent,
+    .bt-ranked__pulse {
+        animation: none;
+    }
+}

@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { BattleActionInput, BattleResponse, BattleSummary, BattleView, Character } from '@/types/battle';
+import type { BattleActionInput, BattleResponse, BattleSummary, BattleView, Character, ReplayResponse } from '@/types/battle';
 
 export async function getCharacters(): Promise<Character[]> {
     const { data } = await api.get<Character[]>('/battles/characters');
@@ -42,5 +42,17 @@ export async function sendBattleAction(id: string, action: BattleActionInput): P
 
 export async function surrenderBattle(id: string): Promise<BattleResponse> {
     const { data } = await api.post<BattleResponse>(`/battles/${id}/surrender`);
+    return data;
+}
+
+/** Partida ranqueada: o adversário passou do prazo sem jogar, e quem espera pede a vitória. */
+export async function claimBattleTimeout(id: string): Promise<BattleResponse> {
+    const { data } = await api.post<BattleResponse>(`/battles/${id}/timeout`);
+    return data;
+}
+
+/** Uma batalha encerrada, do começo ao fim, para assistir de novo. */
+export async function getBattleReplay(id: string): Promise<ReplayResponse> {
+    const { data } = await api.get<ReplayResponse>(`/battles/${id}/replay`);
     return data;
 }

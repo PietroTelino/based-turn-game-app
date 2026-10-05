@@ -220,6 +220,8 @@ export interface BattleState {
     winner: TeamId | null;
     /** Preenchido quando a batalha acabou porque um time desistiu. */
     surrenderedBy?: TeamId;
+    /** A desistência foi por tempo esgotado: numa ranqueada, o time de `surrenderedBy` passou do prazo sem jogar. */
+    timedOut?: boolean;
     /** Batalha de treino (o tutorial): a IA joga fraco e a tela mostra o guia. */
     training?: boolean;
 }
@@ -295,9 +297,20 @@ export interface BattleView {
     availableActions: AvailableAction[];
     /**
      * Quantos eventos a batalha já teve. Entre jogadores, é a partir daqui que
-     * a tela pergunta pelo que o outro fez (`getBattleEvents`). Contra a IA é 0.
+     * a tela pergunta pelo que o outro fez (`getBattleEvents`).
      */
     cursor: number;
+    /** Dá para assistir de novo depois que acabar (as batalhas antigas não guardaram o começo). */
+    hasReplay: boolean;
+    /** Partida ranqueada: vale pontos e tem prazo para jogar. */
+    ranked: boolean;
+    /** Partida ranqueada encerrada: os pontos que você ganhou (ou perdeu, negativo). */
+    ratingChange: number | null;
+    /**
+     * Partida ranqueada em andamento: quanto tempo quem está na vez ainda tem
+     * para jogar, em ms, no instante da resposta. `null` quando não há prazo.
+     */
+    turnTimeLeftMs: number | null;
     createdAt: string;
     updatedAt: string;
     finishedAt: string | null;
@@ -308,6 +321,16 @@ export interface BattleResponse {
     events: BattleEvent[];
 }
 
+/** Uma batalha encerrada, do começo ao fim, para assistir de novo. */
+export interface ReplayResponse {
+    /** A batalha como terminou. */
+    battle: BattleView;
+    /** O estado de quando ela foi criada: a tela parte dele e aplica os eventos. */
+    initial: BattleState;
+    /** Tudo o que aconteceu, em ordem. */
+    events: BattleEvent[];
+}
+
 export interface BattleSummary {
     id: string;
     status: BattleStatus;
@@ -315,6 +338,10 @@ export interface BattleSummary {
     mode: BattleMode;
     playerTeam: TeamId;
     turn: number;
+    hasReplay: boolean;
+    ranked: boolean;
+    /** Partida ranqueada encerrada: os pontos que você ganhou (ou perdeu, negativo). */
+    ratingChange: number | null;
     createdAt: string;
     updatedAt: string;
     finishedAt: string | null;

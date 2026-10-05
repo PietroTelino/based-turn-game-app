@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/Layout';
 import { CharacterCard } from '@/components/battle/CharacterCard';
 import { TEAM_SIZE, usePlay } from '@/hooks/usePlay';
+import { ratingKey } from '@/battle/rating';
 import type { BattleSummary } from '@/types/battle';
 import '@/styles/battle.css';
 
@@ -77,14 +78,32 @@ export function PlayPage() {
                                         <li key={battle.id} className='bt-history__item'>
                                             <span>
                                                 <b>{t(battleLabelKey(battle), { turn: battle.turn })}</b>
-                                                {battle.mode === 'pvp' && <span className='bt-history__tag'>{t('play.versusPlayer')}</span>}
+                                                {battle.ranked ? (
+                                                    <span className='bt-history__tag bt-history__tag--ranked'>{t('play.ranked')}</span>
+                                                ) : (
+                                                    battle.mode === 'pvp' && <span className='bt-history__tag'>{t('play.versusPlayer')}</span>
+                                                )}
+                                                {/* Partida ranqueada encerrada: quantos pontos ela valeu. */}
+                                                {battle.ratingChange !== null && (
+                                                    <span className={`bt-history__points ${battle.ratingChange > 0 ? 'bt-history__points--up' : ''}`}>
+                                                        {t(ratingKey(battle.ratingChange), { count: Math.abs(battle.ratingChange) })}
+                                                    </span>
+                                                )}
                                                 <span className='bt-history__date'>
                                                     {new Date(battle.createdAt).toLocaleString(i18n.language)}
                                                 </span>
                                             </span>
-                                            <Link to={`/battle/${battle.id}`} className='bt-link'>
-                                                {t(battle.status === 'in_progress' ? 'play.continue' : 'play.review')}
-                                            </Link>
+                                            <span className='bt-history__links'>
+                                                {/* As batalhas antigas não guardaram o começo: delas só dá para ver o resultado. */}
+                                                {battle.status === 'finished' && battle.hasReplay && (
+                                                    <Link to={`/replay/${battle.id}`} className='bt-link'>
+                                                        {t('play.replay')}
+                                                    </Link>
+                                                )}
+                                                <Link to={`/battle/${battle.id}`} className='bt-link'>
+                                                    {t(battle.status === 'in_progress' ? 'play.continue' : 'play.review')}
+                                                </Link>
+                                            </span>
                                         </li>
                                     ))}
                                 </ul>

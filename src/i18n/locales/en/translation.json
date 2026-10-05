@@ -17,6 +17,7 @@
         "dashboard": "Dashboard",
         "play": "Play",
         "multiplayer": "Multiplayer",
+        "ranked": "Ranked",
         "tutorial": "Tutorial",
         "profile": "Profile",
         "sessions": "Sessions",
@@ -75,7 +76,23 @@
     },
     "dashboard": {
         "greeting": "Hello, {{name}} 👋",
-        "welcome": "Welcome back. You are logged in as"
+        "welcome": "Welcome back. You are logged in as",
+        "loading": "Loading your dashboard...",
+        "loadError": "Could not load the dashboard. Check that the API is running and reload the page.",
+        "rankTitle": "Your rank",
+        "playRanked": "Play ranked",
+        "usage": {
+            "mineTitle": "Your most used characters",
+            "mineNote": "The teams you built, against the AI and against other players.",
+            "mineEmpty": "You have not built a team yet. Play a battle and they will show up here.",
+            "globalTitle": "Most used in the game",
+            "globalNote": "The sum of every player's teams. No one is identified.",
+            "globalEmpty": "There are no teams to count yet.",
+            "count_one": "{{count}} team · {{percent}}%",
+            "count_other": "{{count}} teams · {{percent}}%",
+            "teams_one": "Out of {{count}} team built.",
+            "teams_other": "Out of {{count}} teams built."
+        }
     },
     "profile": {
         "title": "Profile",
@@ -310,7 +327,9 @@
         },
         "versusPlayer": "Versus player",
         "firstTime": "First time here?",
-        "firstTimeLink": "Play the training battle before building your team."
+        "firstTimeLink": "Play the training battle before building your team.",
+        "ranked": "Ranked",
+        "replay": "Replay"
     },
     "battle": {
         "title": "Battle",
@@ -465,7 +484,16 @@
         "reverted": "Original form",
         "cleansed": "Cleansed",
         "passiveCharge": "{{passive}}: +{{percent}}% damage",
-        "passiveNow": "Damage now"
+        "passiveNow": "Damage now",
+        "ranked": "Ranked",
+        "timerYours": "The time you have to play",
+        "timerTheirs": "The time your opponent has to play. If it runs out, you win.",
+        "timedOutText": "Your time to play ran out on turn {{turn}}.",
+        "enemyTimedOutText": "Your opponent did not play in time on turn {{turn}}.",
+        "ratingUp": "+{{count}} points",
+        "ratingDown": "−{{count}} points",
+        "ratingSame": "0 points",
+        "newRanked": "New match"
     },
     "multiplayer": {
         "title": "Multiplayer",
@@ -512,6 +540,59 @@
         "waitingJoin": "Team confirmed. The battle starts when someone joins the room and also presses Play.",
         "waitingReady": "Team confirmed. Waiting for {{name}} to press Play.",
         "starting": "Both players are ready. Starting the battle..."
+    },
+    "ranked": {
+        "title": "Ranked match",
+        "subtitle": "Build your team and join the queue: the game finds an opponent with points close to yours. Winning gives points, losing takes them away, and your points set your rank.",
+        "loading": "Loading ranked play...",
+        "loadError": "Could not load ranked play. Check that the API is running and reload the page.",
+        "yourRank": "Your rank",
+        "ladder": "The ranks, from lowest to highest",
+        "ranks": {
+            "bronze": "Bronze",
+            "silver": "Silver",
+            "gold": "Gold",
+            "platinum": "Platinum",
+            "diamond": "Diamond",
+            "legendary": "Legendary"
+        },
+        "points_one": "{{count}} point",
+        "points_other": "{{count}} points",
+        "progress": "Progress to the next rank",
+        "toNext_one": "{{count}} point to {{rank}}",
+        "toNext_other": "{{count}} points to {{rank}}",
+        "topRank": "You are at the highest rank.",
+        "wins": "Wins",
+        "losses": "Losses",
+        "teamTitle": "Your team",
+        "teamText": "Pick {{size}} characters. Your opponent only sees your team when the match starts.",
+        "teamReady": "Team complete. Just look for a match.",
+        "queueLabel": "Ranked queue",
+        "search": "Find a match",
+        "searching": "Looking for an opponent... {{time}}",
+        "cancel": "Cancel",
+        "searchError": "Could not join the queue. Try again.",
+        "inBattleTitle": "You have a match in progress",
+        "inBattleText": "Finish the ranked match in progress (or surrender it) before looking for another one.",
+        "backToBattle": "Back to the match",
+        "rules": "Each move has a minute and a half. Whoever lets the time run out or surrenders loses the match. The queue starts by looking for someone of your rank and, if no one shows up, widens the search."
+    },
+    "replay": {
+        "title": "Replay",
+        "tag": "Replay",
+        "loading": "Loading the replay...",
+        "unavailable": "The replay of this battle is not available. Battles played before replays existed only kept the result.",
+        "hint": "You are watching a battle that has already ended.",
+        "finished": "End of the replay.",
+        "progress": "How much of the replay has played",
+        "pause": "Pause",
+        "resume": "Resume",
+        "speed": "Speed",
+        "skip": "Skip to the end",
+        "restart": "Restart",
+        "again": "Watch again",
+        "back": "Back",
+        "watch": "Watch replay"
     },
     "tutorial": {
         "title": "Tutorial",

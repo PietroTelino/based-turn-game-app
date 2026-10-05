@@ -2,6 +2,7 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/Layout';
 import { BattleLog, EnergyPips, SkillBar, TurnQueue } from '@/components/battle/BattleHud';
+import { ReplayBar } from '@/components/battle/ReplayBar';
 import { CharacterArt } from '@/components/battle/CharacterArt';
 import { FxLayer } from '@/components/battle/FxLayer';
 import { SoundControl } from '@/components/battle/SoundControl';
@@ -9,27 +10,52 @@ import { TutorialGuide } from '@/components/battle/TutorialGuide';
 import { UnitToken } from '@/components/battle/UnitToken';
 import { bonusOf, corpsesOf } from '@/battle/passives';
 import { toPercent } from '@/battle/playback';
+import { ratingKey } from '@/battle/rating';
 import { useBattle } from '@/hooks/useBattle';
 import { useTutorial } from '@/hooks/useTutorial';
 import type { BattleResponse, TeamId } from '@/types/battle';
 import '@/styles/battle.css';
 
-function BattleScreen({ battleId, opening }: { battleId: string; opening?: BattleResponse }) {
+/** 75 -> "1:15": o prazo da vez, na partida ranqueada. */
+function formatClock(seconds: number): string {
+    return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+}
+
+/** Abaixo disto o relógio da vez fica vermelho. */
+const URGENT_SECONDS = 15;
+
+function BattleScreen({ battleId, opening, isReplay = false }: { battleId: string; opening?: BattleResponse; isReplay?: boolean }) {
     const { t } = useTranslation();
-    const { view, state, phase, effects, log, actions, selected, activeUnit, canAct, targetIds, selectSkill, act, canSurrender, surrender } =
-        useBattle(battleId, opening);
-    /** Batalha de treino: mostra o guia e destaca a parte da tela de que ele fala. */
-    const isTutorial = view?.state.training === true;
+    const {
+        view,
+        state,
+        phase,
+        effects,
+        log,
+        actions,
+        selected,
+        activeUnit,
+        canAct,
+        turnSecondsLeft,
+        replay,
+        targetIds,
+        selectSkill,
+        act,
+        canSurrender,
+        surrender,
+    } = useBattle(battleId, opening, { replay: isReplay });
+    /** Batalha de treino: mostra o guia e destaca a parte da tela de que ele fala. No replay ninguém joga, então não há guia. */
+    const isTutorial = !isReplay && view?.state.training === true;
     const tutorial = useTutorial(isTutorial, { view, state, canAct, actions, selected });
 
     if (phase === 'loading') {
-        return <p className='bt-message'>{t('battle.loading')}</p>;
+        return <p className='bt-message'>{t(isReplay ? 'replay.loading' : 'battle.loading')}</p>;
     }
 
     if (phase === 'error' || !view || !state) {
         return (
             <div className='bt-message'>
-                <p>{t('battle.notFound')}</p>
+                <p>{t(isReplay ? 'replay.unavailable' : 'battle.notFound')}</p>
                 <Link to='/play' className='bt-btn'>
                     {t('battle.backToPlay')}
                 </Link>
@@ -85,7 +111,9 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
     /** Batalha entre jogadores, na vez do outro: não há jogada para escolher, só esperar. */
     const isWaitingOpponent = isVersus && view.status === 'in_progress' && actions.length === 0;
     /** Para onde o jogador volta quando a batalha acaba. */
-    const lobbyPath = isVersus ? '/multiplayer' : '/play';
+    const lobbyPath = view.ranked ? '/ranked' : isVersus ? '/multiplayer' : '/play';
+    /** A desistência foi por tempo esgotado (partida ranqueada). */
+    const timedOut = state.timedOut === true;
     /** As passivas de quem está na vez: são mostradas junto das habilidades dele. */
     const actingUnit = actions.length > 0 ? view.state.units.find((unit) => unit.id === view.state.activeUnitId) : undefined;
     const actingPassives = actingUnit?.passives ?? [];
@@ -98,7 +126,9 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
         act(targetId);
     };
 
-    if (isOver) {
+    if (isReplay) {
+        hint = t(isOver ? 'replay.finished' : 'replay.hint');
+    } else if (isOver) {
         hint = playerSurrendered ? t('battle.log.surrendered') : playerWon ? t('battle.log.won') : t('battle.log.lost');
     } else if (isWaitingOpponent && !isAnimating) {
         hint = t('battle.waitingOpponent');
@@ -125,6 +155,18 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
                 <div className='bt-topbar'>
                     <span className='bt-topbar__turn'>
                         <span className='bt-chip'>{t('battle.turn', { turn: state.turn })}</span>
+                        {isReplay && <span className='bt-chip bt-chip--tag'>{t('replay.tag')}</span>}
+                        {view.ranked && <span className='bt-chip bt-chip--tag bt-chip--ranked'>{t('battle.ranked')}</span>}
+                        {/* O prazo de quem está na vez. Só aparece com a tela parada, que é quando ele corre. */}
+                        {turnSecondsLeft !== null && (
+                            <span
+                                className={`bt-chip bt-chip--timer ${turnSecondsLeft <= URGENT_SECONDS ? 'bt-chip--urgent' : ''}`}
+                                title={t(canAct ? 'battle.timerYours' : 'battle.timerTheirs')}
+                                role='timer'
+                            >
+                                {formatClock(turnSecondsLeft)}
+                            </span>
+                        )}
                         {/* A chave faz o selo "pular" de novo cada vez que o bônus cresce. */}
                         {berserk > 0 && (
                             <span key={berserk} className='bt-chip bt-chip--berserk' title={t('battle.berserkHint', { percent: berserk })}>
@@ -185,15 +227,25 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
                             <p className='bt-result__text'>
                                 {t(
                                     playerSurrendered
-                                        ? 'battle.surrenderedText'
+                                        ? timedOut
+                                            ? 'battle.timedOutText'
+                                            : 'battle.surrenderedText'
                                         : enemySurrendered
-                                          ? 'battle.enemySurrenderedText'
+                                          ? timedOut
+                                              ? 'battle.enemyTimedOutText'
+                                              : 'battle.enemySurrenderedText'
                                           : playerWon
                                             ? 'battle.victoryText'
                                             : 'battle.defeatText',
                                     { turn: state.turn },
                                 )}
                             </p>
+                            {/* Partida ranqueada: quantos pontos ela valeu. */}
+                            {view.ratingChange !== null && (
+                                <p className={`bt-result__rating ${view.ratingChange > 0 ? 'bt-result__rating--up' : ''}`}>
+                                    {t(ratingKey(view.ratingChange), { count: Math.abs(view.ratingChange) })}
+                                </p>
+                            )}
                             {/* Quem do seu time ficou de pé */}
                             <ul className='bt-result__team' aria-label={t('battle.survivors')}>
                                 {state.units
@@ -211,9 +263,29 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
                                         </li>
                                     ))}
                             </ul>
-                            <Link to={lobbyPath} className='bt-btn'>
-                                {t(isTutorial ? 'tutorial.buildTeam' : 'battle.newBattle')}
-                            </Link>
+                            <div className='bt-result__buttons'>
+                                {isReplay && replay ? (
+                                    <>
+                                        <button type='button' className='bt-btn' onClick={replay.restart}>
+                                            {t('replay.again')}
+                                        </button>
+                                        <Link to='/play' className='bt-btn bt-btn--plain'>
+                                            {t('replay.back')}
+                                        </Link>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Link to={lobbyPath} className='bt-btn'>
+                                            {t(isTutorial ? 'tutorial.buildTeam' : view.ranked ? 'battle.newRanked' : 'battle.newBattle')}
+                                        </Link>
+                                        {view.hasReplay && (
+                                            <Link to={`/replay/${view.id}`} className='bt-btn bt-btn--plain'>
+                                                {t('replay.watch')}
+                                            </Link>
+                                        )}
+                                    </>
+                                )}
+                            </div>
                         </div>
                     </div>
                 )}
@@ -224,9 +296,11 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
             <section className='bt-hud' aria-label={t('battle.hudLabel')}>
                 <div className='bt-hud__head'>
                     <h2 className='bt-hud__title'>
-                        {activeUnit
-                            ? t(activeUnit.team === playerTeam ? 'battle.yourTurn' : 'battle.enemyTurn', { unit: activeUnit.name })
-                            : t('battle.title')}
+                        {isReplay
+                            ? t('replay.title')
+                            : activeUnit
+                              ? t(activeUnit.team === playerTeam ? 'battle.yourTurn' : 'battle.enemyTurn', { unit: activeUnit.name })
+                              : t('battle.title')}
                     </h2>
                     <div className='bt-hud__side'>
                         <span className='bt-hud__energy'>
@@ -237,7 +311,9 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
                     </div>
                 </div>
 
-                {isWaitingOpponent ? (
+                {replay ? (
+                    <ReplayBar replay={replay} />
+                ) : isWaitingOpponent ? (
                     <p className='bt-hud__waiting'>{t('battle.waitingOpponentLong')}</p>
                 ) : (
                     <SkillBar
@@ -276,16 +352,17 @@ function BattleScreen({ battleId, opening }: { battleId: string; opening?: Battl
     );
 }
 
-export function BattlePage() {
+/** `replay`: a rota /replay/:id, que mostra uma batalha encerrada do começo ao fim em vez de deixar jogar. */
+export function BattlePage({ replay = false }: { replay?: boolean }) {
     const { t } = useTranslation();
     const { id } = useParams();
     const location = useLocation();
     const opening = (location.state as { opening?: BattleResponse } | null)?.opening;
 
     return (
-        <Layout title={t('battle.title')}>
-            {/* key: trocar de batalha recria a tela do zero */}
-            {id && <BattleScreen key={id} battleId={id} {...(opening && { opening })} />}
+        <Layout title={t(replay ? 'replay.title' : 'battle.title')}>
+            {/* key: trocar de batalha (ou da batalha para o replay dela) recria a tela do zero */}
+            {id && <BattleScreen key={`${replay ? 'replay' : 'battle'}-${id}`} battleId={id} isReplay={replay} {...(!replay && opening && { opening })} />}
         </Layout>
     );
 }

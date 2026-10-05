@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import { getBattle, getBattleEvents, sendBattleAction, surrenderBattle } from '@/api/battles';
+import { claimBattleTimeout, getBattle, getBattleEvents, getBattleReplay, sendBattleAction, surrenderBattle } from '@/api/battles';
 import { sfx } from '@/audio/sfx';
 import { findPassive, findSkill } from '@/battle/forms';
 import { impactsOf, passiveFxOf, skillFxOf } from '@/battle/fx';
@@ -77,6 +77,28 @@ const INTRO_DURATION = 1300;
 const POLL_INTERVAL = 1200;
 /** `state.step` de uma batalha recém-criada, em que ninguém jogou ainda. */
 const FIRST_STEP = 1;
+/** Partida ranqueada: quanto esperar depois do prazo do adversário antes de pedir a vitória, em ms (folga para a diferença de relógio). */
+const TIMEOUT_GRACE = 1500;
+/** As velocidades do replay. */
+export const REPLAY_SPEEDS = [1, 2, 4] as const;
+
+export type ReplaySpeed = (typeof REPLAY_SPEEDS)[number];
+
+/** O replay de uma batalha encerrada: onde ele está e os controles. `null` fora do replay. */
+export interface ReplayControls {
+    /** Quantos passos da animação já foram mostrados, e quantos são ao todo. */
+    done: number;
+    total: number;
+    isPaused: boolean;
+    /** Chegou ao fim (ou foi pulado até ele). */
+    isFinished: boolean;
+    speed: ReplaySpeed;
+    togglePause: () => void;
+    setSpeed: (speed: ReplaySpeed) => void;
+    /** Vai direto para o resultado. */
+    skip: () => void;
+    restart: () => void;
+}
 
 function sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -438,8 +460,18 @@ function effectsOf(
  * jogada traz só o que ela causou, e a vez pode passar para o outro. Enquanto
  * a tela está parada, ela pergunta à API pelos eventos que vieram depois dos
  * que já mostrou (`view.cursor`) e os anima do mesmo jeito.
+ *
+ * Partida ranqueada (`view.ranked`): quem está na vez tem prazo para jogar.
+ * A tela mostra a contagem (`turnSecondsLeft`) e, se o prazo do adversário
+ * acabar, pede a vitória sozinha.
+ *
+ * Replay (`options.replay`): a batalha já acabou. A tela busca o estado de
+ * quando ela foi criada e todos os eventos, e anima tudo do começo, como se
+ * fosse uma abertura muito comprida. Ninguém joga: `replay` traz os controles
+ * (pausar, velocidade, pular para o fim, recomeçar).
  */
-export function useBattle(battleId: string, opening?: BattleResponse) {
+export function useBattle(battleId: string, opening?: BattleResponse, options: { replay?: boolean } = {}) {
+    const isReplay = options.replay === true;
     const { t } = useTranslation();
     const { showToast } = useToast();
     const { confirm } = useConfirm();
@@ -452,20 +484,52 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
     const [selectedSkillId, setSelectedSkillId] = useState<string | null>(null);
     /** A pergunta "quer mesmo desistir?" está aberta. */
     const [isConfirming, setIsConfirming] = useState(false);
+    /** Ranqueada: o instante (relógio desta máquina, em ms) em que o prazo de quem está na vez acaba. */
+    const [deadline, setDeadline] = useState<number | null>(null);
+    /** Ranqueada: o relógio, andando de segundo em segundo enquanto há prazo correndo. */
+    const [clock, setClock] = useState(() => Date.now());
+    /** Replay: quantos passos já foram mostrados, de quantos. */
+    const [progress, setProgress] = useState({ done: 0, total: 0 });
+    const [isPaused, setIsPaused] = useState(false);
+    const [speed, setSpeed] = useState<ReplaySpeed>(1);
+    /** Replay: sobe a cada "recomeçar", para a tela carregar tudo de novo. */
+    const [replayRound, setReplayRound] = useState(0);
 
     // Cada carregamento da tela ganha um número. Uma animação antiga que ainda
     // esteja rodando percebe que o número mudou e para sozinha.
     const runRef = useRef(0);
     const idRef = useRef(0);
+    // Os controles do replay, lidos pela animação a cada passo (por isso em refs, e não no estado).
+    const pausedRef = useRef(false);
+    const speedRef = useRef<ReplaySpeed>(1);
+    const skipRef = useRef(false);
+
+    /** Guarda quando o prazo da vez acaba, a partir do tempo que a API disse que faltava nesta resposta. */
+    const noteDeadline = useCallback((battle: BattleView) => {
+        setDeadline(battle.turnTimeLeftMs === null ? null : Date.now() + battle.turnTimeLeftMs);
+        setClock(Date.now());
+    }, []);
 
     const play = useCallback(
         async (run: number, from: BattleState, response: BattleResponse) => {
             const nextId = () => ++idRef.current;
             let current = from;
             let skillFx: SkillFx | null = null;
+            const beats = toBeats(response.events);
+            let done = 0;
 
-            for (const beat of toBeats(response.events)) {
+            if (isReplay) setProgress({ done: 0, total: beats.length });
+
+            for (const beat of beats) {
                 if (runRef.current !== run) return;
+
+                // Replay pausado: espera aqui, sem perder o lugar. "Pular para o fim" sai do laço.
+                while (isReplay && pausedRef.current && !skipRef.current && runRef.current === run) {
+                    await sleep(80);
+                }
+
+                if (runRef.current !== run) return;
+                if (isReplay && skipRef.current) break;
 
                 const previousFury = current.fury;
 
@@ -505,17 +569,24 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
                 setEffects(effectsOf(beat.events, units, skillFx, nextId, t, previousFury));
                 setLog((previous) => [...entries, ...previous].slice(0, MAX_LOG_ENTRIES));
 
-                await sleep(beat.duration);
+                if (isReplay) {
+                    done += 1;
+                    setProgress({ done, total: beats.length });
+                }
+
+                await sleep(beat.duration / (isReplay ? speedRef.current : 1));
             }
 
             if (runRef.current !== run) return;
+
+            if (isReplay) setProgress({ done: beats.length, total: beats.length });
 
             setEffects(NO_EFFECTS);
             setView(response.battle);
             setState(response.battle.state);
             setSelectedSkillId(null);
         },
-        [t],
+        [t, isReplay],
     );
 
     useEffect(() => {
@@ -523,9 +594,38 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
 
         async function load() {
             try {
+                if (isReplay) {
+                    const replay = await getBattleReplay(battleId);
+
+                    if (runRef.current !== run) return;
+
+                    // A batalha como terminou é o que fica na tela no fim; a
+                    // animação parte do estado de quando ela foi criada.
+                    const start = openingState({ ...replay.battle, state: replay.initial }, replay.events);
+
+                    skipRef.current = false;
+                    setLog([]);
+                    setView(replay.battle);
+                    setState(start);
+                    setPhase('busy');
+                    setEffects({ ...NO_EFFECTS, announce: { text: t('battle.begin'), big: true } });
+                    sfx.play('start', 150);
+                    await sleep(INTRO_DURATION / speedRef.current);
+
+                    if (runRef.current !== run) return;
+
+                    await play(run, start, { battle: replay.battle, events: replay.events });
+
+                    if (runRef.current === run) setPhase('idle');
+
+                    return;
+                }
+
                 const fetched = await getBattle(battleId);
 
                 if (runRef.current !== run) return;
+
+                noteDeadline(fetched);
 
                 // Só anima a abertura se a batalha ainda está como foi criada
                 // (ao recarregar a página no meio do jogo, não). `step` sobe
@@ -541,6 +641,8 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
                     first = await getBattleEvents(battleId, 0);
 
                     if (runRef.current !== run) return;
+
+                    noteDeadline(first.battle);
                 }
 
                 if (first) {
@@ -574,7 +676,7 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
             // Invalida este carregamento: a animação em andamento para no próximo passo.
             runRef.current = run + 1;
         };
-    }, [battleId, opening, play, t]);
+    }, [battleId, opening, play, t, isReplay, replayRound, noteDeadline]);
 
     // Batalha entre jogadores: enquanto a tela está parada, pergunta o que o
     // outro fez. Vale também na própria vez, porque o outro pode desistir. Com
@@ -600,6 +702,7 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
                 if (cancelled || runRef.current !== run) return;
 
                 if (response.events.length > 0) {
+                    noteDeadline(response.battle);
                     setPhase('busy');
                     await play(run, from, response);
 
@@ -620,7 +723,7 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
             cancelled = true;
             window.clearTimeout(timer);
         };
-    }, [isWatching, battleId, cursor, state, play]);
+    }, [isWatching, battleId, cursor, state, play, noteDeadline]);
 
     const actions: AvailableAction[] = view?.availableActions ?? [];
     const selected = actions.find((a) => a.skill.id === selectedSkillId && a.usable) ?? actions.find((a) => a.usable) ?? null;
@@ -630,8 +733,12 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
     // Desistir não depende de ser a vez do jogador: basta a tela estar parada.
     const canSurrender = phase === 'idle' && view?.status === 'in_progress';
 
-    /** Envia um pedido à API e anima a resposta. Serve para a jogada e para a desistência. */
-    async function submit(request: (battleId: string) => Promise<BattleResponse>) {
+    /**
+     * Envia um pedido à API e anima a resposta. Serve para a jogada, para a
+     * desistência e para o pedido de vitória por tempo. `quiet` não mostra o
+     * erro: é para o pedido que a tela faz sozinha.
+     */
+    async function submit(request: (battleId: string) => Promise<BattleResponse>, quiet = false) {
         if (!view || !state) return;
 
         const run = runRef.current;
@@ -648,17 +755,19 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
                 response = await getBattleEvents(view.id, view.cursor);
             }
 
+            noteDeadline(response.battle);
             await play(run, state, response);
         } catch (error) {
             const message = (error as { response?: { data?: { message?: string } } }).response?.data?.message;
 
-            showToast(message ?? t('errors.genericError'), 'error');
+            if (!quiet) showToast(message ?? t('errors.genericError'), 'error');
 
             // Algo saiu do combinado: busca o estado de verdade para a tela não ficar errada.
             try {
                 const fresh = await getBattle(view.id);
 
                 if (runRef.current === run) {
+                    noteDeadline(fresh);
                     setEffects(NO_EFFECTS);
                     setView(fresh);
                     setState(fresh.state);
@@ -703,6 +812,59 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
         }
     }
 
+    // Ranqueada: com a tela parada e a batalha em andamento, o prazo de quem
+    // está na vez corre. O relógio anda de meio em meio segundo, para a
+    // contagem na tela não pular números.
+    const hasDeadline = !isReplay && phase === 'idle' && !isConfirming && deadline !== null && view?.status === 'in_progress';
+
+    useEffect(() => {
+        if (!hasDeadline) return;
+
+        const timer = window.setInterval(() => setClock(Date.now()), 500);
+
+        return () => window.clearInterval(timer);
+    }, [hasDeadline]);
+
+    const turnSecondsLeft = hasDeadline && deadline !== null ? Math.max(0, Math.ceil((deadline - clock) / 1000)) : null;
+    /** O prazo do adversário acabou (com uma folga): a tela pede a vitória. */
+    const shouldClaim = hasDeadline && deadline !== null && !canAct && activeUnit !== null && clock >= deadline + TIMEOUT_GRACE;
+
+    useEffect(() => {
+        if (!shouldClaim) return;
+
+        // Se a API disser que ainda é cedo (relógios diferentes), o erro é
+        // engolido e o prazo é lido de novo da batalha.
+        void submit(claimBattleTimeout, true);
+        // `submit` muda a cada desenho; o que dispara o pedido é só o prazo ter acabado.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [shouldClaim]);
+
+    const replay: ReplayControls | null = isReplay
+        ? {
+              done: progress.done,
+              total: progress.total,
+              isPaused,
+              isFinished: phase === 'idle',
+              speed,
+              togglePause: () => {
+                  pausedRef.current = !pausedRef.current;
+                  setIsPaused(pausedRef.current);
+              },
+              setSpeed: (next) => {
+                  speedRef.current = next;
+                  setSpeed(next);
+              },
+              skip: () => {
+                  skipRef.current = true;
+              },
+              restart: () => {
+                  pausedRef.current = false;
+                  setIsPaused(false);
+                  setReplayRound((round) => round + 1);
+              },
+          }
+        : null;
+
     return {
         view,
         state,
@@ -713,6 +875,10 @@ export function useBattle(battleId: string, opening?: BattleResponse) {
         selected,
         activeUnit,
         canAct,
+        /** Ranqueada: quantos segundos quem está na vez ainda tem. `null` quando não há prazo correndo. */
+        turnSecondsLeft,
+        /** Os controles do replay. `null` numa batalha de verdade. */
+        replay,
         /** Quem pode ser clicado agora para confirmar a habilidade selecionada. */
         targetIds: canAct && selected ? selected.targetIds : [],
         selectSkill: (skillId: string) => {

@@ -17,6 +17,7 @@
         "dashboard": "Dashboard",
         "play": "Jogar",
         "multiplayer": "Multiplayer",
+        "ranked": "Ranqueada",
         "tutorial": "Tutorial",
         "profile": "Perfil",
         "sessions": "Sessões",
@@ -75,7 +76,23 @@
     },
     "dashboard": {
         "greeting": "Olá, {{name}} 👋",
-        "welcome": "Bem-vindo de volta. Você está logado como"
+        "welcome": "Bem-vindo de volta. Você está logado como",
+        "loading": "Carregando o seu painel...",
+        "loadError": "Não foi possível carregar o painel. Confira se a API está no ar e recarregue a página.",
+        "rankTitle": "Seu rank",
+        "playRanked": "Jogar ranqueada",
+        "usage": {
+            "mineTitle": "Seus personagens mais usados",
+            "mineNote": "Os times que você montou, contra a IA e contra outros jogadores.",
+            "mineEmpty": "Você ainda não montou nenhum time. Jogue uma batalha e eles aparecem aqui.",
+            "globalTitle": "Mais usados no jogo",
+            "globalNote": "A soma dos times de todos os jogadores. Ninguém é identificado.",
+            "globalEmpty": "Ainda não há times para contar.",
+            "count_one": "{{count}} time · {{percent}}%",
+            "count_other": "{{count}} times · {{percent}}%",
+            "teams_one": "De {{count}} time montado.",
+            "teams_other": "De {{count}} times montados."
+        }
     },
     "profile": {
         "title": "Perfil",
@@ -310,7 +327,9 @@
         },
         "versusPlayer": "Contra jogador",
         "firstTime": "Primeira vez por aqui?",
-        "firstTimeLink": "Faça a batalha de treino antes de montar o seu time."
+        "firstTimeLink": "Faça a batalha de treino antes de montar o seu time.",
+        "ranked": "Ranqueada",
+        "replay": "Replay"
     },
     "battle": {
         "title": "Batalha",
@@ -465,7 +484,16 @@
         "reverted": "Forma original",
         "cleansed": "Purificado",
         "passiveCharge": "{{passive}}: +{{percent}}% de dano",
-        "passiveNow": "Dano agora"
+        "passiveNow": "Dano agora",
+        "ranked": "Ranqueada",
+        "timerYours": "O tempo que você tem para jogar",
+        "timerTheirs": "O tempo que o adversário tem para jogar. Se acabar, a vitória é sua.",
+        "timedOutText": "Seu tempo para jogar acabou no turno {{turn}}.",
+        "enemyTimedOutText": "O adversário não jogou a tempo no turno {{turn}}.",
+        "ratingUp": "+{{count}} pontos",
+        "ratingDown": "−{{count}} pontos",
+        "ratingSame": "0 pontos",
+        "newRanked": "Nova partida"
     },
     "multiplayer": {
         "title": "Multiplayer",
@@ -512,6 +540,59 @@
         "waitingJoin": "Time confirmado. A batalha começa quando alguém entrar na sala e também apertar Jogar.",
         "waitingReady": "Time confirmado. Esperando {{name}} apertar Jogar.",
         "starting": "Os dois estão prontos. Começando a batalha..."
+    },
+    "ranked": {
+        "title": "Partida ranqueada",
+        "subtitle": "Monte o time e entre na fila: o jogo encontra um adversário com pontos parecidos com os seus. Vencer dá pontos, perder tira, e são os pontos que definem o seu rank.",
+        "loading": "Carregando a ranqueada...",
+        "loadError": "Não foi possível carregar a ranqueada. Confira se a API está no ar e recarregue a página.",
+        "yourRank": "Seu rank",
+        "ladder": "Os ranks, do mais baixo para o mais alto",
+        "ranks": {
+            "bronze": "Bronze",
+            "silver": "Prata",
+            "gold": "Ouro",
+            "platinum": "Platina",
+            "diamond": "Diamante",
+            "legendary": "Lendário"
+        },
+        "points_one": "{{count}} ponto",
+        "points_other": "{{count}} pontos",
+        "progress": "Progresso até o próximo rank",
+        "toNext_one": "Falta {{count}} ponto para {{rank}}",
+        "toNext_other": "Faltam {{count}} pontos para {{rank}}",
+        "topRank": "Você está no rank mais alto.",
+        "wins": "Vitórias",
+        "losses": "Derrotas",
+        "teamTitle": "Seu time",
+        "teamText": "Escolha {{size}} personagens. O adversário só vê o seu time quando a partida começa.",
+        "teamReady": "Time completo. É só procurar uma partida.",
+        "queueLabel": "Fila da ranqueada",
+        "search": "Procurar partida",
+        "searching": "Procurando adversário... {{time}}",
+        "cancel": "Cancelar",
+        "searchError": "Não foi possível entrar na fila. Tente de novo.",
+        "inBattleTitle": "Você tem uma partida em andamento",
+        "inBattleText": "Termine a partida ranqueada que está em andamento (ou desista dela) antes de procurar outra.",
+        "backToBattle": "Voltar para a partida",
+        "rules": "Cada jogada tem 1 minuto e meio. Quem deixa o tempo acabar ou desiste perde a partida. A fila começa procurando alguém do seu rank e, se ninguém aparecer, vai abrindo a busca."
+    },
+    "replay": {
+        "title": "Replay",
+        "tag": "Replay",
+        "loading": "Carregando o replay...",
+        "unavailable": "O replay desta batalha não está disponível. As batalhas jogadas antes de o replay existir só guardaram o resultado.",
+        "hint": "Você está assistindo a uma batalha que já acabou.",
+        "finished": "Fim do replay.",
+        "progress": "Quanto do replay já passou",
+        "pause": "Pausar",
+        "resume": "Continuar",
+        "speed": "Velocidade",
+        "skip": "Pular para o fim",
+        "restart": "Recomeçar",
+        "again": "Assistir de novo",
+        "back": "Voltar",
+        "watch": "Ver replay"
     },
     "tutorial": {
         "title": "Tutorial",
