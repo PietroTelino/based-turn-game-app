@@ -1,0 +1,84 @@
+# A cada push na branch main: compila o site e publica na máquina da AWS.
+# Também dá para rodar na mão: aba Actions > "Deploy do site" > Run workflow.
+#
+# A publicação só acontece depois que os três secrets existem no repositório
+# (Settings > Secrets and variables > Actions):
+#   DEPLOY_HOST         o IP fixo da máquina
+#   DEPLOY_KNOWN_HOSTS  a identidade da máquina, para o SSH conferir que é ela mesma
+#   DEPLOY_SSH_KEY      a chave privada de deploy
+# Os três são mostrados pelo script deploy/server/setup-server.sh, que fica no
+# repositório da API. Sem eles, o workflow só compila.
+name: Deploy do site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Um deploy por vez: o seguinte espera o anterior terminar.
+concurrency:
+  group: deploy-app
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Compila e publica
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instala as dependências
+        run: npm ci
+
+      - name: Compila
+        run: npm run build
+        env:
+          # O site e a API ficam no mesmo endereço (o CloudFront), então o caminho é relativo.
+          VITE_API_URL: /api
+
+      - name: Empacota
+        run: |
+          RELEASE_ID="$(date -u +%Y%m%d%H%M%S)-${GITHUB_SHA::7}"
+          echo "RELEASE_ID=$RELEASE_ID" >> "$GITHUB_ENV"
+          tar -czf "$RUNNER_TEMP/app.tgz" -C dist .
+
+      - name: Sem servidor configurado
+        if: env.DEPLOY_HOST == ''
+        run: echo "::notice::Os secrets de deploy ainda não foram cadastrados - o site foi compilado, mas nada foi publicado."
+
+      - name: Prepara o SSH
+        if: env.DEPLOY_HOST != ''
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      - name: Publica na máquina
+        if: env.DEPLOY_HOST != ''
+        run: |
+          # HostKeyAlias: a identidade da máquina fica gravada como "btg-server", e não
+          # pelo IP. StrictHostKeyChecking: se não for a mesma máquina, o SSH recusa.
+          SSH_OPTS=(-i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o HostKeyAlias=btg-server
+                    -o StrictHostKeyChecking=yes -o ConnectTimeout=20)
+          REMOTE="btg@$DEPLOY_HOST"
+
+          scp "${SSH_OPTS[@]}" "$RUNNER_TEMP/app.tgz" "$REMOTE:/tmp/btg-app-$RELEASE_ID.tgz"
+          scp "${SSH_OPTS[@]}" deploy/deploy-app.sh "$REMOTE:/tmp/btg-app-$RELEASE_ID.sh"
+          ssh "${SSH_OPTS[@]}" "$REMOTE" \
+            "bash /tmp/btg-app-$RELEASE_ID.sh /tmp/btg-app-$RELEASE_ID.tgz $RELEASE_ID; status=\$?; rm -f /tmp/btg-app-$RELEASE_ID.sh; exit \$status"

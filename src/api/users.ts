@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { User, PaginatedResponse } from '@/types';
+import type { User } from '@/types';
 
 export async function getUsers(): Promise<User[]> {
     const { data } = await api.get<User[]>('/users');
