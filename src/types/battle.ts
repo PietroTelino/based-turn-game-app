@@ -224,7 +224,12 @@ export interface BattleState {
     timedOut?: boolean;
     /** Batalha de treino (o tutorial): a IA joga fraco e a tela mostra o guia. */
     training?: boolean;
+    /** O cenário, sorteado pela API quando a batalha é criada. Batalhas antigas não têm: vale a muralha. */
+    arena?: ArenaId;
 }
+
+/** Os cenários possíveis (a imagem de cada um fica em src/assets/scenery). */
+export type ArenaId = 'muralha' | 'floresta' | 'lago-gelado';
 
 export type BattleEvent =
     /** Um turno novo começou, com a ordem de ação dele e a energia que os dois times recebem. */

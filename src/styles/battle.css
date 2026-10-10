@@ -106,7 +106,8 @@
     border-radius: 10px;
     box-shadow: 0 10px 24px rgb(28 26 43 / 0.35);
     /*
-     * Cenário: a pintura da muralha (src/assets/scenery/muralha.webp). Ela é
+     * Cenário: a pintura sorteada para a batalha (src/assets/scenery; a muralha
+     * é a padrão, e as outras trocam só a imagem, logo abaixo). Ela é
      * um pouco ampliada, para a linha onde o piso começa ficar onde pisa o
      * último de cada fila, e termina onde acabavam os selos de status antes
      * de o painel de efeitos existir (44px abaixo das placas): dali para
@@ -116,6 +117,22 @@
      */
     background: #7d6a52 url('../assets/scenery/muralha.webp') center bottom calc(var(--bt-shelf) - 44px) / auto
         calc((100% - var(--bt-shelf-extra)) * 1.08) no-repeat;
+}
+
+/*
+ * Os outros cenários (o campo `arena` do estado da batalha). A posição e o
+ * tamanho são os mesmos da muralha: nas três pinturas o chão começa perto da
+ * metade da altura. A cor de fundo é a do chão de cada uma, e só aparece
+ * enquanto a imagem carrega.
+ */
+.bt-arena[data-arena='floresta'] {
+    background-color: #564a2c;
+    background-image: url('../assets/scenery/floresta.webp');
+}
+
+.bt-arena[data-arena='lago-gelado'] {
+    background-color: #8da4bc;
+    background-image: url('../assets/scenery/lago-gelado.webp');
 }
 
 /* O filete dourado por dentro da borda, por cima de tudo (o painel de efeitos o cobriria). */
@@ -3096,6 +3113,26 @@
             repeating-linear-gradient(0deg, rgb(28 26 43 / 0.12) 0 2px, transparent 2px 58px) 0 100% / 100% 44% no-repeat,
             linear-gradient(transparent 38%, #8a7458 56%, #6e5a44 100%),
             #6e5a44 url('../assets/scenery/muralha.webp') 72% 0 / auto 62% no-repeat;
+    }
+
+    /*
+     * Nos outros cenários, a pintura se desfaz na cor do chão de cada um, e
+     * sem as juntas do piso de pedra, que são da muralha.
+     */
+    .bt-arena[data-arena='floresta'] {
+        background-color: #564a2c;
+        background-image:
+            none,
+            linear-gradient(transparent 38%, #6f5f37 56%, #564a2c 100%),
+            url('../assets/scenery/floresta.webp');
+    }
+
+    .bt-arena[data-arena='lago-gelado'] {
+        background-color: #8da4bc;
+        background-image:
+            none,
+            linear-gradient(transparent 38%, #a7b8ca 56%, #8da4bc 100%),
+            url('../assets/scenery/lago-gelado.webp');
     }
 
     /* Menos espaço acima das figuras: os números empilham mais juntos. */

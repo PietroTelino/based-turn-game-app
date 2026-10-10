@@ -148,6 +148,7 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
                 className={['bt-arena', isCrowded && 'bt-arena--crowd', effects.quake && 'bt-arena--quake', isOver && !playerWon && 'bt-arena--lost']
                     .filter(Boolean)
                     .join(' ')}
+                data-arena={state.arena ?? 'muralha'}
             >
                 {/* Vem antes de tudo para ficar só sobre o cenário, atrás das figuras e dos selos. */}
                 {berserk > 0 && !isOver && <span className='bt-berserk-veil' aria-hidden='true' />}
