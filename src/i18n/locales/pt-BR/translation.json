@@ -23,7 +23,9 @@
         "sessions": "Sessões",
         "users": "Usuários",
         "audit": "Auditoria",
-        "logout": "Sair"
+        "logout": "Sair",
+        "menu": "Menu",
+        "closeMenu": "Fechar menu"
     },
     "auth": {
         "login": {

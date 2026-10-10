@@ -4,9 +4,11 @@ import { useAuth } from '@/contexts/AuthContext';
 
 interface HeaderProps {
     title: string;
+    /** Botão que abre e fecha o menu, quando ele fica escondido (Layout com hideMenu). */
+    menu?: { isOpen: boolean; onToggle: () => void };
 }
 
-export function Header({ title }: HeaderProps) {
+export function Header({ title, menu }: HeaderProps) {
     const { t } = useTranslation();
     const { logout } = useAuth();
     const navigate = useNavigate();
@@ -18,7 +20,21 @@ export function Header({ title }: HeaderProps) {
 
     return (
         <header className='app-header'>
-            <h1 className='app-header__title'>{title}</h1>
+            <div className='app-header__start'>
+                {menu && (
+                    <button
+                        type='button'
+                        className='app-header__menu'
+                        aria-expanded={menu.isOpen}
+                        aria-controls='app-menu'
+                        onClick={menu.onToggle}
+                    >
+                        <span className='app-header__burger' aria-hidden='true' />
+                        {t('nav.menu')}
+                    </button>
+                )}
+                <h1 className='app-header__title'>{title}</h1>
+            </div>
             <button onClick={handleLogout} className='app-header__logout'>
                 {t('nav.logout')}
             </button>

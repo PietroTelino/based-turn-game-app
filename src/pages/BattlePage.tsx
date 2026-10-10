@@ -361,7 +361,7 @@ export function BattlePage({ replay = false }: { replay?: boolean }) {
     const opening = (location.state as { opening?: BattleResponse } | null)?.opening;
 
     return (
-        <Layout title={t(replay ? 'replay.title' : 'battle.title')}>
+        <Layout title={t(replay ? 'replay.title' : 'battle.title')} hideMenu>
             {/* key: trocar de batalha (ou da batalha para o replay dela) recria a tela do zero */}
             {id && <BattleScreen key={`${replay ? 'replay' : 'battle'}-${id}`} battleId={id} isReplay={replay} {...(!replay && opening && { opening })} />}
         </Layout>

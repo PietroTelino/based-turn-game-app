@@ -4261,3 +4261,217 @@
         animation: none;
     }
 }
+
+/* --------------------------------------------- Batalha em tela de computador */
+
+/*
+ * Em tela larga, tudo da batalha cabe na tela sem rolar: o menu lateral fica
+ * escondido (abre pelo botão "Menu" do cabeçalho) e o painel com as
+ * habilidades ocupa o lugar dele, à esquerda, na altura da arena. A arena
+ * encolhe para caber na altura da janela: o tamanho de referência dela sai
+ * da largura que sobra ao lado do painel e da altura da janela, a que for
+ * menor. 96px são o cabeçalho (64px) e as margens da página, que na batalha
+ * são mais estreitas (32px, ver .app-shell--hidden-menu); 264px é
+ * o que a arena tem além das figuras (as placas, o painel de efeitos e a
+ * barra de cima). No treino, o guia fica embaixo da arena e também precisa
+ * caber (--bt-below). O painel é estreito (300px) para a arena manter o
+ * tamanho que tinha com o menu lateral: 1200px de largura numa tela de
+ * 1552px.
+ *
+ * O registro da batalha fica embaixo de tudo: quem quiser lê-lo rola a tela.
+ */
+@media (min-width: 1024px) {
+    .bt--battle {
+        --bt-hud-width: 300px;
+        --bt-below: 0px;
+        --bt-arena-unit: clamp(120px, min((100vw - 344px) * 0.34, (100dvh - 96px - 264px - var(--bt-below)) / 1.1), 296px);
+
+        display: grid;
+        grid-template-columns: var(--bt-hud-width) minmax(0, 1fr);
+        grid-template-areas:
+            'hud arena'
+            'log log';
+        gap: 12px;
+        max-width: calc(1200px + var(--bt-hud-width) + 12px);
+    }
+
+    .bt--battle:has(> .bt-coach) {
+        /* O guia tem 126px de altura mínima, mais o espaço entre ele e a arena. */
+        --bt-below: 138px;
+
+        grid-template-areas:
+            'hud arena'
+            'hud coach'
+            'log log';
+    }
+
+    /*
+     * Quando a arena fica baixa (janela baixa, ou o guia do treino embaixo),
+     * a pintura na altura de sempre não chegaria às laterais: ela cresce o
+     * bastante para cobrir a largura, presa pelo chão. 2.141 é a proporção da
+     * pintura (1600x807) vezes a ampliação de 1.08 da regra principal.
+     */
+    .bt--battle > .bt-arena {
+        grid-area: arena;
+        background-size: max(100%, calc((var(--bt-arena-unit) * 1.1 + 236px) * 2.141)) auto;
+    }
+
+    /* Times grandes: as figuras acompanham o tamanho da arena (fora daqui, elas seguem a largura da janela). */
+    .bt--battle .bt-arena--crowd {
+        --bt-unit: clamp(100px, calc(var(--bt-arena-unit) * 0.8), 236px);
+    }
+
+    .bt--battle > .bt-coach {
+        grid-area: coach;
+        margin-top: 0;
+    }
+
+    .bt--battle > .bt-log {
+        grid-area: log;
+        margin-top: 0;
+    }
+
+    /*
+     * O painel acompanha a altura da arena (contain: size: o tamanho dele não
+     * conta para a altura da linha). Em cima o título e a energia; no meio as
+     * habilidades; embaixo a dica, o botão de usar e, na última linha,
+     * desistir e o som. Os invólucros do cabeçalho e do rodapé somem
+     * (display: contents) para cada peça ocupar o seu lugar nessa grade. Se
+     * as habilidades não couberem numa janela muito baixa, só o meio rola.
+     */
+    .bt--battle > .bt-hud {
+        grid-area: hud;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-rows: auto auto minmax(0, 1fr) auto auto auto;
+        grid-template-areas:
+            'title title'
+            'energy energy'
+            'middle middle'
+            'hint hint'
+            'use use'
+            'surrender sound';
+        gap: 8px 12px;
+        min-height: 0;
+        margin-top: 0;
+        padding: 12px 14px 14px;
+        contain: size;
+    }
+
+    .bt--battle .bt-hud__head,
+    .bt--battle .bt-hud__side,
+    .bt--battle .bt-hud__foot,
+    .bt--battle .bt-hud__buttons {
+        display: contents;
+    }
+
+    .bt--battle .bt-hud__title {
+        grid-area: title;
+        font-size: 23px;
+    }
+
+    /* Gemas um pouco menores para a energia caber numa linha no painel estreito. */
+    .bt--battle .bt-hud__energy {
+        grid-area: energy;
+        white-space: nowrap;
+    }
+
+    .bt--battle .bt-hud__energy .bt-energy {
+        gap: 7px;
+    }
+
+    .bt--battle .bt-hud__energy .bt-energy__pips {
+        gap: 4px;
+    }
+
+    .bt--battle .bt-hud__energy .bt-energy__pip {
+        width: 9px;
+        height: 9px;
+    }
+
+    .bt--battle .bt-hud__energy .bt-energy__count {
+        min-width: 0;
+    }
+
+    .bt--battle .bt-hud .bt-sound {
+        grid-area: sound;
+    }
+
+    .bt--battle .bt-sound__volume {
+        width: 64px;
+    }
+
+    .bt--battle > .bt-hud > :nth-child(2) {
+        grid-area: middle;
+        min-height: 0;
+        overflow-y: auto;
+        /* Espaço para a sombra e o contorno de foco das habilidades não serem cortados. */
+        margin: 0 -6px;
+        padding: 2px 6px 4px;
+        scrollbar-width: thin;
+    }
+
+    .bt--battle .bt-hud__hint {
+        grid-area: hint;
+        min-height: 0;
+        font-size: 15px;
+        line-height: 1.3;
+    }
+
+    .bt--battle .bt-hud__buttons > .bt-btn:not(.bt-btn--quiet) {
+        grid-area: use;
+    }
+
+    .bt--battle .bt-hud__buttons > .bt-btn--quiet {
+        grid-area: surrender;
+    }
+
+    /*
+     * Habilidades numa coluna só. Quando as descrições não cabem na altura da
+     * arena, a lista fica compacta (bt-skills--compact, ver SkillBar): só a
+     * escolhida mostra a descrição; nas outras ela aparece ao parar o mouse
+     * em cima (title) ou ao escolher. A passiva mostra o começo da dela, e a
+     * que não dá para usar agora mostra o motivo (falta energia, por exemplo).
+     */
+    .bt--battle .bt-skills {
+        grid-template-columns: 1fr;
+        align-content: start;
+        gap: 7px;
+    }
+
+    .bt--battle .bt-skill {
+        padding: 6px 11px 8px;
+    }
+
+    .bt--battle .bt-skill__name {
+        font-size: 18px;
+    }
+
+    .bt--battle .bt-skill__text {
+        font-size: 14px;
+        line-height: 1.25;
+    }
+
+    .bt--battle .bt-skills--compact .bt-skill:not(.bt-skill--selected, .bt-skill--passive, .bt-skill--blocked) .bt-skill__text {
+        display: none;
+    }
+
+    .bt--battle .bt-skills--compact .bt-skill--passive .bt-skill__text {
+        display: -webkit-box;
+        overflow: hidden;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
+
+    .bt--battle .bt-skill__numbers {
+        padding-top: 3px;
+    }
+
+    .bt--battle .bt-hud__waiting {
+        min-height: 100%;
+    }
+
+    .bt--battle .bt-replay__speeds {
+        flex-wrap: wrap;
+        margin-right: 0;
+    }
+}

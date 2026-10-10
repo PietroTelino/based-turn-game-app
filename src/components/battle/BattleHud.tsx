@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CharacterArt } from './CharacterArt';
 import type { LogEntry } from '@/hooks/useBattle';
@@ -105,9 +106,30 @@ interface SkillBarProps {
 
 export function SkillBar({ actions, passives, charge, selectedSkillId, disabled, berserk, onSelect }: SkillBarProps) {
     const { t } = useTranslation();
+    const listRef = useRef<HTMLDivElement>(null);
+
+    /*
+     * Na tela larga a lista tem a altura do painel ao lado da arena. Se as
+     * descrições não couberem, ela fica compacta (bt-skills--compact): só a
+     * habilidade escolhida mostra a descrição. Mede de novo a cada vez nova,
+     * habilidade escolhida e mudança de tamanho da janela. Em tela estreita a
+     * lista cresce com o conteúdo e nunca fica compacta.
+     */
+    useLayoutEffect(() => {
+        const list = listRef.current;
+        if (!list) return;
+        const measure = () => {
+            list.classList.remove('bt-skills--compact');
+            list.classList.toggle('bt-skills--compact', list.scrollHeight > list.clientHeight + 1);
+        };
+        measure();
+        const observer = new ResizeObserver(measure);
+        observer.observe(list);
+        return () => observer.disconnect();
+    }, [actions, passives, selectedSkillId, disabled]);
 
     return (
-        <div className='bt-skills'>
+        <div ref={listRef} className='bt-skills'>
             {actions.map(({ skill, preview, usable, targetIds }) => {
                 const isSelected = !disabled && skill.id === selectedSkillId;
                 // Por que não dá para usar agora: sem alvo (nenhum cadáver para erguer) ou sem energia.
@@ -117,9 +139,11 @@ export function SkillBar({ actions, passives, charge, selectedSkillId, disabled,
                     <button
                         key={skill.id}
                         type='button'
-                        className={`bt-skill ${isSelected ? 'bt-skill--selected' : ''}`}
+                        className={`bt-skill ${isSelected ? 'bt-skill--selected' : ''} ${!usable && !disabled ? 'bt-skill--blocked' : ''}`}
                         disabled={disabled || !usable}
                         aria-pressed={isSelected}
+                        // A descrição completa ao parar o mouse em cima (na tela larga, só a escolhida a mostra).
+                        title={skill.description}
                         onClick={() => onSelect(skill.id)}
                     >
                         <span className='bt-skill__top'>
@@ -152,7 +176,7 @@ export function SkillBar({ actions, passives, charge, selectedSkillId, disabled,
             })}
             {/* Passiva não é botão: ninguém a usa, ela vale sozinha. */}
             {passives.map((passive) => (
-                <div key={passive.id} className='bt-skill bt-skill--passive'>
+                <div key={passive.id} className='bt-skill bt-skill--passive' title={passive.description}>
                     <span className='bt-skill__top'>
                         <span className='bt-skill__name'>{passive.name}</span>
                         <span className='bt-skill__cost bt-skill__cost--passive'>{t('battle.passive')}</span>

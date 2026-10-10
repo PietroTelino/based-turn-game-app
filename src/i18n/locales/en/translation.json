@@ -23,7 +23,9 @@
         "sessions": "Sessions",
         "users": "Users",
         "audit": "Audit",
-        "logout": "Logout"
+        "logout": "Logout",
+        "menu": "Menu",
+        "closeMenu": "Close menu"
     },
     "auth": {
         "login": {

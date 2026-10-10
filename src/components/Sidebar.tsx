@@ -21,7 +21,14 @@ const navItems: NavItem[] = [
     { key: 'audit', label: 'Auditoria', path: '/audit', roles: ['administrator', 'god'] },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+    /** Quando o menu abre por cima da tela (Layout com hideMenu). */
+    id?: string;
+    /** Chamado ao escolher uma página: fecha o menu que abre por cima da tela. */
+    onNavigate?: () => void;
+}
+
+export function Sidebar({ id, onNavigate }: SidebarProps = {}) {
     const { user } = useAuth();
     const { t, i18n } = useTranslation();
 
@@ -39,7 +46,7 @@ export function Sidebar() {
     }
 
     return (
-        <aside className='app-sidebar w-60 min-h-screen flex flex-col'>
+        <aside id={id} className='app-sidebar w-60 min-h-screen flex flex-col'>
 
             <div className='app-sidebar__brand'>Based Turn Game</div>
 
@@ -48,6 +55,7 @@ export function Sidebar() {
                     <NavLink
                         key={item.path}
                         to={item.path}
+                        onClick={onNavigate}
                         className={({ isActive }) => (isActive ? 'app-nav-link app-nav-link--active' : 'app-nav-link')}
                     >
                         {t(`nav.${item.key}`)}
