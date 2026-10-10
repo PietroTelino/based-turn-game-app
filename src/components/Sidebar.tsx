@@ -39,54 +39,38 @@ export function Sidebar() {
     }
 
     return (
-        <aside className='w-60 min-h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col'>
+        <aside className='app-sidebar w-60 min-h-screen flex flex-col'>
 
-            <div className='h-16 flex items-center px-6 border-b border-gray-200 dark:border-gray-800'>
-                <span className='text-lg font-bold text-gray-900 dark:text-white'>Based Turn Game</span>
-            </div>
+            <div className='app-sidebar__brand'>Based Turn Game</div>
 
-            <nav className='flex-1 px-3 py-4 flex flex-col gap-1'>
+            <nav className='app-sidebar__nav flex-1 px-3 py-4 flex flex-col gap-1'>
                 {visibleItems.map((item) => (
                     <NavLink
                         key={item.path}
                         to={item.path}
-                        className={({ isActive }) => `
-                            flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors
-                            ${isActive
-                                ? 'bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-400'
-                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white'
-                            }
-                        `}
+                        className={({ isActive }) => (isActive ? 'app-nav-link app-nav-link--active' : 'app-nav-link')}
                     >
                         {t(`nav.${item.key}`)}
                     </NavLink>
                 ))}
             </nav>
 
-            <div className='px-4 py-3 border-t border-gray-200 dark:border-gray-800'>
+            <div className='app-sidebar__section app-sidebar__lang px-4 py-3'>
                 <select
                     value={i18n.language}
                     onChange={handleLanguageChange}
-                    className='
-                        w-full text-xs px-2 py-1.5 rounded-lg border
-                        border-gray-200 dark:border-gray-700
-                        bg-white dark:bg-gray-800
-                        text-gray-600 dark:text-gray-400
-                        outline-none cursor-pointer
-                    '
+                    className='app-sidebar__select'
                 >
                     <option value='pt-BR'>🇧🇷 Português</option>
                     <option value='en'>🇺🇸 English</option>
                 </select>
             </div>
 
-            <div className='px-4 py-4 border-t border-gray-200 dark:border-gray-800'>
+            <div className='app-sidebar__section app-sidebar__user px-4 py-4'>
                 <div className='flex flex-col gap-0.5'>
-                    <span className='text-sm font-medium text-gray-900 dark:text-white truncate'>
-                        {user?.name}
-                    </span>
-                    <span className='text-xs text-gray-500 dark:text-gray-400 truncate'>{user?.email}</span>
-                    <span className='text-xs text-gray-400 dark:text-gray-500 capitalize'>{user?.role}</span>
+                    <span className='app-sidebar__name truncate'>{user?.name}</span>
+                    <span className='app-sidebar__meta truncate'>{user?.email}</span>
+                    <span className='app-sidebar__meta capitalize'>{user?.role}</span>
                 </div>
             </div>
         </aside>

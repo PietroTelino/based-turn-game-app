@@ -1430,13 +1430,19 @@
     margin: 4px 0 0;
 }
 
-/* Fora dos painéis, o texto fica sobre o fundo do app, que muda com o tema. */
+/*
+ * Fora dos painéis, o texto fica sobre o fundo do app, que muda com o tema:
+ * no escuro, títulos e textos soltos vão para o pergaminho, e os que estão
+ * dentro de um painel de pergaminho continuam em tinta.
+ */
 .dark .bt-play > header,
-.dark .bt-play__actions .bt-lead,
-.dark .bt-history > .bt-subtitle,
-.dark .bt-history > .bt-lead,
-.dark .bt-message {
+.dark .bt :is(.bt-title, .bt-subtitle, .bt-lead, .bt-message) {
     color: var(--bt-paper);
+}
+
+.dark .bt :is(.bt-panel, .bt-callout, .bt-coach, .bt-banner, .bt-result__card, .bt-hud, .bt-log, .bt-history__item, .bt-queue__item, .bt-chip)
+    :is(.bt-title, .bt-subtitle, .bt-lead, .bt-message) {
+    color: var(--bt-ink);
 }
 
 .bt-message {

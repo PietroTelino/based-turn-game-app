@@ -7,8 +7,9 @@ export function LoginPage() {
     const { form, errors, isSubmitting, handleChange, handleSubmit } = useLoginForm();
 
     return (
-        <div className='min-h-screen bg-gray-50 flex items-center justify-center p-4'>
-            <div className='w-full max-w-md bg-white rounded-2xl shadow-sm border border-gray-200 p-8'>
+        <div className='auth-page'>
+            <p className='auth-brand'>Based Turn Game</p>
+            <div className='auth-card'>
                 <div className='mb-8'>
                     <h1 className='text-2xl font-bold text-gray-900'>{t('auth.login.title')}</h1>
                     <p className='text-sm text-gray-500 mt-1'>{t('auth.login.subtitle')}</p>

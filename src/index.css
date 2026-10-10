@@ -2,6 +2,360 @@
 
 @variant dark (&:where(.dark, .dark *));
 
+/*
+ * Paleta da plataforma, tirada das cores do jogo (src/styles/battle.css).
+ *
+ * Em vez de trocar as classes do Tailwind tela por tela, as cores que elas
+ * usam é que mudam: `bg-white` vira o pergaminho claro das cartas, a escala
+ * `gray` vai do pergaminho (claro) até a tinta da moldura (escuro), `blue` é
+ * o azul do time aliado, `red` o vermelho do inimigo, `green` o verde da cura
+ * e `yellow` o dourado dos frisos. Assim o tema claro fica em pergaminho, o
+ * escuro em tinta, e telas novas já nascem nessas cores.
+ */
+@theme {
+    --font-sans: 'Alegreya Sans', 'Segoe UI', system-ui, sans-serif;
+    --font-display: 'Almendra', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+
+    --color-white: #f9f2df;
+
+    --color-gray-50: #eadfc6;
+    --color-gray-100: #e2d4b9;
+    --color-gray-200: #d4c4a5;
+    --color-gray-300: #bdac8c;
+    --color-gray-400: #9f8e72;
+    --color-gray-500: #817059;
+    --color-gray-600: #635442;
+    --color-gray-700: #423c4e;
+    --color-gray-800: #2f2b3b;
+    --color-gray-900: #1e1c2b;
+    --color-gray-950: #0f0d1a;
+
+    --color-blue-50: #dfe8f9;
+    --color-blue-100: #cfddf8;
+    --color-blue-200: #b7cbf3;
+    --color-blue-300: #94b1eb;
+    --color-blue-400: #6c90dc;
+    --color-blue-500: #4970c6;
+    --color-blue-600: #3155a8;
+    --color-blue-700: #254590;
+    --color-blue-800: #1c3673;
+    --color-blue-900: #132857;
+    --color-blue-950: #09183b;
+
+    --color-red-50: #fce1dd;
+    --color-red-100: #fcd1ca;
+    --color-red-200: #fbb7ae;
+    --color-red-300: #ef958a;
+    --color-red-400: #db6d60;
+    --color-red-500: #c4483e;
+    --color-red-600: #a63129;
+    --color-red-700: #8d251f;
+    --color-red-800: #721d17;
+    --color-red-900: #55110e;
+    --color-red-950: #340907;
+
+    --color-green-50: #deeed7;
+    --color-green-100: #cce5c1;
+    --color-green-200: #b3d7a3;
+    --color-green-300: #91c17a;
+    --color-green-400: #72aa56;
+    --color-green-500: #5b913d;
+    --color-green-600: #47782c;
+    --color-green-700: #37621e;
+    --color-green-800: #2b4d17;
+    --color-green-900: #1d380e;
+    --color-green-950: #112209;
+
+    --color-yellow-50: #f7eace;
+    --color-yellow-100: #f1deb3;
+    --color-yellow-200: #ebcd8c;
+    --color-yellow-300: #ddb966;
+    --color-yellow-400: #c8a24b;
+    --color-yellow-500: #ad8a35;
+    --color-yellow-600: #8f7023;
+    --color-yellow-700: #745914;
+    --color-yellow-800: #5a440d;
+    --color-yellow-900: #43330a;
+    --color-yellow-950: #291d03;
+
+    /* Cantos mais secos, como os das molduras do jogo. */
+    --radius-lg: 0.375rem;
+    --radius-xl: 0.5rem;
+    --radius-2xl: 0.625rem;
+}
+
+@layer base {
+    body {
+        background: var(--color-gray-50);
+        color: var(--color-gray-900);
+    }
+
+    /* Títulos na mesma letra dos nomes do jogo. */
+    h1,
+    h2,
+    h3 {
+        font-family: var(--font-display);
+    }
+
+    ::selection {
+        background: #ecd07a;
+        color: #1c1a2b;
+    }
+
+    :focus-visible {
+        outline: 2px solid #c8a24b;
+        outline-offset: 2px;
+    }
+}
+
+/* ------------------------------------------------------------ Menu lateral */
+
+/*
+ * A faixa de tinta do lado esquerdo, com o friso dourado na borda, igual à
+ * moldura das cartas e da arena. É a mesma nos temas claro e escuro.
+ */
+.app-sidebar {
+    background: linear-gradient(180deg, #262236 0%, #1c1a2b 45%, #15131f 100%);
+    border-right: 2px solid #0d0c14;
+    box-shadow: inset -1px 0 0 #8f7023;
+    color: #d4c4a5;
+}
+
+.app-sidebar__brand {
+    display: flex;
+    align-items: center;
+    height: 4rem;
+    padding: 0 1.5rem;
+    border-bottom: 1px solid rgb(200 162 75 / 0.35);
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #ecd07a;
+    text-shadow: 0 2px 0 #0d0c14;
+}
+
+.app-nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #d4c4a5;
+    transition:
+        background-color 0.15s,
+        color 0.15s;
+}
+
+.app-nav-link:hover {
+    background: rgb(239 227 196 / 0.08);
+    color: #f9f2df;
+}
+
+/* A página aberta: friso dourado à esquerda e o nome em ouro. */
+.app-nav-link--active,
+.app-nav-link--active:hover {
+    background: rgb(200 162 75 / 0.16);
+    box-shadow: inset 3px 0 0 #c8a24b;
+    color: #ecd07a;
+}
+
+.app-sidebar__section {
+    border-top: 1px solid rgb(200 162 75 / 0.2);
+}
+
+.app-sidebar__select {
+    width: 100%;
+    padding: 0.375rem 0.5rem;
+    border: 1px solid #423c4e;
+    border-radius: 0.375rem;
+    background: #2f2b3b;
+    color: #e2d4b9;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.app-sidebar__name {
+    font-weight: 700;
+    color: #f9f2df;
+}
+
+.app-sidebar__meta {
+    font-size: 0.78rem;
+    color: #9f8e72;
+}
+
+/*
+ * No celular a faixa lateral vira uma faixa no topo: o nome do jogo e o
+ * idioma numa linha, e as páginas numa fileira que rola para o lado.
+ */
+@media (max-width: 767px) {
+    .app-shell {
+        flex-direction: column;
+    }
+
+    .app-sidebar {
+        position: relative;
+        width: 100%;
+        min-height: 0;
+        border-right: none;
+        border-bottom: 2px solid #0d0c14;
+        box-shadow: inset 0 -1px 0 #8f7023;
+    }
+
+    .app-sidebar__brand {
+        height: 3.25rem;
+        padding: 0 1rem;
+        font-size: 1.15rem;
+    }
+
+    .app-sidebar__nav {
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 0.5rem 0.75rem 0.625rem;
+        scrollbar-width: none;
+    }
+
+    .app-sidebar__nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .app-nav-link {
+        flex: none;
+        white-space: nowrap;
+    }
+
+    .app-nav-link--active,
+    .app-nav-link--active:hover {
+        box-shadow: inset 0 -3px 0 #c8a24b;
+    }
+
+    .app-sidebar__lang {
+        position: absolute;
+        top: 0.625rem;
+        right: 1rem;
+        width: 8.5rem;
+        padding: 0;
+        border: none;
+    }
+
+    .app-sidebar__user {
+        display: none;
+    }
+
+    .app-header {
+        height: 3.25rem;
+        padding: 0 1rem;
+    }
+
+    .app-header__title {
+        font-size: 1.2rem;
+    }
+
+    .app-main {
+        padding: 1rem;
+    }
+}
+
+/* -------------------------------------------------------------- Cabeçalho */
+
+/* Faixa de pergaminho com a borda de tinta e o friso dourado por dentro. */
+.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 4rem;
+    padding: 0 1.5rem;
+    border-bottom: 3px solid #1c1a2b;
+    box-shadow: inset 0 -1px 0 #c8a24b;
+    background: #f9f2df;
+}
+
+.app-header__title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1c1a2b;
+}
+
+.app-header__logout {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #635442;
+    cursor: pointer;
+    transition: color 0.15s;
+}
+
+.app-header__logout:hover {
+    color: #a63129;
+}
+
+.dark .app-header {
+    background: #2f2b3b;
+}
+
+.dark .app-header__title {
+    color: #f9f2df;
+}
+
+.dark .app-header__logout {
+    color: #bdac8c;
+}
+
+.dark .app-header__logout:hover {
+    color: #db6d60;
+}
+
+/* --------------------------------------------- Entrada, cadastro e senha */
+
+/*
+ * Antes de entrar no jogo: a muralha ao fundo, escurecida, e o formulário
+ * numa carta de pergaminho com a moldura do jogo.
+ */
+.auth-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+    background:
+        linear-gradient(rgb(15 13 26 / 0.45), rgb(15 13 26 / 0.8)),
+        #2f2b3b url('./assets/scenery/muralha.webp') center / cover no-repeat;
+}
+
+.auth-brand {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 6vw, 2.75rem);
+    font-weight: 700;
+    line-height: 1.1;
+    text-align: center;
+    color: #ecd07a;
+    text-shadow:
+        0 2px 0 #0d0c14,
+        0 6px 18px rgb(0 0 0 / 0.55);
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 28rem;
+    padding: 2rem;
+    border: 3px solid #1c1a2b;
+    border-radius: 10px;
+    background: #f9f2df;
+    box-shadow:
+        inset 0 0 0 1px #c8a24b,
+        0 18px 40px rgb(0 0 0 / 0.45);
+}
+
+@media (max-width: 480px) {
+    .auth-card {
+        padding: 1.5rem 1.25rem;
+    }
+}
+
+/* ------------------------------------------------------------------------ */
+
 @keyframes fade-in {
     from {
         opacity: 0;
@@ -15,4 +369,10 @@
 
 .animate-fade-in {
     animation: fade-in 0.2s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .animate-fade-in {
+        animation: none;
+    }
 }
