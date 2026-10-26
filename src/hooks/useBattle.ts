@@ -881,6 +881,8 @@ export function useBattle(battleId: string, opening?: BattleResponse, options: {
         replay,
         /** Quem pode ser clicado agora para confirmar a habilidade selecionada. */
         targetIds: canAct && selected ? selected.targetIds : [],
+        /** O que a habilidade selecionada faria em cada alvo possível. */
+        targetPreviews: canAct && selected ? (selected.targets ?? []) : [],
         selectSkill: (skillId: string) => {
             sfx.play('click');
             setSelectedSkillId(skillId);

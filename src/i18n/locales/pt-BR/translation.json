@@ -365,6 +365,13 @@
         "notEnoughEnergy": "Falta energia para usar agora.",
         "baseDamage": "Dano base",
         "baseHeal": "Cura base",
+        "preview": {
+            "damage": "Prévia: tira {{amount}} de vida",
+            "heal": "Prévia: cura {{amount}}",
+            "defeats": "Derruba",
+            "crit": "Crítico: {{amount}} ({{chance}}%)",
+            "shield": "Escudo segura {{amount}}"
+        },
         "hp": "{{hp}} de {{max}} de vida",
         "banner": "{{unit}} usa {{skill}}!",
         "victory": "Vitória!",

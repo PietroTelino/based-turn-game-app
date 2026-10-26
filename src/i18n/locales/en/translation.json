@@ -365,6 +365,13 @@
         "notEnoughEnergy": "Not enough energy right now.",
         "baseDamage": "Base damage",
         "baseHeal": "Base heal",
+        "preview": {
+            "damage": "Preview: deals {{amount}} damage",
+            "heal": "Preview: heals {{amount}}",
+            "defeats": "Defeats",
+            "crit": "Critical: {{amount}} ({{chance}}%)",
+            "shield": "Shield blocks {{amount}}"
+        },
         "hp": "{{hp}} of {{max}} health",
         "banner": "{{unit}} uses {{skill}}!",
         "victory": "Victory!",

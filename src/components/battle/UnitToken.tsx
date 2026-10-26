@@ -5,7 +5,7 @@ import { StatusBadges } from './StatusBadges';
 import type { Impact, SkillFx } from '@/battle/fx';
 import { bonusOf } from '@/battle/passives';
 import type { Floater } from '@/hooks/useBattle';
-import type { BattleUnit } from '@/types/battle';
+import type { BattleUnit, TargetPreview } from '@/types/battle';
 
 interface UnitTokenProps {
     unit: BattleUnit;
@@ -21,6 +21,8 @@ interface UnitTokenProps {
     /** Acabou de ser derrotada: anima a queda. */
     isFalling: boolean;
     isTargetable: boolean;
+    /** O que a habilidade selecionada faria nesta unidade (só quando ela é um alvo possível). */
+    preview: TargetPreview | null;
     impact: Impact | null;
     floaters: Floater[];
     onSelect: (unitId: string) => void;
@@ -33,13 +35,17 @@ function hpColor(ratio: number): string {
 }
 
 /** Uma unidade no campo: desenho, nome, barra de vida e os números que sobem. */
-export function UnitToken({ unit, units, isActive, acting, isHit, isHealed, isMorphing, isFalling, isTargetable, impact, floaters, onSelect }: UnitTokenProps) {
+export function UnitToken({ unit, units, isActive, acting, isHit, isHealed, isMorphing, isFalling, isTargetable, preview, impact, floaters, onSelect }: UnitTokenProps) {
     const { t } = useTranslation();
     const ratio = unit.hp / unit.stats.maxHp;
     const isDown = unit.hp <= 0;
     const statuses = unit.statuses ?? [];
     const shield = statuses.find((status) => status.kind === 'shield');
     const charge = isDown ? null : bonusOf(unit, units);
+    /** A vida que o golpe tira de fato: o que o escudo segura não sai da vida. */
+    const hpLoss = preview?.damage != null ? preview.damage - preview.absorbed : null;
+    const previewText =
+        hpLoss !== null ? t('battle.preview.damage', { amount: hpLoss }) : preview?.heal ? t('battle.preview.heal', { amount: preview.heal }) : null;
 
     const classes = [
         'bt-unit',
@@ -78,6 +84,8 @@ export function UnitToken({ unit, units, isActive, acting, isHit, isHealed, isMo
                               : t('battle.passiveCharge', { passive: charge.passive.name, percent: charge.percent }),
                       ]
                     : []),
+                ...(previewText ? [previewText] : []),
+                ...(preview?.defeats ? [t('battle.preview.defeats')] : []),
             ].join('. ')}
         >
             {/* A figura é maior que a área clicável e passa por cima das vizinhas. */}
@@ -100,6 +108,27 @@ export function UnitToken({ unit, units, isActive, acting, isHit, isHealed, isMo
             </span>
 
             <span className='bt-unit__plate'>
+                {/*
+                 * Prévia: quanto a habilidade selecionada tira (ou cura) desta
+                 * unidade, com o crítico e o escudo. Aparece ao parar o mouse em
+                 * cima (veja .bt-preview no CSS).
+                 * Aliado com a vida cheia não mostra nada: a cura não faria nada.
+                 */}
+                {preview && (hpLoss !== null || (preview.heal ?? 0) > 0) && (
+                    <span
+                        className={['bt-preview', hpLoss === null && 'bt-preview--heal', preview.defeats && 'bt-preview--defeats'].filter(Boolean).join(' ')}
+                        aria-hidden='true'
+                    >
+                        {preview.defeats && <span className='bt-preview__tag'>{t('battle.preview.defeats')}</span>}
+                        <span className='bt-preview__amount'>{hpLoss !== null ? `−${hpLoss}` : `+${preview.heal}`}</span>
+                        {preview.absorbed > 0 && <span className='bt-preview__detail bt-preview__detail--shield'>{t('battle.preview.shield', { amount: preview.absorbed })}</span>}
+                        {preview.critDamage !== null && preview.critChance > 0 && preview.critDamage !== preview.damage && (
+                            <span className='bt-preview__detail'>
+                                {t('battle.preview.crit', { amount: preview.critDamage, chance: Math.round(preview.critChance * 100) })}
+                            </span>
+                        )}
+                    </span>
+                )}
                 {/* Nome comprido (Guerreiro Esqueleto) quebra em duas linhas menores em vez de ser cortado. */}
                 <span className={unit.name.length > 12 ? 'bt-unit__name bt-unit__name--long' : 'bt-unit__name'}>{unit.name}</span>
                 <span className='bt-hp'>

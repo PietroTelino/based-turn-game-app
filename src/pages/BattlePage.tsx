@@ -39,6 +39,7 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
         turnSecondsLeft,
         replay,
         targetIds,
+        targetPreviews,
         selectSkill,
         act,
         canSurrender,
@@ -90,6 +91,7 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
                             isMorphing={effects.morphingUnitIds.includes(unit.id)}
                             isFalling={effects.fallingUnitIds.includes(unit.id)}
                             isTargetable={targetIds.includes(unit.id)}
+                            preview={targetPreviews.find((preview) => preview.unitId === unit.id) ?? null}
                             impact={effects.impacts.find((impact) => impact.unitId === unit.id) ?? null}
                             floaters={effects.floaters.filter((floater) => floater.unitId === unit.id)}
                             onSelect={(unitId) => play(unitId)}
@@ -188,7 +190,8 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
                     </span>
                 </div>
 
-                <div className='bt-field'>
+                {/* Habilidade em área: o mouse em qualquer alvo mostra a prévia em todos (veja .bt-field--area). */}
+                <div className={canAct && selected && !selected.requiresTarget ? 'bt-field bt-field--area' : 'bt-field'}>
                     {renderTeam(playerTeam, 'left')}
                     {renderTeam(enemyTeam, 'right')}
                 </div>
