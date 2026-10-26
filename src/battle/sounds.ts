@@ -16,9 +16,10 @@ const ELEMENT_SOUND: Record<SkillElement, SoundName> = {
     nature: 'nature',
     light: 'light',
     shadow: 'shadow',
+    sound: 'sound',
 };
 
-const GOOD_STATUS: StatusKind[] = ['atk_up', 'def_up', 'speed_up', 'passive_up', 'taunt', 'counter'];
+const GOOD_STATUS: StatusKind[] = ['atk_up', 'def_up', 'speed_up', 'passive_up', 'taunt', 'counter', 'guard'];
 
 /**
  * Os sons de um beat. Os tempos acompanham as animações de battle.css:

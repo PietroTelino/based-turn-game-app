@@ -773,6 +773,15 @@
     }
 }
 
+/* Alvo protegido: diz em quem o golpe vai cair. */
+.bt-preview__tag--guard {
+    color: #8f7023;
+}
+
+.bt-preview--defeats .bt-preview__tag--guard {
+    color: var(--bt-gold-bright);
+}
+
 .bt-preview__detail {
     display: none;
     font-size: 12px;
@@ -2531,6 +2540,13 @@
     --fx-c: #3d1a66;
 }
 
+/* Som (o Bardo): o verde-água da capa dele, com brilho dourado */
+.bt-el--sound {
+    --fx-a: #fff6d6;
+    --fx-b: #5fd3c2;
+    --fx-c: #2a6f8a;
+}
+
 /* Camada por cima do campo: projéteis e ataques em área (FxLayer.tsx). */
 .bt-fx {
     position: absolute;
@@ -2728,21 +2744,24 @@
     animation: bt-gust 0.5s calc(0.2s + var(--i) * 0.08s) ease-in forwards;
 }
 
-/* Físico e sombra (o grito): onda de choque que nasce em quem usou (--sx, --sy) e cresce até os alvos */
+/* Físico, sombra (o grito) e som: onda de choque que nasce em quem usou (--sx, --sy) e cresce até os alvos */
 .bt-area--physical,
-.bt-area--shadow {
+.bt-area--shadow,
+.bt-area--sound {
     inset: 0;
     width: auto;
     height: auto;
 }
 
 .bt-area--physical::before,
-.bt-area--shadow::before {
+.bt-area--shadow::before,
+.bt-area--sound::before {
     content: none;
 }
 
 .bt-area--physical i,
-.bt-area--shadow i {
+.bt-area--shadow i,
+.bt-area--sound i {
     top: var(--sy);
     left: var(--sx);
     width: calc(var(--reach) * 2);
@@ -2756,13 +2775,21 @@
 }
 
 .bt-area--physical i:nth-child(n + 4),
-.bt-area--shadow i:nth-child(n + 4) {
+.bt-area--shadow i:nth-child(n + 4),
+.bt-area--sound i:nth-child(n + 4) {
     display: none;
 }
 
 .bt-area--shadow i {
     border-color: var(--fx-b);
     box-shadow: 0 0 22px 6px var(--fx-c), inset 0 0 22px 6px var(--fx-c);
+}
+
+/* Som: ondas finas e duplas, como a vibração de uma corda */
+.bt-area--sound i {
+    border-width: 3px;
+    border-color: var(--fx-b);
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--fx-a) 55%, transparent), 0 0 14px 4px var(--fx-c);
 }
 
 /*
@@ -2980,6 +3007,26 @@
     filter: drop-shadow(0 0 5px var(--fx-b)) drop-shadow(0 0 2px var(--fx-c));
     rotate: -34deg;
     animation: bt-slash 0.36s ease-out both;
+}
+
+/* Som: anéis que se abrem a partir do alvo e faíscas douradas */
+.bt-impact--sound i {
+    width: 10%;
+    height: 10%;
+    margin: -5% 0 0 -5%;
+    background: radial-gradient(closest-side, var(--fx-a) 30%, var(--fx-b));
+    rotate: calc(var(--i) * 60deg);
+    animation: bt-spore 0.6s calc(var(--i) * 0.04s) ease-out both;
+}
+
+.bt-impact--sound::after {
+    content: '';
+    position: absolute;
+    inset: 4%;
+    border: 3px solid var(--fx-b);
+    border-radius: 50%;
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--fx-a) 45%, transparent), 0 0 12px var(--fx-c);
+    animation: bt-ring 0.55s ease-out both;
 }
 
 /* Cura, bônus e penalidade: uma aura e sinais subindo (ou descendo) */

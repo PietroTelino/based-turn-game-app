@@ -255,6 +255,36 @@ function describe(
                 team: event.team,
             };
 
+        case 'energy_lost':
+            return {
+                text: t(event.team === playerTeam ? 'battle.log.energyLost' : 'battle.log.enemyEnergyLost', { count: event.amount }),
+                team: units.get(event.unitId)?.team ?? null,
+            };
+
+        case 'dispelled':
+            return {
+                text: t('battle.log.dispelled', {
+                    target: units.get(event.targetId)?.name,
+                    statuses: event.statuses.map((status) => t(`battle.status.${status}`)).join(', '),
+                }),
+                team: units.get(event.sourceId)?.team ?? null,
+            };
+
+        case 'chain_jump':
+            return { text: t('battle.log.chainJump', { target: units.get(event.toId)?.name }), team: units.get(event.sourceId)?.team ?? null };
+
+        case 'guarded': {
+            const unit = units.get(event.unitId);
+
+            return { text: t('battle.log.guarded', { unit: unit?.name, target: units.get(event.protectedId)?.name }), team: unit?.team ?? null };
+        }
+
+        case 'revived': {
+            const unit = units.get(event.unitId);
+
+            return { text: t('battle.log.revived', { unit: units.get(event.sourceId)?.name, target: unit?.name, hp: event.hp }), team: unit?.team ?? null };
+        }
+
         case 'unit_activated':
         case 'status_expired':
         case 'statuses_changed':
@@ -277,7 +307,12 @@ function isAftermath(event: BattleEvent): boolean {
         event.type === 'statuses_changed' ||
         event.type === 'order_changed' ||
         event.type === 'passive_triggered' ||
-        event.type === 'energy_gained'
+        event.type === 'energy_gained' ||
+        event.type === 'energy_lost' ||
+        event.type === 'dispelled' ||
+        event.type === 'chain_jump' ||
+        event.type === 'guarded' ||
+        event.type === 'revived'
     );
 }
 
@@ -365,6 +400,25 @@ function effectsOf(
 
         if (event.type === 'energy_gained') {
             effects.floaters.push({ id: nextId(), unitId: event.unitId, text: t('battle.energyFloater', { count: event.amount }), kind: 'passive' });
+        }
+
+        if (event.type === 'energy_lost') {
+            effects.floaters.push({ id: nextId(), unitId: event.unitId, text: t('battle.energyLostFloater', { count: event.amount }), kind: 'passive' });
+        }
+
+        if (event.type === 'dispelled') {
+            effects.floaters.push({ id: nextId(), unitId: event.targetId, text: t('battle.dispelled'), kind: 'status' });
+        }
+
+        if (event.type === 'guarded') {
+            effects.floaters.push({ id: nextId(), unitId: event.unitId, text: t('battle.guarded'), kind: 'passive' });
+        }
+
+        if (event.type === 'revived') {
+            // Volta com o mesmo clarão de uma transformação, e a vida nova sobe em verde.
+            effects.morphingUnitIds.push(event.unitId);
+            effects.healedUnitIds.push(event.unitId);
+            effects.floaters.push({ id: nextId(), unitId: event.unitId, text: t('battle.revived'), kind: 'heal' });
         }
 
         if (event.type === 'order_changed') {

@@ -14,7 +14,7 @@ export interface PassiveCharge {
      * dano; cadáveres (Necromante) são quantos aliados caídos ele ainda pode
      * erguer.
      */
-    kind: 'stacks' | 'wounded' | 'hunt' | 'corpses';
+    kind: 'stacks' | 'wounded' | 'hunt' | 'corpses' | 'zeal';
     /** 'stacks', 'wounded' e 'hunt': quanto a passiva soma ao dano dos golpes agora, em porcentagem (15 = +15%). */
     percent: number;
     /** 'corpses': quantos cadáveres há. */
@@ -22,18 +22,21 @@ export interface PassiveCharge {
 }
 
 /**
- * As cargas da passiva que acumula com roubo de vida, ou null se a unidade
+ * As cargas da passiva que acumula (com roubo de vida ou tirando efeitos), ou null se a unidade
  * não tem uma ou ainda não acumulou nada. `stacks` permite perguntar por um
  * total que ainda não está na unidade (o que acabou de chegar num evento).
  */
 export function chargeOf(unit: BattleUnit | undefined, stacks = unit?.passiveStacks ?? 0): PassiveCharge | null {
-    const passive = unit?.passives?.find((item) => item.effect.type === 'damage_per_drain');
+    const passive = unit?.passives?.find((item) => item.effect.type === 'damage_per_drain' || item.effect.type === 'damage_per_dispel');
 
-    if (!passive || passive.effect.type !== 'damage_per_drain' || stacks <= 0) {
+    if (!passive || (passive.effect.type !== 'damage_per_drain' && passive.effect.type !== 'damage_per_dispel') || stacks <= 0) {
         return null;
     }
 
-    return { passive, percent: toPercent(passive.effect.amount * stacks), count: stacks, kind: 'stacks' };
+    // Cargas de roubo de vida (Vampiro) ou de efeitos tirados dos inimigos (Inquisidora): a conta é a mesma.
+    const kind = passive.effect.type === 'damage_per_dispel' ? 'zeal' : 'stacks';
+
+    return { passive, percent: toPercent(passive.effect.amount * stacks), count: stacks, kind };
 }
 
 /** Os cadáveres que a passiva da unidade conta (zero também vale: é o que ela mostra depois de erguer o último). */

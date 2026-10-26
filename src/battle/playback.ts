@@ -44,13 +44,18 @@ function isEffect(event: BattleEvent): boolean {
         event.type === 'status_damage' ||
         // No meio de uma habilidade, a passiva e a energia que ela devolve aparecem junto com o golpe.
         event.type === 'passive_triggered' ||
-        event.type === 'energy_gained'
+        event.type === 'energy_gained' ||
+        event.type === 'energy_lost' ||
+        event.type === 'dispelled' ||
+        event.type === 'chain_jump' ||
+        event.type === 'revived'
     );
 }
 
 /** Eventos que só atualizam dados, sem animação própria: entram no beat anterior. */
 function isSilent(event: BattleEvent): boolean {
-    return event.type === 'statuses_changed' || event.type === 'status_expired' || event.type === 'order_changed';
+    // A proteção vem logo depois de skill_used: entra no anúncio da habilidade.
+    return event.type === 'statuses_changed' || event.type === 'status_expired' || event.type === 'order_changed' || event.type === 'guarded';
 }
 
 export function toBeats(events: BattleEvent[]): Beat[] {
@@ -141,7 +146,18 @@ export function applyEvents(state: BattleState, events: BattleEvent[]): BattleSt
 
             case 'skill_used':
             case 'energy_gained':
+            case 'energy_lost':
                 next = { ...next, energy: { ...next.energy, [event.team]: event.energy } };
+                break;
+
+            // Voltou à batalha: vida nova, sem status, na forma original.
+            case 'revived':
+                next = {
+                    ...next,
+                    units: next.units.map((unit) =>
+                        unit.id !== event.unitId ? unit : { ...(unit.form === undefined ? unit : withForm(unit, null, event.hp)), hp: event.hp, statuses: [] },
+                    ),
+                };
                 break;
 
             case 'damage':
@@ -199,6 +215,9 @@ export function applyEvents(state: BattleState, events: BattleEvent[]): BattleSt
             case 'extra_action':
             case 'counter_attack':
             case 'cleansed':
+            case 'dispelled':
+            case 'chain_jump':
+            case 'guarded':
             case 'unit_defeated':
             case 'status_applied':
             case 'status_expired':

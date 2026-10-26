@@ -370,7 +370,8 @@
             "heal": "Prévia: cura {{amount}}",
             "defeats": "Derruba",
             "crit": "Crítico: {{amount}} ({{chance}}%)",
-            "shield": "Escudo segura {{amount}}"
+            "shield": "Escudo segura {{amount}}",
+            "guardedBy": "Vai em {{unit}}"
         },
         "hp": "{{hp}} de {{max}} de vida",
         "banner": "{{unit}} usa {{skill}}!",
@@ -415,7 +416,8 @@
             "heal_down": "Cura reduzida",
             "stealth": "Escondido",
             "counter": "Contra-ataque",
-            "form": "Transformado"
+            "form": "Transformado",
+            "guard": "Protegido"
         },
         "statusHelp": {
             "growing": "Esse dano sobe {{amount}} a cada turno enquanto o efeito durar.",
@@ -435,7 +437,8 @@
             "heal_down": "Recebe {{percent}}% a menos de cura.",
             "stealth": "Não pode ser escolhido como alvo. Golpes em área ainda acertam. Acaba quando agir ou levar dano.",
             "counter": "Revida com o ataque básico todo golpe que levar de um inimigo (se algum inimigo provoca, o revide vai nele). Dano de veneno, queimadura e sangramento não conta.",
-            "form": "Está em outra forma. Quando acabar, volta à forma original."
+            "form": "Está em outra forma. Quando acabar, volta à forma original.",
+            "guard": "Os golpes de alvo único dos inimigos aqui vão para quem protege."
         },
         "statShort": {
             "atk": "Atq",
@@ -472,7 +475,13 @@
             "passive": "Passiva de {{unit}}: {{passive}}",
             "energyGained": "Seu time recuperou {{count}} de energia",
             "enemyEnergyGained": "O inimigo recuperou {{count}} de energia",
-            "passiveCharge": "Passiva de {{unit}}: {{passive}} (+{{percent}}% de dano)"
+            "passiveCharge": "Passiva de {{unit}}: {{passive}} (+{{percent}}% de dano)",
+            "energyLost": "Seu time perdeu {{count}} de energia",
+            "enemyEnergyLost": "O inimigo perdeu {{count}} de energia",
+            "dispelled": "{{target}} perdeu: {{statuses}}",
+            "chainJump": "O raio saltou para {{target}}",
+            "guarded": "{{unit}} protegeu {{target}} e recebeu o golpe",
+            "revived": "{{unit}} trouxe {{target}} de volta com {{hp}} de vida"
         },
         "waitingOpponent": "Esperando a jogada do adversário...",
         "waitingOpponentLong": "É a vez do outro jogador. Assim que ele jogar, a jogada aparece aqui.",
@@ -502,7 +511,15 @@
         "ratingUp": "+{{count}} pontos",
         "ratingDown": "−{{count}} pontos",
         "ratingSame": "0 pontos",
-        "newRanked": "Nova partida"
+        "newRanked": "Nova partida",
+        "energyLostFloater": "−{{count}} de energia (inimigo)",
+        "dispelled": "Efeitos removidos",
+        "guarded": "Protege!",
+        "revived": "De volta!",
+        "usedUp": "Já usada nesta batalha.",
+        "noFallen": "Nenhum aliado caído para trazer de volta.",
+        "revivesCorpse": "{{skill}} traz {{unit}} de volta à batalha.",
+        "oncePerBattle": "1 vez por batalha"
     },
     "multiplayer": {
         "title": "Multiplayer",

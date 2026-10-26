@@ -24,6 +24,7 @@ export const SOUND_NAMES = [
     'nature',
     'light',
     'shadow',
+    'sound',
     'heal',
     'shield',
     'boon',
@@ -226,6 +227,15 @@ const RECIPES: Record<SoundName, (voice: Voice) => void> = {
         voice.tone({ type: 'sine', from: 494, to: 247, duration: 0.5, gain: 0.12, attack: 0.05 });
         voice.tone({ type: 'triangle', from: 110, to: 62, duration: 0.45, gain: 0.3, attack: 0.02 });
         voice.noise({ filter: 'bandpass', from: 1400, to: 350, q: 1.5, duration: 0.5, gain: 0.22, attack: 0.08 });
+    },
+
+    // Som (o Bardo): três cordas dedilhadas subindo um acorde, com um brilho no fim.
+    sound(voice) {
+        [392, 494, 587, 784].forEach((frequency, index) => {
+            voice.tone({ type: 'triangle', from: frequency, at: index * 0.06, duration: 0.42, gain: 0.16, attack: 0.004 });
+            voice.tone({ type: 'sine', from: frequency * 2, at: index * 0.06, duration: 0.2, gain: 0.05, attack: 0.004 });
+        });
+        voice.tone({ type: 'sine', from: 1175, to: 1185, at: 0.24, duration: 0.5, gain: 0.05, attack: 0.03 });
     },
 
     // Suporte e status

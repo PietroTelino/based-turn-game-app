@@ -119,6 +119,11 @@ export function UnitToken({ unit, units, isActive, acting, isHit, isHealed, isMo
                         className={['bt-preview', hpLoss === null && 'bt-preview--heal', preview.defeats && 'bt-preview--defeats'].filter(Boolean).join(' ')}
                         aria-hidden='true'
                     >
+                        {preview.guardedBy && (
+                            <span className='bt-preview__tag bt-preview__tag--guard'>
+                                {t('battle.preview.guardedBy', { unit: units.find((item) => item.id === preview.guardedBy)?.name })}
+                            </span>
+                        )}
                         {preview.defeats && <span className='bt-preview__tag'>{t('battle.preview.defeats')}</span>}
                         <span className='bt-preview__amount'>{hpLoss !== null ? `−${hpLoss}` : `+${preview.heal}`}</span>
                         {preview.absorbed > 0 && <span className='bt-preview__detail bt-preview__detail--shield'>{t('battle.preview.shield', { amount: preview.absorbed })}</span>}

@@ -139,7 +139,9 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
     } else if (selected.requiresTarget) {
         hint = t('battle.chooseTarget', { skill: selected.skill.name });
     } else if (selected.skill.target === 'corpse') {
-        hint = t('battle.raisesCorpse', { skill: selected.skill.name, unit: state.units.find((unit) => unit.id === selected.targetIds[0])?.name });
+        const revives = selected.skill.effects.some((effect) => effect.type === 'revive');
+
+        hint = t(revives ? 'battle.revivesCorpse' : 'battle.raisesCorpse', { skill: selected.skill.name, unit: state.units.find((unit) => unit.id === selected.targetIds[0])?.name });
     } else {
         hint = t('battle.hitsAll', { skill: selected.skill.name });
     }

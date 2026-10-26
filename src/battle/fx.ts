@@ -88,7 +88,7 @@ export function passiveFxOf(event: Extract<BattleEvent, { type: 'passive_trigger
 }
 
 const STATUS_ELEMENT: Partial<Record<StatusKind, SkillElement>> = { burn: 'fire', poison: 'nature', bleed: 'physical' };
-const GOOD_STATUS: StatusKind[] = ['atk_up', 'def_up', 'speed_up', 'passive_up', 'taunt', 'counter'];
+const GOOD_STATUS: StatusKind[] = ['atk_up', 'def_up', 'speed_up', 'passive_up', 'taunt', 'counter', 'guard'];
 
 /** Quando várias coisas atingem a mesma unidade no mesmo instante, a mais forte aparece. */
 const PRIORITY: ImpactKind[] = ['hit', 'tick', 'heal', 'shield', 'boon', 'bane'];
@@ -117,6 +117,10 @@ export function impactsOf(events: BattleEvent[], skill: SkillFx | null, nextId: 
             add(event.unitId, 'boon', 'nature');
         } else if (event.type === 'summoned') {
             add(event.unitId, 'boon', skill?.element ?? 'shadow');
+        } else if (event.type === 'revived') {
+            add(event.unitId, 'heal', 'light');
+        } else if (event.type === 'dispelled') {
+            add(event.targetId, 'bane', skill?.element ?? 'light');
         } else if (event.type === 'status_applied') {
             if (event.status === 'shield') add(event.targetId, 'shield', 'light');
             else if (GOOD_STATUS.includes(event.status)) add(event.targetId, 'boon', skill?.element ?? 'light');

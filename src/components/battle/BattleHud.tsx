@@ -130,10 +130,16 @@ export function SkillBar({ actions, passives, charge, selectedSkillId, disabled,
 
     return (
         <div ref={listRef} className='bt-skills'>
-            {actions.map(({ skill, preview, usable, targetIds }) => {
+            {actions.map(({ skill, preview, usable, targetIds, usesLeft }) => {
                 const isSelected = !disabled && skill.id === selectedSkillId;
-                // Por que não dá para usar agora: sem alvo (nenhum cadáver para erguer) ou sem energia.
-                const blocked = targetIds.length === 0 ? t('battle.noCorpse') : t('battle.notEnoughEnergy');
+                // Por que não dá para usar agora: já usada (limite por batalha), sem alvo ou sem energia.
+                const revives = skill.effects.some((effect) => effect.type === 'revive');
+                const blocked =
+                    usesLeft === 0
+                        ? t('battle.usedUp')
+                        : targetIds.length === 0
+                          ? t(revives ? 'battle.noFallen' : 'battle.noCorpse')
+                          : t('battle.notEnoughEnergy');
 
                 return (
                     <button

@@ -370,7 +370,8 @@
             "heal": "Preview: heals {{amount}}",
             "defeats": "Defeats",
             "crit": "Critical: {{amount}} ({{chance}}%)",
-            "shield": "Shield blocks {{amount}}"
+            "shield": "Shield blocks {{amount}}",
+            "guardedBy": "Hits {{unit}}"
         },
         "hp": "{{hp}} of {{max}} health",
         "banner": "{{unit}} uses {{skill}}!",
@@ -415,7 +416,8 @@
             "heal_down": "Reduced healing",
             "stealth": "Hidden",
             "counter": "Counterattack",
-            "form": "Transformed"
+            "form": "Transformed",
+            "guard": "Guarded"
         },
         "statusHelp": {
             "growing": "The damage rises by {{amount}} each turn while the effect lasts.",
@@ -435,7 +437,8 @@
             "heal_down": "Receives {{percent}}% less healing.",
             "stealth": "Cannot be chosen as a target. Area attacks still hit. Ends when it acts or takes damage.",
             "counter": "Strikes back with the basic attack whenever an enemy hits it (if an enemy is taunting, the counter goes there). Poison, burn and bleed damage does not count.",
-            "form": "In another form. Returns to the original form when it ends."
+            "form": "In another form. Returns to the original form when it ends.",
+            "guard": "Enemy single-target hits on this unit go to its protector."
         },
         "statShort": {
             "atk": "Atk",
@@ -472,7 +475,13 @@
             "passive": "{{unit}}'s passive: {{passive}}",
             "energyGained": "Your team recovered {{count}} energy",
             "enemyEnergyGained": "The enemy recovered {{count}} energy",
-            "passiveCharge": "{{unit}}'s passive: {{passive}} (+{{percent}}% damage)"
+            "passiveCharge": "{{unit}}'s passive: {{passive}} (+{{percent}}% damage)",
+            "energyLost": "Your team lost {{count}} energy",
+            "enemyEnergyLost": "The enemy lost {{count}} energy",
+            "dispelled": "{{target}} lost: {{statuses}}",
+            "chainJump": "The lightning jumped to {{target}}",
+            "guarded": "{{unit}} protected {{target}} and took the hit",
+            "revived": "{{unit}} brought {{target}} back with {{hp}} health"
         },
         "waitingOpponent": "Waiting for the opponent's move...",
         "waitingOpponentLong": "It's the other player's turn. As soon as they play, the move shows up here.",
@@ -502,7 +511,15 @@
         "ratingUp": "+{{count}} points",
         "ratingDown": "−{{count}} points",
         "ratingSame": "0 points",
-        "newRanked": "New match"
+        "newRanked": "New match",
+        "energyLostFloater": "−{{count}} energy (enemy)",
+        "dispelled": "Effects removed",
+        "guarded": "Protects!",
+        "revived": "Back!",
+        "usedUp": "Already used in this battle.",
+        "noFallen": "No fallen ally to bring back.",
+        "revivesCorpse": "{{skill}} brings {{unit}} back into the battle.",
+        "oncePerBattle": "Once per battle"
     },
     "multiplayer": {
         "title": "Multiplayer",

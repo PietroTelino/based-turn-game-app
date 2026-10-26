@@ -59,6 +59,13 @@ const ICONS: Partial<Record<StatusKind, ReactNode>> = {
             <path d='M20 3 L16.5 3 L3.5 16 L3.5 20.5 L8 20.5 L21 7.5 Z' fill='#f1c75b' />
         </>
     ),
+    // Protegido: um escudo dourado com um sol, como o do Paladino.
+    guard: (
+        <>
+            <path d='M12 2 L20 5 L20 12 C20 17 16.5 20.5 12 22 C7.5 20.5 4 17 4 12 L4 5 Z' fill='#f1c75b' />
+            <circle cx='12' cy='11.5' r='3.2' fill='#fff4dc' stroke='none' />
+        </>
+    ),
     // Passiva fortalecida: um brilho de quatro pontas.
     passive_up: <path d='M12 1.5 L14.6 9.4 L22.5 12 L14.6 14.6 L12 22.5 L9.4 14.6 L1.5 12 L9.4 9.4 Z' fill='#ecd07a' />,
 };
@@ -73,7 +80,7 @@ const ARROWS: Partial<Record<StatusKind, { stat: 'atk' | 'def' | 'speed'; up: bo
 };
 
 /** Status que ajudam quem os carrega. Os outros atrapalham. */
-const HELPFUL: StatusKind[] = ['shield', 'atk_up', 'def_up', 'speed_up', 'passive_up', 'taunt', 'form', 'stealth', 'counter'];
+const HELPFUL: StatusKind[] = ['shield', 'atk_up', 'def_up', 'speed_up', 'passive_up', 'taunt', 'form', 'stealth', 'counter', 'guard'];
 
 /**
  * Quanto um status de dano por turno vai causar na próxima vez. Num status
@@ -157,6 +164,9 @@ export function StatusBadges({ statuses, charge = null }: StatusBadgesProps) {
                         {charge.kind === 'stacks' ? (
                             // Gota de sangue: cargas acumuladas com roubo de vida.
                             <path d='M12 2.5 C15.5 8 19 11.5 19 15.5 C19 19.5 15.8 22 12 22 C8.2 22 5 19.5 5 15.5 C5 11.5 8.5 8 12 2.5 Z' fill='#c2352b' />
+                        ) : charge.kind === 'zeal' ? (
+                            // Estrela de oito pontas: o zelo cresce com os efeitos tirados dos inimigos.
+                            <path d='M12 1.5 L14 8 L20.5 5.5 L16 10.5 L22.5 12 L16 13.5 L20.5 18.5 L14 16 L12 22.5 L10 16 L3.5 18.5 L8 13.5 L1.5 12 L8 10.5 L3.5 5.5 L10 8 Z' fill='#ecd07a' />
                         ) : charge.kind === 'hunt' ? (
                             // Garras: um tanto a mais para cada inimigo sangrando.
                             <>
