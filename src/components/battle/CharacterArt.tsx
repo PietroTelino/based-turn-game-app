@@ -1,5 +1,5 @@
 import { CharacterSprite } from './CharacterSprite';
-import { getCharacterArt, getPoseFrames } from './artFiles';
+import { getArtId, getCharacterArt, getPoseFrames } from './artFiles';
 import type { ArtKind } from './artFiles';
 
 interface CharacterArtProps {
@@ -22,7 +22,7 @@ export function CharacterArt({ characterId, kind, form, className = '' }: Charac
     // momento, que battle.css mostra uma de cada vez durante o golpe ou a magia.
     if (src && poses) {
         return (
-            <span className={`${className} bt-art--figure bt-posed bt-posed--${characterId}`} aria-hidden='true'>
+            <span className={`${className} bt-art--figure bt-posed bt-posed--${getArtId(characterId)}`} aria-hidden='true'>
                 <img src={src} alt='' draggable={false} className='bt-posed__still' />
                 {poses.map(({ pose, src: frame }) => (
                     <img key={pose} src={frame} alt='' draggable={false} className={`bt-posed__pose bt-posed__pose--${pose}`} />

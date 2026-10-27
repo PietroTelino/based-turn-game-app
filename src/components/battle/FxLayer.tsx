@@ -21,6 +21,30 @@ function stageBox(arena: Element, layer: DOMRect, unitId: string): Box | null {
 }
 
 /**
+ * De onde sai o projétil, se a figura de quem lança diz onde está a mão: as
+ * variáveis CSS --fx-hand-x e --fx-hand-y (frações da caixa da figura, com
+ * ela olhando para a direita), definidas em battle.css para quem tem pose de
+ * lançar. Sem elas, vale o ponto padrão, à frente do corpo.
+ */
+function handPoint(arena: Element, layer: DOMRect, unitId: string, facing: number): { x: number; y: number } | null {
+    const sprite = arena.querySelector<HTMLElement>(`[data-unit-id="${unitId}"] .bt-unit__sprite`);
+
+    if (!sprite) return null;
+
+    const style = getComputedStyle(sprite);
+    const handX = parseFloat(style.getPropertyValue('--fx-hand-x'));
+    const handY = parseFloat(style.getPropertyValue('--fx-hand-y'));
+
+    if (Number.isNaN(handX) || Number.isNaN(handY)) return null;
+
+    const rect = sprite.getBoundingClientRect();
+    // O time da direita é desenhado espelhado: a mão fica do outro lado da caixa.
+    const fraction = facing > 0 ? handX : 1 - handX;
+
+    return { x: rect.left - layer.left + fraction * rect.width, y: rect.top - layer.top + handY * rect.height };
+}
+
+/**
  * Camada por cima do campo onde voam os projéteis e acontecem os ataques em
  * área. O que atinge cada unidade (corte, chama, cura...) é desenhado dentro
  * da própria unidade, em UnitToken.
@@ -49,8 +73,9 @@ export function FxLayer({ skill }: { skill: SkillFx | null }) {
         if (!first) return;
 
         const facing = first.left + first.width / 2 >= source.left + source.width / 2 ? 1 : -1;
-        const x0 = source.left + source.width / 2 + facing * source.width * 0.45;
-        const y0 = source.top + source.height * 0.36;
+        const hand = handPoint(arena, bounds, skill.sourceId, facing);
+        const x0 = hand?.x ?? source.left + source.width / 2 + facing * source.width * 0.45;
+        const y0 = hand?.y ?? source.top + source.height * 0.36;
 
         layer.style.setProperty('--fx-dir', String(facing));
 
