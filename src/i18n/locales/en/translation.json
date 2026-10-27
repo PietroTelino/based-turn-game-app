@@ -417,7 +417,10 @@
             "stealth": "Hidden",
             "counter": "Counterattack",
             "form": "Transformed",
-            "guard": "Guarded"
+            "guard": "Guarded",
+            "sleep": "Sleep",
+            "drowsy": "Drowsy",
+            "curse": "Curse"
         },
         "statusHelp": {
             "growing": "The damage rises by {{amount}} each turn while the effect lasts.",
@@ -438,7 +441,10 @@
             "stealth": "Cannot be chosen as a target. Area attacks still hit. Ends when it acts or takes damage.",
             "counter": "Strikes back with the basic attack whenever an enemy hits it (if an enemy is taunting, the counter goes there). Poison, burn and bleed damage does not count.",
             "form": "In another form. Returns to the original form when it ends.",
-            "guard": "Enemy single-target hits on this unit go to its protector."
+            "guard": "Enemy single-target hits on this unit go to its protector.",
+            "sleep": "Loses the next turn, then wakes up. A hit also wakes it, and deals 50% more.",
+            "drowsy": "Falls asleep when this ends. Cleansing removes it.",
+            "curse": "Takes {{value}} damage at the start of each turn and cannot target whoever cursed it with single-target skills while there is another target. Cleansing does not remove it."
         },
         "statShort": {
             "atk": "Atk",
@@ -481,7 +487,8 @@
             "dispelled": "{{target}} lost: {{statuses}}",
             "chainJump": "The lightning jumped to {{target}}",
             "guarded": "{{unit}} protected {{target}} and took the hit",
-            "revived": "{{unit}} brought {{target}} back with {{hp}} health"
+            "revived": "{{unit}} brought {{target}} back with {{hp}} health",
+            "wokeUp": "{{unit}} woke up"
         },
         "waitingOpponent": "Waiting for the opponent's move...",
         "waitingOpponentLong": "It's the other player's turn. As soon as they play, the move shows up here.",
@@ -519,7 +526,9 @@
         "usedUp": "Already used in this battle.",
         "noFallen": "No fallen ally to bring back.",
         "revivesCorpse": "{{skill}} brings {{unit}} back into the battle.",
-        "oncePerBattle": "Once per battle"
+        "oncePerBattle": "Once per battle",
+        "wokeUp": "Woke up!",
+        "permanent": "permanent"
     },
     "multiplayer": {
         "title": "Multiplayer",

@@ -570,6 +570,15 @@
     --pose-height: 136.79%;
 }
 
+/* Súcubo: figura de 667 x 840; poses de 791 x 893, a partir de (-35, -53). */
+.bt-posed--sucubo {
+    aspect-ratio: 667 / 840;
+    --pose-left: -5.25%;
+    --pose-top: -6.31%;
+    --pose-width: 118.59%;
+    --pose-height: 106.31%;
+}
+
 /*
  * Golpe corpo a corpo (bt-lunge, 1,1 s): no recuo ela ergue a arma (windup)
  * e, no avanço, desce o golpe (strike), que acerta aos 63%, quando o dano
@@ -900,6 +909,12 @@
     font-variant-numeric: tabular-nums;
 }
 
+/* Status permanente: "∞" no lugar da duração, menor para caber na casa do selo. */
+.bt-status__turns--forever {
+    font-size: 0.8em;
+    line-height: 1;
+}
+
 /* Estados da unidade */
 
 .bt-unit__marker {
@@ -1091,6 +1106,86 @@
 .bt-unit--stunned .bt-unit__sprite {
     filter: saturate(0.35) brightness(0.9);
     animation: bt-dizzy 1.4s ease-in-out infinite;
+}
+
+/* Dormindo: azulado e escuro, com a cabeça pendendo devagar, e três "z" que sobem acima da cabeça. */
+.bt-unit--asleep .bt-unit__sprite {
+    filter: saturate(0.5) brightness(0.72) hue-rotate(-12deg);
+    animation: bt-doze 3.2s ease-in-out infinite;
+}
+
+.bt-unit__zzz {
+    position: absolute;
+    left: 46%;
+    top: -4%;
+    z-index: 6;
+    width: 40%;
+    height: 30%;
+    pointer-events: none;
+}
+
+.bt-unit__zzz i {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    color: #c9d6ff;
+    font: 700 italic clamp(14px, calc(var(--bt-unit, 200px) * 0.09), 30px) / 1 var(--bt-display);
+    text-shadow: 0 0 6px rgb(40 50 110 / 0.9), 0 1px 0 #1c1a2b;
+    opacity: 0;
+    animation: bt-zzz 2.4s ease-out infinite;
+}
+
+.bt-unit__zzz i:nth-child(2) {
+    animation-delay: 0.8s;
+    font-size: 1.25em;
+}
+
+.bt-unit__zzz i:nth-child(3) {
+    animation-delay: 1.6s;
+    font-size: 1.5em;
+}
+
+@keyframes bt-doze {
+    0%,
+    100% {
+        transform: rotate(0deg) translateY(0);
+    }
+    50% {
+        transform: rotate(-2.5deg) translateY(1.2%);
+    }
+}
+
+@keyframes bt-zzz {
+    0% {
+        translate: 0 0;
+        opacity: 0;
+    }
+    20% {
+        opacity: 1;
+    }
+    100% {
+        translate: 60% -140%;
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bt-unit--asleep .bt-unit__sprite,
+    .bt-unit__zzz i {
+        animation: none;
+    }
+
+    .bt-unit__zzz i {
+        opacity: 1;
+    }
+
+    .bt-unit__zzz i:nth-child(2) {
+        translate: 30% -60%;
+    }
+
+    .bt-unit__zzz i:nth-child(3) {
+        translate: 60% -120%;
+    }
 }
 
 /*

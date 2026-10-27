@@ -417,7 +417,10 @@
             "stealth": "Escondido",
             "counter": "Contra-ataque",
             "form": "Transformado",
-            "guard": "Protegido"
+            "guard": "Protegido",
+            "sleep": "Sono",
+            "drowsy": "Torpor",
+            "curse": "Maldição"
         },
         "statusHelp": {
             "growing": "Esse dano sobe {{amount}} a cada turno enquanto o efeito durar.",
@@ -438,7 +441,10 @@
             "stealth": "Não pode ser escolhido como alvo. Golpes em área ainda acertam. Acaba quando agir ou levar dano.",
             "counter": "Revida com o ataque básico todo golpe que levar de um inimigo (se algum inimigo provoca, o revide vai nele). Dano de veneno, queimadura e sangramento não conta.",
             "form": "Está em outra forma. Quando acabar, volta à forma original.",
-            "guard": "Os golpes de alvo único dos inimigos aqui vão para quem protege."
+            "guard": "Os golpes de alvo único dos inimigos aqui vão para quem protege.",
+            "sleep": "Perde a próxima vez e então acorda. Um golpe também acorda, e causa 50% a mais.",
+            "drowsy": "Quando acabar, adormece. A purificação tira.",
+            "curse": "Leva {{value}} de dano no começo de cada turno e não pode mirar em quem amaldiçoou com golpes de alvo único enquanto houver outro alvo. A purificação não tira."
         },
         "statShort": {
             "atk": "Atq",
@@ -481,7 +487,8 @@
             "dispelled": "{{target}} perdeu: {{statuses}}",
             "chainJump": "O raio saltou para {{target}}",
             "guarded": "{{unit}} protegeu {{target}} e recebeu o golpe",
-            "revived": "{{unit}} trouxe {{target}} de volta com {{hp}} de vida"
+            "revived": "{{unit}} trouxe {{target}} de volta com {{hp}} de vida",
+            "wokeUp": "{{unit}} acordou"
         },
         "waitingOpponent": "Esperando a jogada do adversário...",
         "waitingOpponentLong": "É a vez do outro jogador. Assim que ele jogar, a jogada aparece aqui.",
@@ -519,7 +526,9 @@
         "usedUp": "Já usada nesta batalha.",
         "noFallen": "Nenhum aliado caído para trazer de volta.",
         "revivesCorpse": "{{skill}} traz {{unit}} de volta à batalha.",
-        "oncePerBattle": "1 vez por batalha"
+        "oncePerBattle": "1 vez por batalha",
+        "wokeUp": "Acordou!",
+        "permanent": "permanente"
     },
     "multiplayer": {
         "title": "Multiplayer",

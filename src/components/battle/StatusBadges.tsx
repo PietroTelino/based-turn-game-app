@@ -66,6 +66,30 @@ const ICONS: Partial<Record<StatusKind, ReactNode>> = {
             <circle cx='12' cy='11.5' r='3.2' fill='#fff4dc' stroke='none' />
         </>
     ),
+    // Dormindo: uma lua crescente com um "z".
+    sleep: (
+        <>
+            <path d='M14.5 2.5 C9 3 5 7.4 5 12.8 C5 18.3 9.5 22 14.6 21.6 C17.3 21.4 19.6 20.2 21.2 18.3 C15.5 18.9 11 14.8 11 9.4 C11 6.6 12.4 4.2 14.5 2.5 Z' fill='#9db4ff' />
+            <path d='M15 4 L20.5 4 L15 10 L20.5 10' fill='none' strokeWidth={2} strokeLinecap='round' />
+        </>
+    ),
+    // Torpor: um olho meio fechado, pesado de sono.
+    drowsy: (
+        <>
+            <path d='M2 12.5 C5.5 17.5 9 19 12 19 C15 19 18.5 17.5 22 12.5 Z' fill='#cfc7e8' />
+            <path d='M2 12.5 L22 12.5' fill='none' strokeWidth={2.6} strokeLinecap='round' />
+            <path d='M6 16.5 L5 19.5 M12 19 L12 22 M18 16.5 L19 19.5' fill='none' strokeWidth={1.8} strokeLinecap='round' />
+        </>
+    ),
+    // Maldição: um selo de chifres sobre um círculo roxo.
+    curse: (
+        <>
+            <circle cx='12' cy='13.5' r='8' fill='#8c2f6e' />
+            <path d='M5.5 9 C4.5 5.5 5.5 3 8 1.8 C7.5 4.5 8.5 6.5 10 7.5 Z' fill='#e9e2cf' />
+            <path d='M18.5 9 C19.5 5.5 18.5 3 16 1.8 C16.5 4.5 15.5 6.5 14 7.5 Z' fill='#e9e2cf' />
+            <path d='M8.5 13 L15.5 13 M12 9.5 L12 18' fill='none' stroke='#fff4dc' strokeWidth={2} strokeLinecap='round' />
+        </>
+    ),
     // Passiva fortalecida: um brilho de quatro pontas.
     passive_up: <path d='M12 1.5 L14.6 9.4 L22.5 12 L14.6 14.6 L12 22.5 L9.4 14.6 L1.5 12 L9.4 9.4 Z' fill='#ecd07a' />,
 };
@@ -95,14 +119,15 @@ function StatusBadge({ status }: { status: StatusEffect }) {
     const { t } = useTranslation();
     const arrow = ARROWS[status.kind];
     const name = t(`battle.status.${status.kind}`);
-    const dealsDamage = status.kind === 'burn' || status.kind === 'poison' || status.kind === 'bleed';
+    const dealsDamage = status.kind === 'burn' || status.kind === 'poison' || status.kind === 'bleed' || status.kind === 'curse';
     const help = t(`battle.statusHelp.${status.kind}`, {
         value: dealsDamage ? tickDamageOf(status) : status.value,
         percent: Math.round(status.value * 100),
     });
     // Dano que cresce: a dica diz quanto ele sobe por turno.
     const growing = status.growth ? ` ${t('battle.statusHelp.growing', { amount: Math.round(status.value * status.growth) })}` : '';
-    const turns = t('battle.turns', { count: status.turns });
+    // Status permanente (a maldição da Súcubo) não tem prazo: o selo mostra "∞".
+    const turns = status.permanent ? t('battle.permanent') : t('battle.turns', { count: status.turns });
     const tone = HELPFUL.includes(status.kind) ? 'good' : 'bad';
 
     return (
@@ -120,8 +145,8 @@ function StatusBadge({ status }: { status: StatusEffect }) {
                     {ICONS[status.kind]}
                 </svg>
             )}
-            <span className='bt-status__turns' aria-hidden='true'>
-                {status.turns}
+            <span className={`bt-status__turns${status.permanent ? ' bt-status__turns--forever' : ''}`} aria-hidden='true'>
+                {status.permanent ? '∞' : status.turns}
             </span>
             <span className='bt-visually-hidden'>{`${name}, ${turns}`}</span>
         </span>

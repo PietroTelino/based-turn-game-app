@@ -285,8 +285,16 @@ function describe(
             return { text: t('battle.log.revived', { unit: units.get(event.sourceId)?.name, target: unit?.name, hp: event.hp }), team: unit?.team ?? null };
         }
 
+        // Só o fim do sono vira linha: a unidade acordou (por um golpe, ou depois da vez perdida).
+        case 'status_expired': {
+            if (event.status !== 'sleep') return null;
+
+            const unit = units.get(event.unitId);
+
+            return { text: t('battle.log.wokeUp', { unit: unit?.name }), team: unit?.team ?? null };
+        }
+
         case 'unit_activated':
-        case 'status_expired':
         case 'statuses_changed':
             return null;
     }
@@ -450,6 +458,10 @@ function effectsOf(
 
         if (event.type === 'cleansed') {
             effects.floaters.push({ id: nextId(), unitId: event.targetId, text: t('battle.cleansed'), kind: 'status' });
+        }
+
+        if (event.type === 'status_expired' && event.status === 'sleep') {
+            effects.floaters.push({ id: nextId(), unitId: event.unitId, text: t('battle.wokeUp'), kind: 'status' });
         }
 
         if (event.type === 'status_applied') {

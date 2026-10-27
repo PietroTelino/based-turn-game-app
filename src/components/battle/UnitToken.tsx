@@ -63,6 +63,8 @@ export function UnitToken({ unit, units, isActive, acting, isHit, isHealed, isMo
         isFalling && 'bt-unit--falling',
         shield && 'bt-unit--shielded',
         statuses.some((status) => status.kind === 'stun') && 'bt-unit--stunned',
+        // Dormindo: a figura escurece e cai num balanço lento, com "z" subindo.
+        statuses.some((status) => status.kind === 'sleep') && 'bt-unit--asleep',
         // Escondida: a figura fica quase transparente até ela agir ou levar dano.
         statuses.some((status) => status.kind === 'stealth') && 'bt-unit--hidden',
     ]
@@ -99,6 +101,14 @@ export function UnitToken({ unit, units, isActive, acting, isHit, isHealed, isMo
                 {impact && <ImpactFx key={impact.id} impact={impact} />}
 
                 {isActive && <span className='bt-unit__marker' aria-hidden='true' />}
+
+                {statuses.some((status) => status.kind === 'sleep') && (
+                    <span className='bt-unit__zzz' aria-hidden='true'>
+                        <i>z</i>
+                        <i>z</i>
+                        <i>z</i>
+                    </span>
+                )}
 
                 <span className='bt-unit__floaters' aria-hidden='true'>
                     {floaters.map((floater) => (

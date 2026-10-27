@@ -44,7 +44,13 @@ export type StatusKind =
     /** A unidade está transformada; quando acaba, ela volta à forma original. */
     | 'form'
     /** Protegida: os golpes de alvo único dos inimigos nela vão para quem aplicou o status (`sourceId`). */
-    | 'guard';
+    | 'guard'
+    /** Dormindo: perde a próxima vez e acorda; um golpe também acorda, e causa 50% a mais. */
+    | 'sleep'
+    /** Torpor: quando a duração acaba, a unidade adormece. */
+    | 'drowsy'
+    /** Maldição de quem aplicou (`sourceId`): dano por turno, e os golpes de alvo único dela não miram nele enquanto houver outro alvo. */
+    | 'curse';
 
 export interface StatusEffect {
     kind: StatusKind;
@@ -53,6 +59,8 @@ export interface StatusEffect {
     /** Dano por turno, pontos de escudo ou fração do atributo, conforme o tipo. */
     value: number;
     sourceId: string;
+    /** Permanente: não gasta duração (`turns` não conta). A maldição da Súcubo. */
+    permanent?: boolean;
     /**
      * Só no dano por turno que cresce (o veneno do Guardião): a fração do valor
      * original que o dano sobe a cada turno, e quantas vezes ele já causou
@@ -68,7 +76,7 @@ export type SkillEffect =
     /** `bounces`: o golpe salta para essa quantidade de outros inimigos sorteados, `falloff` mais fraco a cada salto. */
     | { type: 'damage'; power: number; drain?: number; perTargetMissingHp?: number; bounces?: number; falloff?: number }
     | { type: 'heal'; power: number }
-    | { type: 'status'; status: StatusKind; turns: number; power: number; chance?: number; to?: 'target' | 'self' }
+    | { type: 'status'; status: StatusKind; turns: number; power: number; chance?: number; to?: 'target' | 'self'; permanent?: boolean }
     /** Purificação: tira do alvo os efeitos negativos. */
     | { type: 'cleanse' }
     /** Muda o alvo para uma das formas dele (`form` é o id em `forms`) por `turns` turnos. */
@@ -102,7 +110,8 @@ export interface Skill {
 
 /** Quando uma passiva de golpe vale, olhando para o alvo. Sem condição, vale sempre. */
 export type PassiveCondition =
-    | { type: 'target_has_status'; statuses: StatusKind[] }
+    /** `fromSelf`: só o status aplicado por quem tem a passiva. */
+    | { type: 'target_has_status'; statuses: StatusKind[]; fromSelf?: boolean }
     | { type: 'target_hp_below'; ratio: number }
     | { type: 'target_hp_above'; ratio: number };
 
@@ -118,8 +127,8 @@ export type PassiveEffect =
     | { type: 'atk_from_def'; amount: number }
     | { type: 'lifesteal'; amount: number }
     | { type: 'energy_on_crit'; amount: number }
-    /** Todo golpe também aplica este status no alvo. */
-    | { type: 'status_on_hit'; status: StatusKind; turns: number; power: number; chance?: number }
+    /** Todo golpe também aplica este status no alvo (com `when`, só nos alvos que cumprem a condição antes do golpe). */
+    | { type: 'status_on_hit'; status: StatusKind; turns: number; power: number; chance?: number; permanent?: boolean; when?: PassiveCondition }
     /** Acumula cargas: cada cura por roubo de vida soma `amount` ao dano dos golpes (0.05 = +5%). */
     | { type: 'damage_per_drain'; amount: number; max?: number }
     /** Para cada 1% de vida perdida, `amount`% a mais de dano. */
