@@ -30,5 +30,24 @@ Cuidados para a figura combinar com as outras:
 - o **corpo no centro da largura** (se a arma ou a capa sobram para um lado, deixe a mesma sobra vazia do outro);
 - a mesma escala das atuais: uma pessoa em pé ocupa quase toda a altura.
 
+## Poses de ação
+
+Além da figura parada, um personagem pode ter desenhos de cada momento da
+ação, trocados durante a animação (hoje, a Inquisidora):
+
+| Arquivo | Quando aparece |
+| --- | --- |
+| `<id>-pose-windup.webp` | Golpe corpo a corpo: preparando o golpe (recuo). |
+| `<id>-pose-strike.webp` | Golpe corpo a corpo: o golpe acertando (avanço). |
+| `<id>-pose-cast.webp` | Habilidade à distância, em área ou de suporte. |
+
+O golpe usa `windup` e `strike` juntas; a magia usa `cast`. Pode haver só as
+do golpe ou só a da magia: o que faltar fica com a figura parada. As poses
+têm **todas o mesmo tamanho**, um pouco maior que a figura (para caber a arma
+erguida ou o braço estendido), com a pessoa na mesma escala e os pés no mesmo
+lugar da figura parada, olhando para o mesmo lado. Onde a pose fica em
+relação à figura (as medidas `--pose-*`) e o tempo de cada troca ficam em
+`src/styles/battle.css`, na seção `.bt-posed--<id>`.
+
 Quem não tem arquivo aparece com o desenho de reserva de
 `src/components/battle/CharacterSprite.tsx`.

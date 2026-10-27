@@ -11,6 +11,10 @@
  *
  * Basta salvar os arquivos na pasta: o Vite encontra sozinho, sem mexer em
  * código. Personagem sem arquivo aparece com o desenho antigo, de reserva.
+ *
+ * Poses de ação: além do <id>.webp, o personagem pode ter os desenhos
+ * <id>-pose-<momento>.webp (windup, strike, cast), trocados durante a
+ * animação em battle.css. Ver getPoseFrames.
  */
 export type ArtKind = 'figure' | 'face' | 'card';
 
@@ -36,6 +40,30 @@ const RENAMED: Record<string, string> = {
     geada: 'criomante',
     espinho: 'guardiao',
 };
+
+export type PoseName = 'windup' | 'strike' | 'cast';
+
+const POSES: PoseName[] = ['windup', 'strike', 'cast'];
+
+/**
+ * Os desenhos de cada momento da ação (preparar e acertar o golpe, conjurar),
+ * ou null se o personagem não tem nenhum. A forma de quem se transforma não
+ * tem poses: nela vale a figura parada.
+ */
+export function getPoseFrames(characterId: string, form?: string): { pose: PoseName; src: string }[] | null {
+    if (form !== undefined) {
+        return null;
+    }
+
+    const id = RENAMED[characterId] ?? characterId;
+    const frames = POSES.flatMap((pose) => {
+        const src = ART.get(`${id}-pose-${pose}`);
+
+        return src ? [{ pose, src }] : [];
+    });
+
+    return frames.length > 0 ? frames : null;
+}
 
 /** `form` é a forma em que a unidade está, se estiver transformada. Sem ilustração da forma, vale a do personagem. */
 export function getCharacterArt(characterId: string, kind: ArtKind, form?: string): string | undefined {

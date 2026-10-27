@@ -477,6 +477,149 @@
     scale: -1 1;
 }
 
+/*
+ * Figura com poses de ação (CharacterArt com <id>-pose-*): a caixa tem a
+ * proporção da figura parada; as poses ficam por cima, todas do mesmo
+ * tamanho, deslocadas pelas medidas --pose-* de cada personagem, e aparecem
+ * uma de cada vez. As animações da figura inteira (respirar, avançar,
+ * tremer) continuam na caixa, por fora das poses.
+ */
+.bt-posed {
+    display: block;
+}
+
+.bt-posed__still,
+.bt-posed__pose {
+    position: absolute;
+    max-width: none;
+    pointer-events: none;
+    user-select: none;
+}
+
+.bt-posed__still {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.bt-posed__pose {
+    left: var(--pose-left);
+    top: var(--pose-top);
+    width: var(--pose-width);
+    height: var(--pose-height);
+    opacity: 0;
+}
+
+/* Inquisidora: figura de 610 x 840; poses de 687 x 944, a partir de (-63, -104). */
+.bt-posed--inquisidora {
+    aspect-ratio: 610 / 840;
+    --pose-left: -10.33%;
+    --pose-top: -12.38%;
+    --pose-width: 112.62%;
+    --pose-height: 112.38%;
+}
+
+/*
+ * Golpe corpo a corpo (bt-lunge, 1,1 s): no recuo ela ergue a arma (windup)
+ * e, no avanço, desce o golpe (strike), que acerta aos 63%, quando o dano
+ * aparece. Depois volta à figura parada. As trocas têm um cruzamento curto.
+ */
+.bt-unit--acting .bt-posed:has(.bt-posed__pose--strike) .bt-posed__still {
+    animation: bt-pose-melee-still 1.1s linear;
+}
+
+.bt-unit--acting .bt-posed__pose--windup {
+    animation: bt-pose-windup 1.1s linear;
+}
+
+.bt-unit--acting .bt-posed__pose--strike {
+    animation: bt-pose-strike 1.1s linear;
+}
+
+/* Magia, projétil e suporte (bt-cast, 0,75 s): a pose de conjurar o tempo todo. */
+.bt-unit--casting .bt-posed:has(.bt-posed__pose--cast) .bt-posed__still {
+    animation: bt-pose-cast-still 0.75s linear;
+}
+
+.bt-unit--casting .bt-posed__pose--cast {
+    animation: bt-pose-cast 0.75s linear;
+}
+
+@keyframes bt-pose-melee-still {
+    0%,
+    6% {
+        opacity: 1;
+    }
+    9%,
+    86% {
+        opacity: 0;
+    }
+    90%,
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes bt-pose-windup {
+    0%,
+    6% {
+        opacity: 0;
+    }
+    9%,
+    50% {
+        opacity: 1;
+    }
+    53%,
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes bt-pose-strike {
+    0%,
+    50% {
+        opacity: 0;
+    }
+    53%,
+    86% {
+        opacity: 1;
+    }
+    90%,
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes bt-pose-cast-still {
+    0%,
+    8% {
+        opacity: 1;
+    }
+    13%,
+    84% {
+        opacity: 0;
+    }
+    90%,
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes bt-pose-cast {
+    0%,
+    8% {
+        opacity: 0;
+    }
+    13%,
+    84% {
+        opacity: 1;
+    }
+    90%,
+    100% {
+        opacity: 0;
+    }
+}
+
 /* Sombra no chão, sob os pés, com a cor do time */
 .bt-unit__shadow {
     position: absolute;

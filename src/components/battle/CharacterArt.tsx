@@ -1,5 +1,5 @@
 import { CharacterSprite } from './CharacterSprite';
-import { getCharacterArt } from './artFiles';
+import { getCharacterArt, getPoseFrames } from './artFiles';
 import type { ArtKind } from './artFiles';
 
 interface CharacterArtProps {
@@ -16,6 +16,20 @@ interface CharacterArtProps {
  */
 export function CharacterArt({ characterId, kind, form, className = '' }: CharacterArtProps) {
     const src = getCharacterArt(characterId, kind, form);
+    const poses = kind === 'figure' && src ? getPoseFrames(characterId, form) : null;
+
+    // Figura com poses de ação: a figura parada e, por cima, uma pose de cada
+    // momento, que battle.css mostra uma de cada vez durante o golpe ou a magia.
+    if (src && poses) {
+        return (
+            <span className={`${className} bt-art--figure bt-posed bt-posed--${characterId}`} aria-hidden='true'>
+                <img src={src} alt='' draggable={false} className='bt-posed__still' />
+                {poses.map(({ pose, src: frame }) => (
+                    <img key={pose} src={frame} alt='' draggable={false} className={`bt-posed__pose bt-posed__pose--${pose}`} />
+                ))}
+            </span>
+        );
+    }
 
     if (!src) {
         return <CharacterSprite characterId={characterId} className={`${className} bt-art--drawn`} />;
