@@ -543,6 +543,15 @@
     --fx-hand-y: 0.195;
 }
 
+/* Vampiro: figura de 518 x 840; poses de 763 x 844, a partir de (-164, -4). */
+.bt-posed--vampiro {
+    aspect-ratio: 518 / 840;
+    --pose-left: -31.66%;
+    --pose-top: -0.48%;
+    --pose-width: 147.3%;
+    --pose-height: 100.48%;
+}
+
 /*
  * Golpe corpo a corpo (bt-lunge, 1,1 s): no recuo ela ergue a arma (windup)
  * e, no avanço, desce o golpe (strike), que acerta aos 63%, quando o dano
