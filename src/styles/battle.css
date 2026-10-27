@@ -552,6 +552,15 @@
     --pose-height: 100.48%;
 }
 
+/* Ladino: figura de 562 x 840; poses de 747 x 844, a partir de (-54, -4). */
+.bt-posed--ladino {
+    aspect-ratio: 562 / 840;
+    --pose-left: -9.61%;
+    --pose-top: -0.48%;
+    --pose-width: 132.92%;
+    --pose-height: 100.48%;
+}
+
 /*
  * Golpe corpo a corpo (bt-lunge, 1,1 s): no recuo ela ergue a arma (windup)
  * e, no avanço, desce o golpe (strike), que acerta aos 63%, quando o dano
