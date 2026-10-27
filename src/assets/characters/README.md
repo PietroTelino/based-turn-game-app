@@ -33,7 +33,7 @@ Cuidados para a figura combinar com as outras:
 ## Poses de ação
 
 Além da figura parada, um personagem pode ter desenhos de cada momento da
-ação, trocados durante a animação (hoje, a Inquisidora e o Piromante):
+ação, trocados durante a animação (hoje, a Inquisidora, o Piromante e o Sacerdote):
 
 | Arquivo | Quando aparece |
 | --- | --- |
@@ -41,17 +41,19 @@ ação, trocados durante a animação (hoje, a Inquisidora e o Piromante):
 | `<id>-pose-strike.webp` | Golpe corpo a corpo: o golpe acertando (avanço). |
 | `<id>-pose-charge.webp` | Magia: juntando a magia, antes de lançar (opcional). |
 | `<id>-pose-cast.webp` | Habilidade à distância, em área ou de suporte: lançando. |
+| `<id>-pose-bolt.webp` | Projétil: no lugar da `cast` (opcional). |
 | `<id>-pose-area.webp` | Habilidade em área: no lugar da `cast` (opcional). |
 
 O golpe usa `windup` e `strike` juntas. Na magia, com `charge` a pose de
-juntar aparece primeiro e a de lançar (`cast`, ou `area` em área) depois;
+juntar aparece primeiro e a de lançar (`cast`, ou `bolt` no projétil e `area` em área) depois;
 sem ela, só a de lançar. Pode haver só as do golpe ou só as da magia: o que
 faltar fica com a figura parada.
 
 As poses têm **todas o mesmo tamanho**, maior que a figura (para caber a arma
 erguida ou o braço estendido), com a pessoa na mesma escala e os pés no mesmo
 lugar da figura parada, olhando para o mesmo lado. Onde a pose fica em
-relação à figura (as medidas `--pose-*`) e o tempo de cada troca ficam em
+relação à figura (as medidas `--pose-*`), a mão de onde sai o projétil
+(`--fx-hand-*`) e o tempo de cada troca ficam em
 `src/styles/battle.css`, na seção `.bt-posed--<id>`.
 
 Quem não tem arquivo aparece com o desenho de reserva de

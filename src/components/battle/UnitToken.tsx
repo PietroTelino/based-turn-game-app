@@ -52,8 +52,9 @@ export function UnitToken({ unit, units, isActive, acting, isHit, isHealed, isMo
         isActive && 'bt-unit--active',
         // Corpo a corpo avança no alvo; o resto conjura no lugar, na cor do elemento.
         acting && (acting.delivery === 'melee' ? 'bt-unit--acting' : `bt-unit--casting bt-el--${acting.element}`),
-        // Em área, quem tem a pose própria (o Piromante chamando meteoros) usa ela no lugar da de conjurar.
+        // Projétil e área podem ter pose própria (o raio do Sacerdote, os meteoros do Piromante) no lugar da de conjurar.
         acting?.delivery === 'area' && 'bt-unit--area',
+        acting?.delivery === 'projectile' && 'bt-unit--projectile',
         isHit && 'bt-unit--hit',
         isHealed && 'bt-unit--healed',
         isMorphing && 'bt-unit--morphing',

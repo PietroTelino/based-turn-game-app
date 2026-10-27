@@ -13,7 +13,7 @@
  * código. Personagem sem arquivo aparece com o desenho antigo, de reserva.
  *
  * Poses de ação: além do <id>.webp, o personagem pode ter os desenhos
- * <id>-pose-<momento>.webp (windup, strike, charge, cast, area), trocados durante a
+ * <id>-pose-<momento>.webp (windup, strike, charge, cast, bolt, area), trocados durante a
  * animação em battle.css. Ver getPoseFrames.
  */
 export type ArtKind = 'figure' | 'face' | 'card';
@@ -41,13 +41,13 @@ const RENAMED: Record<string, string> = {
     espinho: 'guardiao',
 };
 
-export type PoseName = 'windup' | 'strike' | 'charge' | 'cast' | 'area';
+export type PoseName = 'windup' | 'strike' | 'charge' | 'cast' | 'bolt' | 'area';
 
-const POSES: PoseName[] = ['windup', 'strike', 'charge', 'cast', 'area'];
+const POSES: PoseName[] = ['windup', 'strike', 'charge', 'cast', 'bolt', 'area'];
 
 /**
  * Os desenhos de cada momento da ação (preparar e acertar o golpe; juntar,
- * lançar e, em área, chamar a magia),
+ * lançar a magia; o projétil e a magia em área podem ter pose própria),
  * ou null se o personagem não tem nenhum. A forma de quem se transforma não
  * tem poses: nela vale a figura parada.
  */

@@ -531,6 +531,18 @@
     --fx-hand-y: 0.155;
 }
 
+/* Sacerdote: figura de 598 x 840; poses de 812 x 943, a partir de (-100, -103). */
+.bt-posed--sacerdote {
+    aspect-ratio: 598 / 840;
+    --pose-left: -16.72%;
+    --pose-top: -12.26%;
+    --pose-width: 135.79%;
+    --pose-height: 112.26%;
+    /* A mão estendida na pose do raio: de onde o projétil sai (FxLayer). */
+    --fx-hand-x: 1;
+    --fx-hand-y: 0.195;
+}
+
 /*
  * Golpe corpo a corpo (bt-lunge, 1,1 s): no recuo ela ergue a arma (windup)
  * e, no avanço, desce o golpe (strike), que acerta aos 63%, quando o dano
@@ -551,14 +563,17 @@
 /*
  * Magia, projétil e suporte (bt-cast, 0,75 s): a pose de conjurar o tempo
  * todo. Quem tem a pose de juntar a magia (charge) mostra ela primeiro e
- * lança depois; em área, a pose `area` (se houver) fica no lugar da `cast`.
+ * lança depois. O projétil usa a pose `bolt` e a magia em área a `area`, se
+ * houver, no lugar da `cast`.
  */
 .bt-unit--casting .bt-posed:is(:has(.bt-posed__pose--cast), :has(.bt-posed__pose--charge)) .bt-posed__still,
+.bt-unit--projectile .bt-posed:has(.bt-posed__pose--bolt) .bt-posed__still,
 .bt-unit--area .bt-posed:has(.bt-posed__pose--area) .bt-posed__still {
     animation: bt-pose-cast-still 0.75s linear;
 }
 
 .bt-unit--casting .bt-posed__pose--cast,
+.bt-unit--projectile .bt-posed__pose--bolt,
 .bt-unit--area .bt-posed__pose--area {
     animation: bt-pose-cast 0.75s linear;
 }
@@ -568,10 +583,12 @@
 }
 
 .bt-unit--casting .bt-posed:has(.bt-posed__pose--charge) .bt-posed__pose--cast,
+.bt-unit--projectile .bt-posed:has(.bt-posed__pose--charge) .bt-posed__pose--bolt,
 .bt-unit--area .bt-posed:has(.bt-posed__pose--charge) .bt-posed__pose--area {
     animation-name: bt-pose-release;
 }
 
+.bt-unit--projectile .bt-posed:has(.bt-posed__pose--bolt) .bt-posed__pose--cast,
 .bt-unit--area .bt-posed:has(.bt-posed__pose--area) .bt-posed__pose--cast {
     animation: none;
 }
