@@ -33,7 +33,7 @@ Cuidados para a figura combinar com as outras:
 ## Poses de ação
 
 Além da figura parada, um personagem pode ter desenhos de cada momento da
-ação, trocados durante a animação (hoje, a Inquisidora, o Piromante, o Sacerdote, o Vampiro e o Ladino):
+ação, trocados durante a animação (hoje, a Inquisidora, o Piromante, o Sacerdote, o Vampiro, o Ladino e o Cavaleiro):
 
 | Arquivo | Quando aparece |
 | --- | --- |

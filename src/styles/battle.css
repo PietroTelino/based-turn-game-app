@@ -561,6 +561,15 @@
     --pose-height: 100.48%;
 }
 
+/* Cavaleiro: figura de 611 x 840; poses de 899 x 1149, a partir de (-162, -309). */
+.bt-posed--cavaleiro {
+    aspect-ratio: 611 / 840;
+    --pose-left: -26.51%;
+    --pose-top: -36.79%;
+    --pose-width: 147.14%;
+    --pose-height: 136.79%;
+}
+
 /*
  * Golpe corpo a corpo (bt-lunge, 1,1 s): no recuo ela ergue a arma (windup)
  * e, no avanço, desce o golpe (strike), que acerta aos 63%, quando o dano
