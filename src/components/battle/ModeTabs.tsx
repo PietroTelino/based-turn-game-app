@@ -1,8 +1,12 @@
 import { NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { LockMark } from '@/components/battle/TutorialLock';
 
 export interface ModeTab {
     to: string;
     label: string;
+    /** A aba está travada (falta o tutorial): continua clicável, e mostra o porquê. */
+    locked?: boolean;
 }
 
 interface ModeTabsProps {
@@ -17,11 +21,15 @@ interface ModeTabsProps {
  * navegador funciona.
  */
 export function ModeTabs({ label, tabs }: ModeTabsProps) {
+    const { t } = useTranslation();
+
     return (
         <nav className='bt-modes' aria-label={label}>
             {tabs.map((tab) => (
                 <NavLink key={tab.to} to={tab.to} end className={({ isActive }) => (isActive ? 'bt-modes__tab bt-modes__tab--active' : 'bt-modes__tab')}>
+                    {tab.locked && <LockMark small />}
                     {tab.label}
+                    {tab.locked && <span className='bt-visually-hidden'> ({t('tutorialGate.lockedTab')})</span>}
                 </NavLink>
             ))}
         </nav>

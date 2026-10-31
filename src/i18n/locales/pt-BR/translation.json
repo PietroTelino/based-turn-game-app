@@ -15,8 +15,8 @@
     },
     "nav": {
         "dashboard": "Dashboard",
-        "play": "Single Player",
-        "multiplayer": "Multiplayer",
+        "play": "Um Jogador",
+        "multiplayer": "Multijogador",
         "ranked": "Ranqueada",
         "tutorial": "Tutorial",
         "profile": "Perfil",
@@ -328,8 +328,6 @@
             "speed": "Velocidade"
         },
         "versusPlayer": "Contra jogador",
-        "firstTime": "Primeira vez por aqui?",
-        "firstTimeLink": "Faça a batalha de treino antes de montar o seu time.",
         "ranked": "Ranqueada",
         "replay": "Replay",
         "difficultyTag": "{{level}}",
@@ -538,7 +536,7 @@
         "backToCampaign": "Voltar à campanha"
     },
     "multiplayer": {
-        "title": "Multiplayer",
+        "title": "Multijogador",
         "subtitle": "Jogue contra outras pessoas: numa partida casual, com uma sala e um convite, ou na ranqueada, contra quem a fila encontrar, valendo pontos.",
         "createTitle": "Criar uma sala",
         "createText": "Você recebe um código para passar ao outro jogador. A sala também aparece na lista de salas abertas.",
@@ -554,7 +552,7 @@
         "noRooms": "Nenhuma sala aberta agora. Crie a sua e passe o código para alguém.",
         "roomOf": "Sala de {{name}}",
         "enter": "Entrar",
-        "modes": "Modos do multiplayer",
+        "modes": "Modos do multijogador",
         "tabs": {
             "casual": "Partida casual",
             "ranked": "Partida ranqueada"
@@ -688,7 +686,7 @@
         "opening": "A batalha vai começar. O guia fala com você assim que for a sua vez.",
         "idle": "Continue jogando. Uma dica nova aparece quando acontecer algo que você ainda não viu.",
         "doneTitle": "Treino concluído",
-        "done": "Você já viu o básico. Agora monte o seu próprio time contra o computador ou chame alguém para o multiplayer.",
+        "done": "Tutorial concluído! A partida rápida, a campanha e o multijogador estão liberados. Monte o seu próprio time contra o computador ou chame alguém para jogar.",
         "buildTeam": "Montar meu time",
         "tips": {
             "welcome": {
@@ -747,7 +745,10 @@
                 "title": "Berserk",
                 "text": "A partir do turno 9 o dano de todas as habilidades aumenta 50% a cada turno, para os dois times. É o que impede uma batalha de durar para sempre."
             }
-        }
+        },
+        "quitTitle": "O treino não foi concluído",
+        "quit": "Você desistiu da batalha de treino, então o tutorial ainda não conta como feito. Termine uma batalha de treino, vencendo ou perdendo, para liberar as outras partidas.",
+        "retry": "Refazer o tutorial"
     },
     "errors": {
         "required": "{{field}} é obrigatório",
@@ -765,10 +766,11 @@
         "page": "Página {{current}} de {{total}}"
     },
     "singlePlayer": {
-        "title": "Single Player",
-        "subtitle": "Jogue contra a IA: uma partida rápida com o time que você quiser, ou a campanha, fase por fase.",
-        "modes": "Modos do single player",
+        "title": "Um Jogador",
+        "subtitle": "Jogue contra a IA: comece pelo tutorial, jogue uma partida rápida com o time que você quiser ou avance na campanha, fase por fase.",
+        "modes": "Modos de um jogador",
         "tabs": {
+            "tutorial": "Tutorial",
             "quick": "Partida rápida",
             "campaign": "Campanha"
         },
@@ -810,5 +812,22 @@
         "teamText": "Escolha {{size}} personagens para enfrentar a fase {{stage}}.",
         "pickStage": "Escolha uma fase aberta acima para montar o time.",
         "start": "Começar a fase {{stage}}"
+    },
+    "tutorialGate": {
+        "welcomeTitle": "Comece por aqui: o tutorial é obrigatório",
+        "welcomeText": "Antes da sua primeira partida, você joga uma batalha de treino guiada. Ela mostra, na própria arena, tudo o que você vai usar em todas as outras partidas, e o computador pega leve enquanto você aprende.",
+        "learnTitle": "O que você aprende",
+        "learn": {
+            "screen": "Ler a arena: a ordem de ação, a vida de cada um e os efeitos ativos.",
+            "energy": "Gastar a energia do time, que é dividida entre todos os personagens.",
+            "skills": "Quando usar o ataque básico e quando guardar energia para uma habilidade forte.",
+            "effects": "O que fazem a queimadura, o veneno, o atordoamento, o escudo e os outros efeitos."
+        },
+        "unlockTitle": "O que fica liberado ao terminar",
+        "welcomeNote": "Termine a batalha de treino, vencendo ou perdendo, para liberar o resto do jogo. Desistir no meio não conta.",
+        "lockedTitle": "Termine o tutorial primeiro",
+        "lockedText": "Esta partida fica liberada quando você termina a batalha de treino. São poucos minutos, e ela ensina o que você vai precisar aqui.",
+        "goToTutorial": "Ir para o tutorial",
+        "lockedTab": "travada até você fazer o tutorial"
     }
 }

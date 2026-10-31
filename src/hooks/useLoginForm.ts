@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { getTutorialStatus } from '@/api/tutorial';
 
 interface FormState {
     email: string;
@@ -62,7 +63,11 @@ export function useLoginForm() {
 
         try {
             await login(form.email, form.password);
-            navigate('/dashboard');
+
+            // Quem ainda não fez o tutorial (o primeiro acesso) entra direto nele: ele é obrigatório.
+            const tutorial = await getTutorialStatus().catch(() => null);
+
+            navigate(tutorial && !tutorial.completed ? '/play/tutorial' : '/dashboard');
         } catch (err: any) {
             console.log('Erro completo:', err);
             console.log('Response:', err?.response);

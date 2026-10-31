@@ -5,15 +5,18 @@ import { CharacterArt } from '@/components/battle/CharacterArt';
 import { CharacterCard } from '@/components/battle/CharacterCard';
 import { DifficultyMark, DifficultyPicker } from '@/components/battle/DifficultyPicker';
 import { ModeTabs } from '@/components/battle/ModeTabs';
+import { TutorialLobby } from '@/components/battle/TutorialLobby';
+import { TutorialLock } from '@/components/battle/TutorialLock';
 import { useCampaign } from '@/hooks/useCampaign';
 import { useDifficulty } from '@/hooks/useDifficulty';
+import { useTutorialStatus } from '@/hooks/useTutorialStatus';
 import { TEAM_SIZE, usePlay } from '@/hooks/usePlay';
 import { ratingKey } from '@/battle/rating';
 import type { AiDifficulty, BattleSummary, CampaignStage, Character } from '@/types/battle';
 import '@/styles/battle.css';
 
-/** As duas abas do single player: cada uma é uma rota. */
-export type SinglePlayerMode = 'quick' | 'campaign';
+/** As abas do single player: cada uma é uma rota. */
+export type SinglePlayerMode = 'tutorial' | 'quick' | 'campaign';
 
 function battleLabelKey(battle: BattleSummary): string {
     if (battle.status === 'in_progress') return 'play.inProgress';
@@ -23,15 +26,21 @@ function battleLabelKey(battle: BattleSummary): string {
 }
 
 /**
- * Single player: jogar contra a IA. Na partida rápida o time inimigo é
- * sorteado; na campanha, cada fase tem o seu. Nas duas o jogador escolhe o
- * nível da IA e monta o time.
+ * Single player: jogar contra a IA. O tutorial é a batalha de treino, com o
+ * guia, e é obrigatório: enquanto o jogador não o termina, as outras abas
+ * mostram a trava. Na partida rápida o time inimigo é sorteado; na campanha,
+ * cada fase tem o seu. Nas duas o jogador escolhe o nível da IA e monta o time.
  */
 export function PlayPage({ mode = 'quick' }: { mode?: SinglePlayerMode }) {
     const { t } = useTranslation();
     const play = usePlay();
     const [difficulty, setDifficulty] = useDifficulty();
     const { battles, isLoading, hasError } = play;
+    const tutorialDone = useTutorialStatus();
+    /** Falta o tutorial: as abas de partida mostram a trava no lugar do conteúdo. */
+    const locked = tutorialDone === false;
+    /** O conteúdo de uma aba de partida (enquanto não se sabe do tutorial, nada aparece). */
+    const showGame = mode !== 'tutorial' && tutorialDone === true;
 
     return (
         <Layout title={t('nav.play')}>
@@ -41,28 +50,24 @@ export function PlayPage({ mode = 'quick' }: { mode?: SinglePlayerMode }) {
                     <p className='bt-lead'>{t('singlePlayer.subtitle')}</p>
                 </header>
 
-                {/* Quem nunca jogou é convidado a começar pelo treino. */}
-                {!isLoading && !hasError && battles.length === 0 && (
-                    <p className='bt-callout'>
-                        {t('play.firstTime')}{' '}
-                        <Link to='/tutorial' className='bt-link'>
-                            {t('play.firstTimeLink')}
-                        </Link>
-                    </p>
-                )}
-
                 <ModeTabs
                     label={t('singlePlayer.modes')}
                     tabs={[
-                        { to: '/play', label: t('singlePlayer.tabs.quick') },
-                        { to: '/play/campaign', label: t('singlePlayer.tabs.campaign') },
+                        { to: '/play/tutorial', label: t('singlePlayer.tabs.tutorial') },
+                        { to: '/play', label: t('singlePlayer.tabs.quick'), locked },
+                        { to: '/play/campaign', label: t('singlePlayer.tabs.campaign'), locked },
                     ]}
                 />
 
-                {isLoading && <p className='bt-message'>{t('play.loading')}</p>}
-                {hasError && <p className='bt-message bt-message--error'>{t('play.loadError')}</p>}
+                {/* O tutorial carrega o próprio time; as outras abas, o catálogo e o histórico. */}
+                {mode === 'tutorial' && <TutorialLobby required={locked} />}
 
-                {!isLoading && !hasError && mode === 'quick' && (
+                {mode !== 'tutorial' && locked && <TutorialLock />}
+
+                {showGame && isLoading && <p className='bt-message'>{t('play.loading')}</p>}
+                {showGame && hasError && <p className='bt-message bt-message--error'>{t('play.loadError')}</p>}
+
+                {showGame && !isLoading && !hasError && mode === 'quick' && (
                     <>
                         <p className='bt-lead'>{t('singlePlayer.quickLead')}</p>
                         <DifficultyPicker value={difficulty} onChange={setDifficulty} disabled={play.isStarting} />
@@ -72,7 +77,7 @@ export function PlayPage({ mode = 'quick' }: { mode?: SinglePlayerMode }) {
                     </>
                 )}
 
-                {!isLoading && !hasError && mode === 'campaign' && <Campaign play={play} difficulty={difficulty} onDifficulty={setDifficulty} />}
+                {showGame && !isLoading && !hasError && mode === 'campaign' && <Campaign play={play} difficulty={difficulty} onDifficulty={setDifficulty} />}
             </div>
         </Layout>
     );

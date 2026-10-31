@@ -17,7 +17,6 @@ import { PlayPage } from '@/pages/PlayPage';
 import { BattlePage } from '@/pages/BattlePage';
 import { MultiplayerPage } from '@/pages/MultiplayerPage';
 import { RoomPage } from '@/pages/RoomPage';
-import { TutorialPage } from '@/pages/TutorialPage';
 
 export default function App() {
     return (
@@ -35,6 +34,7 @@ export default function App() {
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/play" element={<PlayPage mode='quick' />} />
                 <Route path="/play/campaign" element={<PlayPage mode='campaign' />} />
+                <Route path="/play/tutorial" element={<PlayPage mode='tutorial' />} />
                 <Route path="/battle/:id" element={<BattlePage />} />
                 <Route path="/replay/:id" element={<BattlePage replay />} />
                 <Route path="/multiplayer" element={<MultiplayerPage mode='casual' />} />
@@ -42,7 +42,8 @@ export default function App() {
                 {/* A ranqueada era uma página própria: o endereço antigo leva à aba nova. */}
                 <Route path="/ranked" element={<Navigate to="/multiplayer/ranked" replace />} />
                 <Route path="/room/:code" element={<RoomPage />} />
-                <Route path="/tutorial" element={<TutorialPage />} />
+                {/* O tutorial era uma página própria: o endereço antigo leva à aba do single player. */}
+                <Route path="/tutorial" element={<Navigate to="/play/tutorial" replace />} />
                 <Route path="/sessions" element={<SessionsPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
 

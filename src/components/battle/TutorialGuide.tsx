@@ -38,6 +38,7 @@ export function TutorialGuide({ guide, unitName, onAdvance }: TutorialGuideProps
             ) : (
                 <div className='bt-coach__body'>
                     {guide.kind === 'done' && <p className='bt-coach__title'>{t('tutorial.doneTitle')}</p>}
+                    {guide.kind === 'quit' && <p className='bt-coach__title'>{t('tutorial.quitTitle')}</p>}
                     <p className='bt-coach__text'>{t(`tutorial.${guide.kind}`)}</p>
                 </div>
             )}
@@ -52,6 +53,11 @@ export function TutorialGuide({ guide, unitName, onAdvance }: TutorialGuideProps
                     <button type='button' className='bt-btn bt-btn--small' onClick={onAdvance}>
                         {t('tutorial.gotIt')}
                     </button>
+                )}
+                {guide.kind === 'quit' && (
+                    <Link to='/play/tutorial' className='bt-btn bt-btn--small'>
+                        {t('tutorial.retry')}
+                    </Link>
                 )}
                 {guide.kind === 'done' && (
                     <>

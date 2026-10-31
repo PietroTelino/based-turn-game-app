@@ -23,7 +23,7 @@ interface TutorialInput {
 export type TutorialGuide =
     | { kind: 'lesson'; id: TutorialTipId; focus: TutorialFocus | null; step: number; total: number; hasNext: boolean }
     | { kind: 'moment'; id: TutorialTipId; focus: TutorialFocus | null }
-    | { kind: 'opening' | 'idle' | 'done'; focus: null };
+    | { kind: 'opening' | 'idle' | 'done' | 'quit'; focus: null };
 
 /**
  * O guia da batalha de treino. Não guarda nada no servidor: olha a batalha
@@ -41,7 +41,8 @@ export function useTutorial(enabled: boolean, { view, state, canAct, actions, se
     let guide: TutorialGuide;
 
     if (view.status === 'finished') {
-        guide = { kind: 'done', focus: null };
+        // Desistir do treino não conclui o tutorial: o guia diz isso em vez de dar parabéns.
+        guide = { kind: view.state.surrenderedBy === view.playerTeam ? 'quit' : 'done', focus: null };
     } else if (!hasPlayed && lessonStep < LESSON.length) {
         const tip = LESSON[lessonStep];
 

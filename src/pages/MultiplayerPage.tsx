@@ -2,7 +2,9 @@ import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/Layout';
 import { ModeTabs } from '@/components/battle/ModeTabs';
 import { RankedLobby } from '@/components/battle/RankedLobby';
+import { TutorialLock } from '@/components/battle/TutorialLock';
 import { useLobby } from '@/hooks/useLobby';
+import { useTutorialStatus } from '@/hooks/useTutorialStatus';
 import '@/styles/battle.css';
 
 /** O código tem sempre este tamanho (CODE_LENGTH em room.service.ts, na API). */
@@ -17,6 +19,9 @@ export type MultiplayerMode = 'casual' | 'ranked';
  */
 export function MultiplayerPage({ mode = 'casual' }: { mode?: MultiplayerMode }) {
     const { t } = useTranslation();
+    const tutorialDone = useTutorialStatus();
+    /** Falta o tutorial: as duas abas mostram a trava (a API também recusa salas e fila). */
+    const locked = tutorialDone === false;
 
     return (
         <Layout title={t('nav.multiplayer')}>
@@ -29,12 +34,13 @@ export function MultiplayerPage({ mode = 'casual' }: { mode?: MultiplayerMode })
                 <ModeTabs
                     label={t('multiplayer.modes')}
                     tabs={[
-                        { to: '/multiplayer', label: t('multiplayer.tabs.casual') },
-                        { to: '/multiplayer/ranked', label: t('multiplayer.tabs.ranked') },
+                        { to: '/multiplayer', label: t('multiplayer.tabs.casual'), locked },
+                        { to: '/multiplayer/ranked', label: t('multiplayer.tabs.ranked'), locked },
                     ]}
                 />
 
-                {mode === 'ranked' ? <RankedLobby /> : <CasualLobby />}
+                {locked && <TutorialLock />}
+                {tutorialDone === true && (mode === 'ranked' ? <RankedLobby /> : <CasualLobby />)}
             </div>
         </Layout>
     );

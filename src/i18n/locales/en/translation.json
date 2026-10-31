@@ -328,8 +328,6 @@
             "speed": "Speed"
         },
         "versusPlayer": "Versus player",
-        "firstTime": "First time here?",
-        "firstTimeLink": "Play the training battle before building your team.",
         "ranked": "Ranked",
         "replay": "Replay",
         "difficultyTag": "{{level}}",
@@ -688,7 +686,7 @@
         "opening": "The battle is about to start. The guide will talk to you as soon as it is your turn.",
         "idle": "Keep playing. A new tip shows up when something you have not seen yet happens.",
         "doneTitle": "Training complete",
-        "done": "You have seen the basics. Now build your own team against the computer or invite someone to multiplayer.",
+        "done": "Tutorial complete! Quick matches, the campaign and multiplayer are unlocked. Build your own team against the computer or invite someone to play.",
         "buildTeam": "Build my team",
         "tips": {
             "welcome": {
@@ -747,7 +745,10 @@
                 "title": "Berserk",
                 "text": "From turn 9 on, the damage of every skill increases 50% each turn, for both teams. It is what keeps a battle from lasting forever."
             }
-        }
+        },
+        "quitTitle": "The training was not completed",
+        "quit": "You gave up the training battle, so the tutorial does not count as done yet. Finish a training battle, win or lose, to unlock the other matches.",
+        "retry": "Play the tutorial again"
     },
     "errors": {
         "required": "{{field}} is required",
@@ -766,9 +767,10 @@
     },
     "singlePlayer": {
         "title": "Single Player",
-        "subtitle": "Play against the AI: a quick match with any team you like, or the campaign, stage by stage.",
+        "subtitle": "Play against the AI: start with the tutorial, play a quick match with any team you like or move through the campaign, stage by stage.",
         "modes": "Single player modes",
         "tabs": {
+            "tutorial": "Tutorial",
             "quick": "Quick match",
             "campaign": "Campaign"
         },
@@ -810,5 +812,22 @@
         "teamText": "Pick {{size}} characters to face stage {{stage}}.",
         "pickStage": "Choose an unlocked stage above to build your team.",
         "start": "Start stage {{stage}}"
+    },
+    "tutorialGate": {
+        "welcomeTitle": "Start here: the tutorial is required",
+        "welcomeText": "Before your first match, you play a guided training battle. It shows you, right on the battlefield, everything you will use in every other match, and the computer goes easy on you while you learn.",
+        "learnTitle": "What you learn",
+        "learn": {
+            "screen": "Reading the battlefield: the turn order, everyone’s health and the active effects.",
+            "energy": "Spending the team’s energy, which is shared by every character.",
+            "skills": "When to use the basic attack and when to save energy for a strong skill.",
+            "effects": "What burn, poison, stun, shields and the other effects do."
+        },
+        "unlockTitle": "What unlocks when you finish",
+        "welcomeNote": "Finish the training battle, win or lose, to unlock the rest of the game. Giving up halfway does not count.",
+        "lockedTitle": "Finish the tutorial first",
+        "lockedText": "This match unlocks once you finish the training battle. It only takes a few minutes, and it teaches what you will need here.",
+        "goToTutorial": "Go to the tutorial",
+        "lockedTab": "locked until you play the tutorial"
     }
 }
