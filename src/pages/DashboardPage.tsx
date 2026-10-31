@@ -34,7 +34,7 @@ export function DashboardPage() {
                         <section className='bt-panel bt-dashboard__rank' aria-label={t('ranked.yourRank')}>
                             <h3 className='bt-subtitle'>{t('dashboard.rankTitle')}</h3>
                             <RankProgress profile={profile} />
-                            <Link to='/ranked' className='bt-btn'>
+                            <Link to='/multiplayer/ranked' className='bt-btn'>
                                 {t('dashboard.playRanked')}
                             </Link>
                         </section>

@@ -5132,3 +5132,389 @@
         margin-right: 0;
     }
 }
+
+/* ----------------------------------------------------- Abas dos modos de jogo */
+
+/*
+ * Single player (Partida rápida, Campanha) e multiplayer (Casual, Ranqueada):
+ * abas de fichário, apoiadas numa linha de tinta. A aba ativa é pergaminho
+ * claro e "abre" a linha embaixo dela; as outras ficam um tom de pedra atrás.
+ */
+.bt-modes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 6px;
+    border-bottom: 3px solid var(--bt-ink);
+}
+
+.bt-modes__tab {
+    position: relative;
+    margin-bottom: -3px;
+    padding: 9px 22px 8px;
+    border: 3px solid var(--bt-ink);
+    border-bottom: 0;
+    border-radius: 10px 10px 0 0;
+    background: linear-gradient(#d8c9a5, #c9b78f);
+    color: #3b3022;
+    font-family: var(--bt-display);
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 1.2;
+    text-decoration: none;
+    transition: background-color 0.15s ease;
+}
+
+.bt-modes__tab:hover {
+    background: linear-gradient(#e6d9b8, #d6c59d);
+    color: var(--bt-ink);
+}
+
+.bt-modes__tab:focus-visible {
+    outline: 3px solid var(--bt-ally);
+    outline-offset: 2px;
+}
+
+.bt-modes__tab--active,
+.bt-modes__tab--active:hover {
+    z-index: 1;
+    padding-bottom: 11px;
+    box-shadow: inset 0 1px 0 1px var(--bt-gold);
+    background: var(--bt-paper-light);
+    color: var(--bt-ink);
+}
+
+/* A linha de baixo some sob a aba ativa: ela fica "aberta" para o conteúdo. */
+.bt-modes__tab--active::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: -3px;
+    left: 0;
+    height: 3px;
+    background: var(--bt-paper-light);
+}
+
+.dark .bt-modes {
+    border-bottom-color: var(--bt-gold);
+}
+
+.dark .bt-modes__tab {
+    border-color: var(--bt-gold);
+}
+
+/* ------------------------------------------------------- Dificuldade da IA */
+
+.bt-difficulty {
+    display: grid;
+    gap: 8px;
+    min-width: 0;
+    margin: 0;
+    padding: 14px 18px 16px;
+    border: 3px solid var(--bt-ink);
+    border-radius: 10px;
+    box-shadow: inset 0 0 0 1px var(--bt-gold), 0 6px 16px rgb(28 26 43 / 0.2);
+    background: linear-gradient(var(--bt-paper-light), var(--bt-paper));
+    color: var(--bt-ink);
+}
+
+.bt-difficulty__legend {
+    float: left;
+    width: 100%;
+    padding: 0;
+    font-family: var(--bt-display);
+    font-weight: 700;
+    font-size: 22px;
+}
+
+.bt-difficulty__options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 10px;
+}
+
+.bt-difficulty__option {
+    --bt-level: var(--bt-gold);
+    display: grid;
+    align-content: start;
+    gap: 4px;
+    padding: 10px 14px 12px;
+    border: 2px solid rgb(28 26 43 / 0.45);
+    border-radius: 8px;
+    background: rgb(255 248 226 / 0.55);
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.bt-difficulty__option--easy {
+    --bt-level: var(--bt-good);
+}
+
+.bt-difficulty__option--hard {
+    --bt-level: var(--bt-enemy);
+}
+
+.bt-difficulty__option:hover {
+    border-color: var(--bt-ink);
+    background: #fff8e2;
+}
+
+/* O escolhido: a borda inteira em tinta e uma faixa na cor do nível. */
+.bt-difficulty__option:has(.bt-difficulty__input:checked) {
+    border-color: var(--bt-ink);
+    box-shadow: inset 6px 0 0 var(--bt-level), 0 3px 0 var(--bt-ink);
+    background: #fff8e2;
+}
+
+.bt-difficulty__option:has(.bt-difficulty__input:focus-visible) {
+    outline: 3px solid var(--bt-ally);
+    outline-offset: 2px;
+}
+
+.bt-difficulty:disabled .bt-difficulty__option {
+    cursor: default;
+    opacity: 0.6;
+}
+
+.bt-difficulty__input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.bt-difficulty__name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--bt-display);
+    font-weight: 700;
+    font-size: 21px;
+    line-height: 1.15;
+}
+
+.bt-difficulty__hint {
+    font-size: 15px;
+    line-height: 1.35;
+    color: #3b3022;
+}
+
+/* Os crânios: acesos na cor do nível, apagados em contorno. */
+.bt-difficulty__mark {
+    display: inline-flex;
+    gap: 1px;
+}
+
+.bt-difficulty__skull {
+    width: 16px;
+    height: 16px;
+    fill: rgb(28 26 43 / 0.16);
+}
+
+.bt-difficulty__skull--on {
+    fill: var(--bt-level, var(--bt-ink));
+}
+
+.bt-difficulty__eye {
+    fill: var(--bt-paper-light);
+}
+
+/* ------------------------------------------------------------------ Campanha */
+
+.bt-stages {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.bt-stage {
+    --bt-stage-scene: url('../assets/scenery/muralha.webp');
+    display: grid;
+    grid-template-rows: auto 1fr;
+    overflow: hidden;
+    border: 3px solid var(--bt-ink);
+    border-radius: 10px;
+    box-shadow: inset 0 0 0 1px var(--bt-gold), 0 6px 16px rgb(28 26 43 / 0.25);
+    background: linear-gradient(var(--bt-paper-light), var(--bt-paper));
+    color: var(--bt-ink);
+}
+
+.bt-stage[data-arena='floresta'] {
+    --bt-stage-scene: url('../assets/scenery/floresta.webp');
+}
+
+.bt-stage[data-arena='lago-gelado'] {
+    --bt-stage-scene: url('../assets/scenery/lago-gelado.webp');
+}
+
+/* A fase escolhida ganha a moldura de ouro. */
+.bt-stage--selected {
+    box-shadow: 0 0 0 3px var(--bt-gold-bright), inset 0 0 0 1px var(--bt-gold), 0 8px 20px rgb(28 26 43 / 0.35);
+}
+
+/* O cenário da fase, como uma janela no alto do cartão. */
+.bt-stage__scene {
+    height: 128px;
+    border-bottom: 3px solid var(--bt-ink);
+    background: #6e5a44 var(--bt-stage-scene) center 62% / cover no-repeat;
+}
+
+.bt-stage--locked .bt-stage__scene {
+    filter: grayscale(1) brightness(0.7);
+}
+
+.bt-stage__body {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+    padding: 12px 18px 16px;
+}
+
+.bt-stage__number {
+    margin: 0;
+    color: #6b5531;
+    font-weight: 800;
+    font-size: 15px;
+}
+
+.bt-stage__name {
+    margin: -6px 0 0;
+    font-family: var(--bt-display);
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 1.15;
+}
+
+.bt-stage__story {
+    max-width: 52ch;
+    margin: 0;
+    line-height: 1.45;
+}
+
+.bt-stage--locked :is(.bt-stage__name, .bt-stage__story, .bt-stage__enemies) {
+    opacity: 0.6;
+}
+
+.bt-stage__enemies {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 4px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.bt-stage__enemy {
+    width: 48px;
+    height: 48px;
+    overflow: hidden;
+    border: 3px solid var(--bt-enemy);
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px var(--bt-ink), 0 2px 4px rgb(28 26 43 / 0.35);
+    background: var(--bt-paper);
+}
+
+.bt-stage__face {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.bt-stage__footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 16px;
+    margin-top: 6px;
+    padding-top: 10px;
+    border-top: 1px solid rgb(28 26 43 / 0.25);
+}
+
+.bt-stage__status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 8px;
+    margin: 0;
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.bt-stage__lock {
+    width: 16px;
+    height: 16px;
+    fill: var(--bt-ink);
+    stroke: var(--bt-ink);
+}
+
+.bt-stage__medal {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 1px 9px 2px 6px;
+    border: 1px solid var(--bt-ink);
+    border-radius: 999px;
+    background: #fff8e2;
+    font-size: 14px;
+}
+
+.bt-stage__medal .bt-difficulty__skull {
+    width: 12px;
+    height: 12px;
+}
+
+/* No histórico: a fase da campanha e o nível da IA. */
+.bt-history__tag--campaign {
+    border-color: #6b5531;
+    background: #f1e2bb;
+    color: #4a3b2a;
+}
+
+.bt-history__tag--level {
+    border-color: var(--bt-stone-dark);
+    color: #4a3b2a;
+}
+
+.bt-history__tag--easy {
+    border-color: var(--bt-good);
+    color: #2f5a1c;
+}
+
+.bt-history__tag--hard {
+    border-color: var(--bt-enemy);
+    color: #8a231e;
+}
+
+/* Duas etiquetas seguidas ficam mais próximas. */
+.bt-history__tag + .bt-history__tag {
+    margin-left: 6px;
+}
+
+@media (max-width: 640px) {
+    .bt-modes__tab {
+        flex: 1 1 0;
+        padding: 8px 10px 7px;
+        font-size: 17px;
+        text-align: center;
+    }
+
+    .bt-stage__scene {
+        height: 96px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bt-modes__tab,
+    .bt-difficulty__option {
+        transition: none;
+    }
+}
+
+/* As etiquetas do histórico não quebram no meio: se não couberem, descem inteiras. */
+.bt-history__tag {
+    display: inline-block;
+    white-space: nowrap;
+}

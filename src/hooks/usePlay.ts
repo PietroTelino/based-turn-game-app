@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { createBattle, getCharacters, listBattles } from '@/api/battles';
+import type { CreateBattleOptions } from '@/api/battles';
 import { sfx } from '@/audio/sfx';
 import { useToast } from '@/contexts/ToastContext';
 import type { BattleSummary, Character } from '@/types/battle';
@@ -56,14 +57,15 @@ export function usePlay() {
         });
     }
 
-    async function start() {
+    /** Cria a batalha contra a IA com o time escolhido. `options`: o nível da IA e, na campanha, a fase. */
+    async function start(options: Pick<CreateBattleOptions, 'difficulty' | 'campaignStage'> = {}) {
         if (team.length !== TEAM_SIZE || isStarting) return;
 
         setIsStarting(true);
         sfx.play('click');
 
         try {
-            const response = await createBattle(team);
+            const response = await createBattle(team, options);
 
             // A resposta vai junto para a tela de batalha animar a abertura.
             navigate(`/battle/${response.battle.id}`, { state: { opening: response } });

@@ -256,6 +256,30 @@ export interface BattleState {
     training?: boolean;
     /** O cenário, sorteado pela API quando a batalha é criada. Batalhas antigas não têm: vale a muralha. */
     arena?: ArenaId;
+    /** Contra a IA: o nível dela. Batalhas antigas não têm: vale o normal. */
+    difficulty?: AiDifficulty;
+    /** Batalha da campanha: a fase (1, 2...). */
+    campaignStage?: number;
+}
+
+/** O nível da IA nas partidas single player. */
+export type AiDifficulty = 'easy' | 'normal' | 'hard';
+
+/** Os níveis, do mais fácil ao mais difícil (é a ordem dos botões). */
+export const AI_DIFFICULTIES: AiDifficulty[] = ['easy', 'normal', 'hard'];
+
+/** Uma fase da campanha como a API devolve: contra quem, onde e o que o jogador já fez nela. */
+export interface CampaignStage {
+    stage: number;
+    /** O nome da fase nas traduções (campaign.stages.<key>). */
+    key: string;
+    arena: ArenaId;
+    /** Os personagens do time inimigo, na ordem. */
+    enemyTeam: string[];
+    /** Dá para jogar: é a primeira fase ou a anterior já foi vencida. */
+    unlocked: boolean;
+    /** Os níveis em que o jogador já venceu a fase. */
+    clearedOn: AiDifficulty[];
 }
 
 /** Os cenários possíveis (a imagem de cada um fica em src/assets/scenery). */
@@ -382,6 +406,10 @@ export interface BattleView {
      * Partida ranqueada em andamento: quanto tempo quem está na vez ainda tem
      * para jogar, em ms, no instante da resposta. `null` quando não há prazo.
      */
+    /** Contra a IA: o nível dela (`null` entre jogadores, no treino e nas batalhas antigas). */
+    difficulty: AiDifficulty | null;
+    /** Batalha da campanha: a fase. */
+    campaignStage: number | null;
     turnTimeLeftMs: number | null;
     createdAt: string;
     updatedAt: string;
@@ -414,6 +442,10 @@ export interface BattleSummary {
     ranked: boolean;
     /** Partida ranqueada encerrada: os pontos que você ganhou (ou perdeu, negativo). */
     ratingChange: number | null;
+    /** Contra a IA: o nível dela (`null` entre jogadores, no treino e nas batalhas antigas). */
+    difficulty: AiDifficulty | null;
+    /** Batalha da campanha: a fase. */
+    campaignStage: number | null;
     createdAt: string;
     updatedAt: string;
     finishedAt: string | null;

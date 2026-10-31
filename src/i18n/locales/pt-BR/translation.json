@@ -15,7 +15,7 @@
     },
     "nav": {
         "dashboard": "Dashboard",
-        "play": "Jogar",
+        "play": "Single Player",
         "multiplayer": "Multiplayer",
         "ranked": "Ranqueada",
         "tutorial": "Tutorial",
@@ -331,7 +331,9 @@
         "firstTime": "Primeira vez por aqui?",
         "firstTimeLink": "Faça a batalha de treino antes de montar o seu time.",
         "ranked": "Ranqueada",
-        "replay": "Replay"
+        "replay": "Replay",
+        "difficultyTag": "{{level}}",
+        "campaignTag": "Campanha, fase {{stage}}"
     },
     "battle": {
         "title": "Batalha",
@@ -532,11 +534,12 @@
         "wokeUp": "Acordou!",
         "permanent": "permanente",
         "chooseRevive": "Clique no aliado caído que {{skill}} vai trazer de volta.",
-        "chooseRaise": "Clique no aliado caído que {{skill}} vai erguer como esqueleto."
+        "chooseRaise": "Clique no aliado caído que {{skill}} vai erguer como esqueleto.",
+        "backToCampaign": "Voltar à campanha"
     },
     "multiplayer": {
         "title": "Multiplayer",
-        "subtitle": "Jogue contra outra pessoa. Crie uma sala e passe o código, ou entre em uma sala que já existe.",
+        "subtitle": "Jogue contra outras pessoas: numa partida casual, com uma sala e um convite, ou na ranqueada, contra quem a fila encontrar, valendo pontos.",
         "createTitle": "Criar uma sala",
         "createText": "Você recebe um código para passar ao outro jogador. A sala também aparece na lista de salas abertas.",
         "create": "Criar sala",
@@ -550,7 +553,13 @@
         "loadError": "Não foi possível buscar as salas. Confira se a API está no ar.",
         "noRooms": "Nenhuma sala aberta agora. Crie a sua e passe o código para alguém.",
         "roomOf": "Sala de {{name}}",
-        "enter": "Entrar"
+        "enter": "Entrar",
+        "modes": "Modos do multiplayer",
+        "tabs": {
+            "casual": "Partida casual",
+            "ranked": "Partida ranqueada"
+        },
+        "casualLead": "Crie uma sala e passe o código para alguém, ou entre na sala de outra pessoa. A partida não vale pontos."
     },
     "room": {
         "title": "Sala de batalha",
@@ -754,5 +763,52 @@
     },
     "pagination": {
         "page": "Página {{current}} de {{total}}"
+    },
+    "singlePlayer": {
+        "title": "Single Player",
+        "subtitle": "Jogue contra a IA: uma partida rápida com o time que você quiser, ou a campanha, fase por fase.",
+        "modes": "Modos do single player",
+        "tabs": {
+            "quick": "Partida rápida",
+            "campaign": "Campanha"
+        },
+        "quickLead": "Monte o seu time e enfrente um time sorteado pela IA, num cenário sorteado."
+    },
+    "difficulty": {
+        "label": "Dificuldade da IA",
+        "easy": "Fácil",
+        "normal": "Normal",
+        "hard": "Difícil",
+        "hint": {
+            "easy": "Gasta energia uma vez por turno e espalha os golpes.",
+            "normal": "Joga do jeito de sempre: cura, purifica e termina os feridos.",
+            "hard": "Pensa cada jogada antes de agir e concentra o dano em quem mais pesa."
+        }
+    },
+    "campaign": {
+        "lead": "Cada fase tem um time inimigo e um cenário próprios. Vencer uma fase, em qualquer dificuldade, abre a seguinte.",
+        "loading": "Carregando a campanha...",
+        "loadError": "Não foi possível carregar a campanha. Confira se a API está no ar e recarregue a página.",
+        "stageLabel": "Fase {{stage}}",
+        "stages": {
+            "muralha": {
+                "name": "A Estrada da Muralha",
+                "story": "Um bando de saqueadores fechou a estrada da muralha. São guerreiros e atiradores, e nenhum deles cura: derrube-os antes que o machado do Bárbaro faça o estrago."
+            },
+            "floresta": {
+                "name": "A Floresta da Noite",
+                "story": "Na floresta, as criaturas da noite esperam. A Súcubo põe o seu time para dormir, o Vampiro bebe a vida que tira e o Necromante ergue os mortos. Leve quem saiba purificar."
+            }
+        },
+        "enemies": "Time inimigo",
+        "locked": "Bloqueada. Vença a fase {{stage}} para abrir.",
+        "notCleared": "Ainda não vencida.",
+        "clearedOn": "Vencida em:",
+        "choose": "Jogar esta fase",
+        "chosen": "Fase escolhida",
+        "teamTitle": "Seu time",
+        "teamText": "Escolha {{size}} personagens para enfrentar a fase {{stage}}.",
+        "pickStage": "Escolha uma fase aberta acima para montar o time.",
+        "start": "Começar a fase {{stage}}"
     }
 }

@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { BattleActionInput, BattleResponse, BattleSummary, BattleView, Character, ReplayResponse } from '@/types/battle';
+import type { AiDifficulty, BattleActionInput, BattleResponse, BattleSummary, BattleView, CampaignStage, Character, ReplayResponse } from '@/types/battle';
 
 export async function getCharacters(): Promise<Character[]> {
     const { data } = await api.get<Character[]>('/battles/characters');
@@ -11,12 +11,26 @@ export async function listBattles(): Promise<BattleSummary[]> {
     return data;
 }
 
-/**
- * Cria uma batalha contra a IA. Sem `enemyTeam` o time inimigo é sorteado.
- * O tutorial informa o time inimigo e pede `training`: a batalha de treino é
- * sempre a mesma e nela a IA joga fraco de propósito.
- */
-export async function createBattle(team: string[], options: { enemyTeam?: string[]; training?: boolean } = {}): Promise<BattleResponse> {
+/** As fases da campanha, com o que o jogador já abriu e venceu. */
+export async function getCampaign(): Promise<CampaignStage[]> {
+    const { data } = await api.get<CampaignStage[]>('/battles/campaign');
+    return data;
+}
+
+/** O que dá para pedir ao criar uma batalha contra a IA, além do time. */
+export interface CreateBattleOptions {
+    /** O time da IA. Sem ele, é sorteado (numa fase da campanha, é o da fase). */
+    enemyTeam?: string[];
+    /** A batalha de treino do tutorial: sempre a mesma, e a IA joga fraco de propósito. */
+    training?: boolean;
+    /** O nível da IA. Sem ele, normal. */
+    difficulty?: AiDifficulty;
+    /** Uma fase da campanha: o time inimigo e o cenário são os dela. */
+    campaignStage?: number;
+}
+
+/** Cria uma batalha contra a IA. */
+export async function createBattle(team: string[], options: CreateBattleOptions = {}): Promise<BattleResponse> {
     const { data } = await api.post<BattleResponse>('/battles', { team, ...options });
     return data;
 }

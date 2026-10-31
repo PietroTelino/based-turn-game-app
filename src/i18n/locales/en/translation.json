@@ -15,7 +15,7 @@
     },
     "nav": {
         "dashboard": "Dashboard",
-        "play": "Play",
+        "play": "Single Player",
         "multiplayer": "Multiplayer",
         "ranked": "Ranked",
         "tutorial": "Tutorial",
@@ -331,7 +331,9 @@
         "firstTime": "First time here?",
         "firstTimeLink": "Play the training battle before building your team.",
         "ranked": "Ranked",
-        "replay": "Replay"
+        "replay": "Replay",
+        "difficultyTag": "{{level}}",
+        "campaignTag": "Campaign, stage {{stage}}"
     },
     "battle": {
         "title": "Battle",
@@ -532,11 +534,12 @@
         "wokeUp": "Woke up!",
         "permanent": "permanent",
         "chooseRevive": "Click the fallen ally that {{skill}} will bring back.",
-        "chooseRaise": "Click the fallen ally that {{skill}} will raise as a skeleton."
+        "chooseRaise": "Click the fallen ally that {{skill}} will raise as a skeleton.",
+        "backToCampaign": "Back to the campaign"
     },
     "multiplayer": {
         "title": "Multiplayer",
-        "subtitle": "Play against another person. Create a room and share the code, or join a room that already exists.",
+        "subtitle": "Play against other people: a casual match, with a room and an invite, or ranked, against whoever the queue finds, for points.",
         "createTitle": "Create a room",
         "createText": "You get a code to share with the other player. The room also shows up in the list of open rooms.",
         "create": "Create room",
@@ -550,7 +553,13 @@
         "loadError": "Could not load the rooms. Check that the API is running.",
         "noRooms": "No open rooms right now. Create yours and share the code with someone.",
         "roomOf": "{{name}}'s room",
-        "enter": "Join"
+        "enter": "Join",
+        "modes": "Multiplayer modes",
+        "tabs": {
+            "casual": "Casual match",
+            "ranked": "Ranked match"
+        },
+        "casualLead": "Create a room and share the code with someone, or join someone else’s room. The match is not worth points."
     },
     "room": {
         "title": "Battle room",
@@ -754,5 +763,52 @@
     },
     "pagination": {
         "page": "Page {{current}} of {{total}}"
+    },
+    "singlePlayer": {
+        "title": "Single Player",
+        "subtitle": "Play against the AI: a quick match with any team you like, or the campaign, stage by stage.",
+        "modes": "Single player modes",
+        "tabs": {
+            "quick": "Quick match",
+            "campaign": "Campaign"
+        },
+        "quickLead": "Build your team and face a team picked at random by the AI, on a random battlefield."
+    },
+    "difficulty": {
+        "label": "AI difficulty",
+        "easy": "Easy",
+        "normal": "Normal",
+        "hard": "Hard",
+        "hint": {
+            "easy": "Spends energy once per turn and spreads its hits around.",
+            "normal": "Plays the usual way: heals, cleanses and finishes off the wounded.",
+            "hard": "Thinks through each move before acting and focuses damage where it matters most."
+        }
+    },
+    "campaign": {
+        "lead": "Each stage has its own enemy team and battlefield. Beating a stage, on any difficulty, unlocks the next one.",
+        "loading": "Loading the campaign...",
+        "loadError": "Could not load the campaign. Check that the API is running and reload the page.",
+        "stageLabel": "Stage {{stage}}",
+        "stages": {
+            "muralha": {
+                "name": "The Wall Road",
+                "story": "A band of raiders has closed the road along the wall. They are warriors and marksmen, and none of them heals: bring them down before the Barbarian’s axe does the damage."
+            },
+            "floresta": {
+                "name": "The Night Forest",
+                "story": "In the forest, the creatures of the night are waiting. The Succubus puts your team to sleep, the Vampire drinks the life it takes and the Necromancer raises the dead. Bring someone who can cleanse."
+            }
+        },
+        "enemies": "Enemy team",
+        "locked": "Locked. Beat stage {{stage}} to unlock it.",
+        "notCleared": "Not beaten yet.",
+        "clearedOn": "Beaten on:",
+        "choose": "Play this stage",
+        "chosen": "Chosen stage",
+        "teamTitle": "Your team",
+        "teamText": "Pick {{size}} characters to face stage {{stage}}.",
+        "pickStage": "Choose an unlocked stage above to build your team.",
+        "start": "Start stage {{stage}}"
     }
 }

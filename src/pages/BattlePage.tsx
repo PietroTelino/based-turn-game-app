@@ -113,7 +113,7 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
     /** Batalha entre jogadores, na vez do outro: não há jogada para escolher, só esperar. */
     const isWaitingOpponent = isVersus && view.status === 'in_progress' && actions.length === 0;
     /** Para onde o jogador volta quando a batalha acaba. */
-    const lobbyPath = view.ranked ? '/ranked' : isVersus ? '/multiplayer' : '/play';
+    const lobbyPath = view.ranked ? '/multiplayer/ranked' : isVersus ? '/multiplayer' : typeof view.campaignStage === 'number' ? '/play/campaign' : '/play';
     /** A desistência foi por tempo esgotado (partida ranqueada). */
     const timedOut = state.timedOut === true;
     /** As passivas de quem está na vez: são mostradas junto das habilidades dele. */
@@ -283,7 +283,15 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
                                 ) : (
                                     <>
                                         <Link to={lobbyPath} className='bt-btn'>
-                                            {t(isTutorial ? 'tutorial.buildTeam' : view.ranked ? 'battle.newRanked' : 'battle.newBattle')}
+                                            {t(
+                                                isTutorial
+                                                    ? 'tutorial.buildTeam'
+                                                    : view.ranked
+                                                      ? 'battle.newRanked'
+                                                      : typeof view.campaignStage === 'number'
+                                                        ? 'battle.backToCampaign'
+                                                        : 'battle.newBattle',
+                                            )}
                                         </Link>
                                         {view.hasReplay && (
                                             <Link to={`/replay/${view.id}`} className='bt-btn bt-btn--plain'>

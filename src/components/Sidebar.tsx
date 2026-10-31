@@ -11,9 +11,8 @@ interface NavItem {
 
 const navItems: NavItem[] = [
     { key: 'dashboard', label: 'Dashboard', path: '/dashboard' },
-    { key: 'play', label: 'Jogar', path: '/play' },
+    { key: 'play', label: 'Single Player', path: '/play' },
     { key: 'multiplayer', label: 'Multiplayer', path: '/multiplayer' },
-    { key: 'ranked', label: 'Ranqueada', path: '/ranked' },
     { key: 'tutorial', label: 'Tutorial', path: '/tutorial' },
     { key: 'profile', label: 'Perfil', path: '/profile' },
     { key: 'sessions', label: 'Sessões', path: '/sessions' },
