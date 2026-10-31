@@ -420,6 +420,7 @@
             "guard": "Guarded",
             "sleep": "Sleep",
             "drowsy": "Drowsy",
+            "countdown": "Sleep countdown",
             "curse": "Curse"
         },
         "statusHelp": {
@@ -444,6 +445,7 @@
             "guard": "Enemy single-target hits on this unit go to its protector.",
             "sleep": "Loses the next turn, then wakes up. A hit also wakes it, and deals 50% more.",
             "drowsy": "Falls asleep when this ends. Cleansing removes it.",
+            "countdown": "When it runs out, at the start of her turn, every enemy falls asleep.",
             "curse": "Takes {{value}} damage at the start of each turn and cannot target whoever cursed it with single-target skills while there is another target. Cleansing does not remove it."
         },
         "statShort": {
@@ -528,7 +530,9 @@
         "revivesCorpse": "{{skill}} brings {{unit}} back into the battle.",
         "oncePerBattle": "Once per battle",
         "wokeUp": "Woke up!",
-        "permanent": "permanent"
+        "permanent": "permanent",
+        "chooseRevive": "Click the fallen ally that {{skill}} will bring back.",
+        "chooseRaise": "Click the fallen ally that {{skill}} will raise as a skeleton."
     },
     "multiplayer": {
         "title": "Multiplayer",

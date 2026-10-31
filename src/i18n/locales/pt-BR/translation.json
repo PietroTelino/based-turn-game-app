@@ -420,6 +420,7 @@
             "guard": "Protegido",
             "sleep": "Sono",
             "drowsy": "Torpor",
+            "countdown": "Contagem do sono",
             "curse": "Maldição"
         },
         "statusHelp": {
@@ -444,6 +445,7 @@
             "guard": "Os golpes de alvo único dos inimigos aqui vão para quem protege.",
             "sleep": "Perde a próxima vez e então acorda. Um golpe também acorda, e causa 50% a mais.",
             "drowsy": "Quando acabar, adormece. A purificação tira.",
+            "countdown": "Quando a contagem acabar, no começo da vez dela, todos os inimigos adormecem.",
             "curse": "Leva {{value}} de dano no começo de cada turno e não pode mirar em quem amaldiçoou com golpes de alvo único enquanto houver outro alvo. A purificação não tira."
         },
         "statShort": {
@@ -528,7 +530,9 @@
         "revivesCorpse": "{{skill}} traz {{unit}} de volta à batalha.",
         "oncePerBattle": "1 vez por batalha",
         "wokeUp": "Acordou!",
-        "permanent": "permanente"
+        "permanent": "permanente",
+        "chooseRevive": "Clique no aliado caído que {{skill}} vai trazer de volta.",
+        "chooseRaise": "Clique no aliado caído que {{skill}} vai erguer como esqueleto."
     },
     "multiplayer": {
         "title": "Multiplayer",

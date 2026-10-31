@@ -33,7 +33,7 @@ Cuidados para a figura combinar com as outras:
 ## Poses de ação
 
 Além da figura parada, um personagem pode ter desenhos de cada momento da
-ação, trocados durante a animação (hoje, a Inquisidora, o Piromante, o Sacerdote, o Vampiro, o Ladino, o Cavaleiro, a Súcubo e a Harpia):
+ação, trocados durante a animação (hoje, a Inquisidora, o Piromante, o Sacerdote, o Vampiro, o Ladino, o Cavaleiro, a Súcubo, a Harpia e o Arqueiro):
 
 | Arquivo | Quando aparece |
 | --- | --- |
@@ -43,6 +43,9 @@ ação, trocados durante a animação (hoje, a Inquisidora, o Piromante, o Sacer
 | `<id>-pose-cast.webp` | Habilidade à distância, em área ou de suporte: lançando. |
 | `<id>-pose-bolt.webp` | Projétil: no lugar da `cast` (opcional). |
 | `<id>-pose-area.webp` | Habilidade em área: no lugar da `cast` (opcional). |
+| `<id>-pose-bolt-end.webp` | Projétil: o fim do gesto, depois do disparo (opcional). |
+| `<id>-pose-area-start.webp`, `<id>-pose-area-charge.webp` | Área: dois quadros de preparo, no lugar da `charge` (opcionais). |
+| `<id>-pose-area-end.webp` | Área: o fim do gesto, depois do disparo (opcional). |
 
 O golpe usa `windup` e `strike` juntas. Na magia, com `charge` a pose de
 juntar aparece primeiro e a de lançar (`cast`, ou `bolt` no projétil e `area` em área) depois;

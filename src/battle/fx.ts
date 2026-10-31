@@ -62,14 +62,15 @@ export function skillFxOf(event: Extract<BattleEvent, { type: 'skill_used' | 'co
  * Uma passiva que age sozinha é animada como uma habilidade. A de começo de
  * vez: a cura em área como um feitiço, o golpe num inimigo como projétil ou
  * investida. A de começo de batalha (a nuvem de esporos do Guardião): como um
- * golpe em área no time inimigo. As outras passivas mudam um golpe que já
+ * golpe em área no time inimigo, assim como a contagem do sono da Súcubo
+ * quando chega ao fim. As outras passivas mudam um golpe que já
  * está sendo animado: para elas não há nada novo a desenhar, e a função
  * devolve null.
  */
 export function passiveFxOf(event: Extract<BattleEvent, { type: 'passive_triggered' }>, units: Map<string, BattleUnit>, id: number): SkillFx | null {
     const passive = findPassive(units.get(event.unitId), event.passiveId);
 
-    if (!passive || (passive.effect.type !== 'turn_start' && passive.effect.type !== 'battle_start') || event.targetIds.length === 0) {
+    if (!passive || (passive.effect.type !== 'turn_start' && passive.effect.type !== 'battle_start' && passive.effect.type !== 'countdown') || event.targetIds.length === 0) {
         return null;
     }
 

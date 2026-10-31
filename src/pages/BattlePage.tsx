@@ -136,12 +136,13 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
         hint = t('battle.waitingOpponent');
     } else if (!canAct || !selected) {
         hint = t('battle.resolving');
-    } else if (selected.requiresTarget) {
-        hint = t('battle.chooseTarget', { skill: selected.skill.name });
     } else if (selected.skill.target === 'corpse') {
+        // Escolher qual aliado caído trazer de volta (ou erguer como esqueleto).
         const revives = selected.skill.effects.some((effect) => effect.type === 'revive');
 
-        hint = t(revives ? 'battle.revivesCorpse' : 'battle.raisesCorpse', { skill: selected.skill.name, unit: state.units.find((unit) => unit.id === selected.targetIds[0])?.name });
+        hint = t(revives ? 'battle.chooseRevive' : 'battle.chooseRaise', { skill: selected.skill.name });
+    } else if (selected.requiresTarget) {
+        hint = t('battle.chooseTarget', { skill: selected.skill.name });
     } else {
         hint = t('battle.hitsAll', { skill: selected.skill.name });
     }

@@ -15,7 +15,7 @@ export interface Stats {
     critDamage: number;
 }
 
-/** 'corpse' é o cadáver de um aliado (unidade derrotada do próprio time que ainda não foi erguida): quem escolhe é a API. */
+/** 'corpse' é o cadáver de um aliado (unidade derrotada do próprio time que ainda não foi erguida): o jogador escolhe qual, como num alvo único. */
 export type TargetType = 'single-enemy' | 'all-enemies' | 'single-ally' | 'all-allies' | 'self' | 'corpse';
 
 export type StatusKind =
@@ -50,7 +50,9 @@ export type StatusKind =
     /** Torpor: quando a duração acaba, a unidade adormece. */
     | 'drowsy'
     /** Maldição de quem aplicou (`sourceId`): dano por turno, e os golpes de alvo único dela não miram nele enquanto houver outro alvo. */
-    | 'curse';
+    | 'curse'
+    /** Contagem do sono, na própria Súcubo: `turns` é quantas vezes dela faltam; no começo da vez em que ela chega ao fim, todos os inimigos adormecem. Nada a remove. */
+    | 'countdown';
 
 export interface StatusEffect {
     kind: StatusKind;
@@ -146,6 +148,8 @@ export type PassiveEffect =
     | { type: 'stealth_each_turn' }
     /** No começo da batalha (só no turno 1), aplica os efeitos em todos os inimigos. */
     | { type: 'battle_start'; target: 'all-enemies'; effects: SkillEffect[] }
+    /** Começa a batalha com uma contagem de `turns` na unidade; no começo da vez dela em que a contagem acaba, aplica os efeitos em todos os inimigos. */
+    | { type: 'countdown'; turns: number; target: 'all-enemies'; effects: SkillEffect[] }
     | { type: 'turn_start'; target: 'all-allies' | 'fastest-enemy' | 'lowest-ally'; effects: SkillEffect[] }
     /** Acumula cargas: cada efeito tirado de um inimigo soma `amount` ao dano dos golpes. */
     | { type: 'damage_per_dispel'; amount: number; max?: number }

@@ -81,6 +81,14 @@ const ICONS: Partial<Record<StatusKind, ReactNode>> = {
             <path d='M6 16.5 L5 19.5 M12 19 L12 22 M18 16.5 L19 19.5' fill='none' strokeWidth={1.8} strokeLinecap='round' />
         </>
     ),
+    // Contagem do sono: uma ampulheta lilás.
+    countdown: (
+        <>
+            <path d='M6 2.5 L18 2.5 M6 21.5 L18 21.5' fill='none' strokeWidth={2.2} strokeLinecap='round' />
+            <path d='M7 3 C7 8 10.5 10 12 12 C13.5 10 17 8 17 3 Z M7 21 C7 16 10.5 14 12 12 C13.5 14 17 16 17 21 Z' fill='#cfc7e8' />
+            <path d='M9 20.5 C9.5 18 11 16.6 12 16 C13 16.6 14.5 18 15 20.5 Z' fill='#9db4ff' stroke='none' />
+        </>
+    ),
     // Maldição: um selo de chifres sobre um círculo roxo.
     curse: (
         <>
@@ -104,7 +112,7 @@ const ARROWS: Partial<Record<StatusKind, { stat: 'atk' | 'def' | 'speed'; up: bo
 };
 
 /** Status que ajudam quem os carrega. Os outros atrapalham. */
-const HELPFUL: StatusKind[] = ['shield', 'atk_up', 'def_up', 'speed_up', 'passive_up', 'taunt', 'form', 'stealth', 'counter', 'guard'];
+const HELPFUL: StatusKind[] = ['shield', 'atk_up', 'def_up', 'speed_up', 'passive_up', 'taunt', 'form', 'stealth', 'counter', 'guard', 'countdown'];
 
 /**
  * Quanto um status de dano por turno vai causar na próxima vez. Num status
