@@ -13,6 +13,7 @@ import { toPercent } from '@/battle/playback';
 import { ratingKey } from '@/battle/rating';
 import { useBattle } from '@/hooks/useBattle';
 import { useTutorial } from '@/hooks/useTutorial';
+import { followsStep } from '@/battle/tutorial';
 import type { BattleResponse, TeamId } from '@/types/battle';
 import '@/styles/battle.css';
 
@@ -33,21 +34,48 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
         effects,
         log,
         actions,
-        selected,
+        selected: chosen,
         activeUnit,
         canAct,
         turnSecondsLeft,
         replay,
-        targetIds,
+        targetIds: allTargetIds,
         targetPreviews,
-        selectSkill,
+        selectSkill: chooseSkill,
         act,
-        canSurrender,
+        canSurrender: canGiveUp,
         surrender,
     } = useBattle(battleId, opening, { replay: isReplay });
     /** Batalha de treino: mostra o guia e destaca a parte da tela de que ele fala. No replay ninguém joga, então não há guia. */
     const isTutorial = !isReplay && view?.state.training === true;
-    const tutorial = useTutorial(isTutorial, { view, state, canAct, actions, selected });
+    const tutorial = useTutorial(isTutorial, { view, state, canAct, selected: chosen });
+    /**
+     * A trava do roteiro do tutorial: no começo guiado, só a habilidade do
+     * passo fica liberada e, escolhida ela, só o alvo do passo. Enquanto o
+     * jogador não escolhe a habilidade, nenhuma fica escolhida, para a arena
+     * não marcar alvos de uma habilidade que ele não pode usar.
+     */
+    const lock = tutorial?.lock ?? null;
+    const isPicked = lock !== null && (lock.stage === 'target' || lock.stage === 'confirm');
+    const selected = lock && !isPicked ? null : chosen;
+    const targetIds = !lock
+        ? allTargetIds
+        : lock.stage === 'confirm'
+          ? allTargetIds
+          : lock.stage === 'target' && lock.step.targetId
+            ? allTargetIds.filter((id) => id === lock.step.targetId)
+            : [];
+    /** As prévias de dano e cura, só nos alvos que o passo deixa clicar. */
+    const previews = lock ? targetPreviews.filter((preview) => targetIds.includes(preview.unitId)) : targetPreviews;
+    /** O alvo do passo, que ganha a seta "clique aqui". */
+    const coachTargetId = lock?.stage === 'target' ? (lock.step.targetId ?? null) : null;
+    /** Desistir no meio do roteiro não é uma das jogadas guiadas. */
+    const canSurrender = canGiveUp && !lock;
+    const selectSkill = (skillId: string) => {
+        if (lock && skillId !== lock.step.skillId) return;
+        tutorial?.notePick(skillId);
+        chooseSkill(skillId);
+    };
 
     if (phase === 'loading') {
         return <p className='bt-message'>{t(isReplay ? 'replay.loading' : 'battle.loading')}</p>;
@@ -91,7 +119,8 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
                             isMorphing={effects.morphingUnitIds.includes(unit.id)}
                             isFalling={effects.fallingUnitIds.includes(unit.id)}
                             isTargetable={targetIds.includes(unit.id)}
-                            preview={targetPreviews.find((preview) => preview.unitId === unit.id) ?? null}
+                            isCoachTarget={coachTargetId === unit.id}
+                            preview={previews.find((preview) => preview.unitId === unit.id) ?? null}
                             impact={effects.impacts.find((impact) => impact.unitId === unit.id) ?? null}
                             floaters={effects.floaters.filter((floater) => floater.unitId === unit.id)}
                             onSelect={(unitId) => play(unitId)}
@@ -122,11 +151,14 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
     /** A parte da tela que o guia do treino está explicando agora. */
     const coachFocus = tutorial?.guide.focus ?? null;
 
-    /** No treino, a primeira jogada encerra a lição do começo. */
+    /** No roteiro do tutorial, só a jogada do passo passa. */
     const play = (targetId?: string) => {
-        tutorial?.noteAction();
+        if (lock && (!isPicked || !followsStep(lock.step, selected, targetId))) return;
         act(targetId);
     };
+    /** Os nomes que o guia usa no passo de agora. */
+    const stepSkillName = lock ? (actions.find((action) => action.skill.id === lock.step.skillId)?.skill.name ?? '') : '';
+    const stepTargetName = lock?.step.targetId ? (state.units.find((unit) => unit.id === lock.step.targetId)?.name ?? '') : '';
 
     if (isReplay) {
         hint = t(isOver ? 'replay.finished' : 'replay.hint');
@@ -134,6 +166,8 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
         hint = playerSurrendered ? t('battle.log.surrendered') : playerWon ? t('battle.log.won') : t('battle.log.lost');
     } else if (isWaitingOpponent && !isAnimating) {
         hint = t('battle.waitingOpponent');
+    } else if (lock && canAct && !selected) {
+        hint = t('tutorial.followGuide');
     } else if (!canAct || !selected) {
         hint = t('battle.resolving');
     } else if (selected.skill.target === 'corpse') {
@@ -282,10 +316,13 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
                                     </>
                                 ) : (
                                     <>
-                                        <Link to={lobbyPath} className='bt-btn'>
+                                        {/* No tutorial, só a vitória libera o resto: quem perde volta para refazer. */}
+                                        <Link to={isTutorial && !playerWon ? '/play/tutorial' : lobbyPath} className='bt-btn'>
                                             {t(
                                                 isTutorial
-                                                    ? 'tutorial.buildTeam'
+                                                    ? playerWon
+                                                        ? 'tutorial.buildTeam'
+                                                        : 'tutorial.retry'
                                                     : view.ranked
                                                       ? 'battle.newRanked'
                                                       : typeof view.campaignStage === 'number'
@@ -306,7 +343,15 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
                 )}
             </div>
 
-            {tutorial && <TutorialGuide guide={tutorial.guide} unitName={activeUnit?.name ?? ''} onAdvance={tutorial.advance} />}
+            {tutorial && (
+                <TutorialGuide
+                    guide={tutorial.guide}
+                    unitName={activeUnit?.name ?? ''}
+                    skillName={stepSkillName}
+                    targetName={stepTargetName}
+                    onAdvance={tutorial.advance}
+                />
+            )}
 
             <section className='bt-hud' aria-label={t('battle.hudLabel')}>
                 <div className='bt-hud__head'>
@@ -340,6 +385,11 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
                         disabled={!canAct}
                         berserk={berserk > 0}
                         onSelect={selectSkill}
+                        {...(lock && {
+                            // Enquanto o guia explica, nenhuma carta; depois, só a do passo.
+                            onlySkillId: lock.stage === 'read' ? null : lock.step.skillId,
+                            coachSkillId: lock.stage === 'skill' ? lock.step.skillId : null,
+                        })}
                     />
                 )}
 
@@ -349,7 +399,7 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
                     </p>
                     <div className='bt-hud__buttons'>
                         {canAct && selected && !selected.requiresTarget && (
-                            <button type='button' className='bt-btn' onClick={() => play()}>
+                            <button type='button' className={`bt-btn ${lock?.stage === 'confirm' ? 'bt-btn--coach' : ''}`} onClick={() => play()}>
                                 {t('battle.useSkill', { skill: selected.skill.name })}
                             </button>
                         )}

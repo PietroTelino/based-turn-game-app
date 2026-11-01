@@ -21,6 +21,8 @@ interface UnitTokenProps {
     /** Acabou de ser derrotada: anima a queda. */
     isFalling: boolean;
     isTargetable: boolean;
+    /** Tutorial: é o alvo que o guia manda clicar. Ganha uma seta em cima. */
+    isCoachTarget?: boolean;
     /** O que a habilidade selecionada faria nesta unidade (só quando ela é um alvo possível). */
     preview: TargetPreview | null;
     impact: Impact | null;
@@ -35,7 +37,7 @@ function hpColor(ratio: number): string {
 }
 
 /** Uma unidade no campo: desenho, nome, barra de vida e os números que sobem. */
-export function UnitToken({ unit, units, isActive, acting, isHit, isHealed, isMorphing, isFalling, isTargetable, preview, impact, floaters, onSelect }: UnitTokenProps) {
+export function UnitToken({ unit, units, isActive, acting, isHit, isHealed, isMorphing, isFalling, isTargetable, isCoachTarget = false, preview, impact, floaters, onSelect }: UnitTokenProps) {
     const { t } = useTranslation();
     const ratio = unit.hp / unit.stats.maxHp;
     const isDown = unit.hp <= 0;
@@ -59,6 +61,7 @@ export function UnitToken({ unit, units, isActive, acting, isHit, isHealed, isMo
         isHealed && 'bt-unit--healed',
         isMorphing && 'bt-unit--morphing',
         isTargetable && 'bt-unit--target',
+        isCoachTarget && 'bt-unit--coach',
         isDown && 'bt-unit--down',
         isFalling && 'bt-unit--falling',
         shield && 'bt-unit--shielded',
@@ -101,6 +104,11 @@ export function UnitToken({ unit, units, isActive, acting, isHit, isHealed, isMo
                 {impact && <ImpactFx key={impact.id} impact={impact} />}
 
                 {isActive && <span className='bt-unit__marker' aria-hidden='true' />}
+                {isCoachTarget && (
+                    <span className='bt-unit__coach' aria-hidden='true'>
+                        {t('tutorial.clickHere')}
+                    </span>
+                )}
 
                 {statuses.some((status) => status.kind === 'sleep') && (
                     <span className='bt-unit__zzz' aria-hidden='true'>

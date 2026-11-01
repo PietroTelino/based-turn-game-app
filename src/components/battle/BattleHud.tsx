@@ -102,9 +102,16 @@ interface SkillBarProps {
     /** Berserk ativo: o dano base mostrado já vem aumentado, e o número ganha destaque. */
     berserk: boolean;
     onSelect: (skillId: string) => void;
+    /**
+     * Tutorial: só esta carta pode ser clicada (`null`: nenhuma). Sem a
+     * propriedade, todas as que têm energia e alvo podem.
+     */
+    onlySkillId?: string | null;
+    /** Tutorial: a carta que o guia manda clicar. Ganha um contorno que pulsa. */
+    coachSkillId?: string | null;
 }
 
-export function SkillBar({ actions, passives, charge, selectedSkillId, disabled, berserk, onSelect }: SkillBarProps) {
+export function SkillBar({ actions, passives, charge, selectedSkillId, disabled, berserk, onSelect, onlySkillId, coachSkillId = null }: SkillBarProps) {
     const { t } = useTranslation();
     const listRef = useRef<HTMLDivElement>(null);
 
@@ -126,12 +133,15 @@ export function SkillBar({ actions, passives, charge, selectedSkillId, disabled,
         const observer = new ResizeObserver(measure);
         observer.observe(list);
         return () => observer.disconnect();
-    }, [actions, passives, selectedSkillId, disabled]);
+    }, [actions, passives, selectedSkillId, disabled, onlySkillId, coachSkillId]);
 
     return (
         <div ref={listRef} className='bt-skills'>
             {actions.map(({ skill, preview, usable, targetIds, usesLeft }) => {
                 const isSelected = !disabled && skill.id === selectedSkillId;
+                /** Travada pelo roteiro do tutorial: não é a carta do passo. */
+                const isLocked = onlySkillId !== undefined && skill.id !== onlySkillId;
+                const isCoached = !disabled && skill.id === coachSkillId;
                 // Por que não dá para usar agora: já usada (limite por batalha), sem alvo ou sem energia.
                 const revives = skill.effects.some((effect) => effect.type === 'revive');
                 const blocked =
@@ -145,8 +155,16 @@ export function SkillBar({ actions, passives, charge, selectedSkillId, disabled,
                     <button
                         key={skill.id}
                         type='button'
-                        className={`bt-skill ${isSelected ? 'bt-skill--selected' : ''} ${!usable && !disabled ? 'bt-skill--blocked' : ''}`}
-                        disabled={disabled || !usable}
+                        className={[
+                            'bt-skill',
+                            isSelected && 'bt-skill--selected',
+                            !usable && !disabled && 'bt-skill--blocked',
+                            isLocked && usable && !disabled && 'bt-skill--locked',
+                            isCoached && 'bt-skill--coach',
+                        ]
+                            .filter(Boolean)
+                            .join(' ')}
+                        disabled={disabled || !usable || isLocked}
                         aria-pressed={isSelected}
                         // A descrição completa ao parar o mouse em cima (na tela larga, só a escolhida a mostra).
                         title={skill.description}

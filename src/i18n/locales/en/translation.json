@@ -687,7 +687,7 @@
     },
     "tutorial": {
         "title": "Tutorial",
-        "subtitle": "A training battle against the computer, with a guide that explains each part of the screen while you play. The guided part is the beginning; the rest of the battle is for practice.",
+        "subtitle": "A training battle against the computer. At first the guide shows each move, step by step; then it is up to you: win the match to complete the tutorial.",
         "teamTitle": "Your training team",
         "teamText": "In training the team is already built, the opponent is always the same and the computer goes easy on you. Afterwards you pick your own five.",
         "start": "Start training",
@@ -723,77 +723,123 @@
             }
         },
         "guide": "Guide",
-        "step": "Step {{current}} of {{total}}",
         "next": "Next",
         "gotIt": "Got it",
         "yourTeam": "Your team",
         "enemyTeam": "Enemy team",
-        "opening": "The battle is about to start. The guide will talk to you as soon as it is your turn.",
-        "idle": "Keep playing. A new tip shows up when something you have not seen yet happens.",
+        "idle": "Keep playing: win the match to complete the tutorial.",
         "doneTitle": "Training complete",
         "done": "Tutorial complete! Quick matches, the campaign and multiplayer are unlocked. Build your own team against the computer or invite someone to play.",
         "buildTeam": "Build my team",
-        "tips": {
+        "retry": "Play the tutorial again",
+        "move": "Move {{current}} of {{total}}",
+        "doTitle": "Your turn",
+        "do": {
+            "skill": "Click the {{skill}} skill, in the skills panel.",
+            "target": "Now click the target marked \"Click here\": {{target}}, in the arena.",
+            "confirm": "{{skill}} needs no target: it hits everyone marked at once. Confirm with the \"{{button}}\" button."
+        },
+        "watch": "The computer is playing for the enemy. Follow it in the arena: the guide comes back on your turn.",
+        "freeTitle": "Now it is up to you",
+        "free": "Now that you have learned the basics of the game, win the match to complete the tutorial. Every skill and every target is unlocked. One last rule: from turn 9 on, Berserk starts and both teams deal more damage every turn.",
+        "lostTitle": "The tutorial is not complete",
+        "lost": "You did not win the training battle, so the tutorial does not count as done yet. Redo the tutorial and win to unlock the other matches.",
+        "clickHere": "Click here",
+        "followGuide": "Follow the guide: it shows what to click now.",
+        "script": {
             "welcome": {
                 "title": "Welcome to training",
-                "text": "Both teams are labelled in the arena: yours and the enemy. Whoever takes down all five characters on the other side wins."
+                "text": "Your team is on the left and the enemy is on the right. Whoever knocks down all five characters on the other side wins. At first the guide shows each move, step by step: just follow along."
             },
             "queue": {
-                "title": "Action order",
-                "text": "The queue at the top shows who acts this turn, from fastest to slowest. Each character acts once per turn, and the bigger portrait is the one acting now."
+                "title": "Turn order",
+                "text": "The queue at the top shows who acts this turn, from fastest to slowest. Each character acts once per turn. Bárbaro is the fastest of all, so he goes first."
             },
             "energy": {
                 "title": "Energy",
-                "text": "The whole team shares one energy pool. It is 3 on the first turn and 1 more each turn, up to 10. Leftover energy does not carry over to the next turn."
+                "text": "The whole team shares the same energy: 3 on the first turn and 1 more each turn, up to 10. Whatever is left at the end of a turn does not carry over."
             },
             "skills": {
                 "title": "Skills",
-                "text": "It is {{unit}}'s turn. Each card shows the energy cost, what the skill does and its base damage or healing. Every character has a free attack. Click a card to choose it."
+                "text": "It is Bárbaro's turn. Each skill shows its energy cost, what it does and its base damage or healing. Skills tagged Passive are not clicked: they work on their own."
             },
-            "target": {
-                "title": "Target",
-                "text": "Possible targets are marked in the arena. Click an enemy to attack. If the skill hits everyone at once, confirm with the Use button."
+            "basicAttack": {
+                "title": "Basic attack",
+                "text": "Every character has a free attack that can always be used. Let us start with it: Bárbaro will hit Banshee with {{skill}}."
             },
             "damage": {
-                "title": "First strike",
-                "text": "The number that floats up is the damage, and the bar under each character is their health. Now the others act, each on their turn; the computer plays for the enemy."
+                "title": "Damage",
+                "text": "The number that popped up was the damage, and the bar under each character is their health. Whoever reaches 0 health falls."
+            },
+            "enemyTurn": {
+                "title": "The enemy's turn",
+                "text": "Between your moves, the computer plays for the enemy, in queue order. Espadachim struck your Cavaleiro three times in a row, and he lost a lot of health."
+            },
+            "heal": {
+                "title": "Support skill",
+                "text": "It is Sacerdote's turn. {{skill}} costs 1 energy and is for your team: its targets are your allies, not the enemies. Let us heal Cavaleiro."
             },
             "passive": {
                 "title": "Passive",
-                "text": "The last card, tagged Passive, is not for clicking: it is a skill that works on its own. Each character has one; read it to know when it helps."
+                "text": "Look at Arqueiro's last skill, tagged Passive. It is not clicked: it works on its own whenever its condition happens. Every character has one."
             },
-            "area": {
-                "title": "Area skill",
-                "text": "This skill needs no target: it hits everyone that is marked. Confirm with the Use button."
-            },
-            "allySkill": {
-                "title": "Support skill",
-                "text": "This skill is for your team: the marked characters are your allies. Click the one who should receive it."
-            },
-            "noEnergy": {
-                "title": "Out of energy",
-                "text": "Dimmed cards cost more energy than the team has right now. The free attack is always available, and next turn the energy is full again."
+            "eagleEye": {
+                "title": "Eagle Eye",
+                "text": "Arqueiro's passive deals 50% more damage to anyone above 70% health, and Banshee still is. Even his free attack hits hard now."
             },
             "status": {
                 "title": "Effects",
-                "text": "The badges under a character are effects that last a few turns, such as burn, stun and shield. The number is how many turns are left; hover a badge to see what it does."
+                "text": "The badges under a character are effects that last a few turns. The arrow left Banshee with lowered defense. The number on the badge is how many turns are left; hover over it to see what it does."
+            },
+            "fireball": {
+                "title": "Burn",
+                "text": "{{skill}} costs 1 energy, deals high damage and sets the target on fire for 2 turns: the burn keeps taking their health. Let us burn Vampiro."
+            },
+            "area": {
+                "title": "Area attack",
+                "text": "There is 1 energy left, enough for {{skill}}. This skill needs no target: it hits every enemy at once, lowers their attack and taunts them for 2 turns. While taunted, their single-target attacks can only aim at Cavaleiro, who can take it."
             },
             "newTurn": {
                 "title": "New turn",
-                "text": "Everyone has acted, so another turn started. Energy is full again, with 1 more, and the queue was rebuilt by speed."
+                "text": "Everyone has acted, so turn 2 has started. Energy is full again, now with 4, and the queue was rebuilt by speed."
+            },
+            "speed": {
+                "title": "Speed",
+                "text": "Bárbaro is no longer first in the queue: Dríade's passive hit him and slowed him down. Speed decides the order, so changing speed changes who acts first."
+            },
+            "blessing": {
+                "title": "Support for the whole team",
+                "text": "{{skill}} costs 2 energy and needs no target: it affects every ally at once. For 2 turns they are faster and have more attack."
+            },
+            "slow": {
+                "title": "Slowing the enemy",
+                "text": "{{skill}} costs 1 energy, deals damage and lowers the target's speed for 2 turns. Slowed, Banshee will act after your team."
+            },
+            "stun": {
+                "title": "Stun",
+                "text": "{{skill}} costs 1 energy and has a chance to stun: a stunned character loses their next turn. Let us aim at Espadachim, the enemy who hit your team the hardest."
+            },
+            "stunned": {
+                "title": "Stunned",
+                "text": "It worked: Espadachim is stunned and will lose his next turn. See the badge under him."
+            },
+            "noEnergy": {
+                "title": "Out of energy",
+                "text": "This turn's energy is gone, so the skills that cost energy are greyed out. The free attack is still available, and next turn your energy is full again."
+            },
+            "combustion": {
+                "title": "Combustion",
+                "text": "Piromante's passive deals 40% more damage to anyone burning or with lowered defense. Banshee has lowered defense and little health left: {{skill}} should take her down."
             },
             "defeated": {
                 "title": "Character defeated",
-                "text": "A character that reaches 0 health falls and leaves the queue. The battle ends when one team has nobody standing."
+                "text": "Banshee reached 0 health and fell: she leaves the queue for good. The battle ends when one team has no one left standing. Last guided move: Cavaleiro attacks Vampiro."
             },
             "berserk": {
                 "title": "Berserk",
-                "text": "From turn 9 on, the damage of every skill increases 50% each turn, for both teams. It is what keeps a battle from lasting forever."
+                "text": "From turn 9 on, the damage of every skill grows 50% each turn, for both teams. That keeps a battle from lasting forever."
             }
-        },
-        "quitTitle": "The training was not completed",
-        "quit": "You gave up the training battle, so the tutorial does not count as done yet. Finish a training battle, win or lose, to unlock the other matches.",
-        "retry": "Play the tutorial again"
+        }
     },
     "errors": {
         "required": "{{field}} is required",
@@ -869,9 +915,9 @@
             "effects": "What burn, poison, stun, shields and the other effects do."
         },
         "unlockTitle": "What unlocks when you finish",
-        "welcomeNote": "Finish the training battle, win or lose, to unlock the rest of the game. Giving up halfway does not count.",
+        "welcomeNote": "Win the training battle to unlock the rest of the game. If you lose or give up, just redo the tutorial.",
         "lockedTitle": "Finish the tutorial first",
-        "lockedText": "This match unlocks once you finish the training battle. It only takes a few minutes, and it teaches what you will need here.",
+        "lockedText": "This match unlocks once you win the training battle. It only takes a few minutes, and it teaches what you will need here.",
         "goToTutorial": "Go to the tutorial",
         "lockedTab": "locked until you play the tutorial"
     }

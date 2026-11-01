@@ -687,7 +687,7 @@
     },
     "tutorial": {
         "title": "Tutorial",
-        "subtitle": "Uma batalha de treino contra o computador, com um guia que explica cada parte da tela enquanto você joga. O guiado é o começo; o resto da batalha é para praticar.",
+        "subtitle": "Uma batalha de treino contra o computador. No começo o guia mostra cada jogada, passo a passo; depois é com você: vença a partida para concluir o tutorial.",
         "teamTitle": "Seu time de treino",
         "teamText": "No treino o time já vem montado, o adversário é sempre o mesmo e o computador pega leve. Depois você escolhe os seus cinco.",
         "start": "Começar o treino",
@@ -723,77 +723,123 @@
             }
         },
         "guide": "Guia",
-        "step": "Passo {{current}} de {{total}}",
         "next": "Próximo",
         "gotIt": "Entendi",
         "yourTeam": "Seu time",
         "enemyTeam": "Time inimigo",
-        "opening": "A batalha vai começar. O guia fala com você assim que for a sua vez.",
-        "idle": "Continue jogando. Uma dica nova aparece quando acontecer algo que você ainda não viu.",
+        "idle": "Continue jogando: vença a partida para concluir o tutorial.",
         "doneTitle": "Treino concluído",
         "done": "Tutorial concluído! A partida rápida, a campanha e o multijogador estão liberados. Monte o seu próprio time contra o computador ou chame alguém para jogar.",
         "buildTeam": "Montar meu time",
-        "tips": {
+        "retry": "Refazer o tutorial",
+        "move": "Jogada {{current}} de {{total}}",
+        "doTitle": "Sua vez",
+        "do": {
+            "skill": "Clique na habilidade {{skill}}, no painel de habilidades.",
+            "target": "Agora clique no alvo marcado com \"Clique aqui\": {{target}}, na arena.",
+            "confirm": "{{skill}} não pede alvo: atinge todos os marcados de uma vez. Confirme no botão \"{{button}}\"."
+        },
+        "watch": "O computador está jogando pelo inimigo. Acompanhe na arena: o guia volta quando for a sua vez.",
+        "freeTitle": "Agora é com você",
+        "free": "Agora que você aprendeu a mecânica básica do jogo, vença a partida para concluir o tutorial. Todas as habilidades e todos os alvos estão liberados. Uma última regra: a partir do turno 9 começa o Berserk, e o dano dos dois times cresce a cada turno.",
+        "lostTitle": "O tutorial não foi concluído",
+        "lost": "Você não venceu a batalha de treino, então o tutorial ainda não conta como feito. Refaça o tutorial e vença para liberar as outras partidas.",
+        "clickHere": "Clique aqui",
+        "followGuide": "Siga o guia: ele mostra o que clicar agora.",
+        "script": {
             "welcome": {
                 "title": "Bem-vindo ao treino",
-                "text": "Os dois times estão marcados na arena: o seu e o inimigo. Vence quem derrubar os cinco personagens do outro lado."
+                "text": "Seu time está à esquerda e o inimigo, à direita. Vence quem derrubar os cinco personagens do outro lado. No começo o guia mostra cada jogada, passo a passo: é só seguir."
             },
             "queue": {
                 "title": "Ordem de ação",
-                "text": "A fila no topo mostra quem age neste turno, do mais rápido para o mais lento. Cada personagem age uma vez por turno, e o retrato maior é de quem está na vez."
+                "text": "A fila no topo mostra quem age neste turno, do mais rápido para o mais lento. Cada personagem age uma vez por turno. O Bárbaro é o mais rápido de todos, então ele começa."
             },
             "energy": {
                 "title": "Energia",
-                "text": "O time inteiro divide a mesma energia. São 3 no primeiro turno e 1 a mais a cada turno, até 10. A que sobra não passa para o turno seguinte."
+                "text": "O time inteiro divide a mesma energia: 3 no primeiro turno e 1 a mais a cada turno, até 10. A que sobra no fim do turno não passa para o próximo."
             },
             "skills": {
                 "title": "Habilidades",
-                "text": "É a vez de {{unit}}. Cada carta mostra o custo em energia, o que a habilidade faz e o dano ou a cura base. Todo personagem tem um ataque sem custo. Clique em uma carta para escolher."
+                "text": "É a vez do Bárbaro. Cada habilidade mostra o custo em energia, o que ela faz e o dano ou a cura base. As habilidades com a etiqueta Passiva não se clicam: elas funcionam sozinhas."
             },
-            "target": {
-                "title": "Alvo",
-                "text": "Os alvos possíveis ficam marcados na arena. Clique em um inimigo para atacar. Se a habilidade atingir todos de uma vez, confirme no botão Usar."
+            "basicAttack": {
+                "title": "Ataque básico",
+                "text": "Todo personagem tem um ataque sem custo, que pode ser usado sempre. Vamos começar por ele: o Bárbaro vai golpear a Banshee com {{skill}}."
             },
             "damage": {
-                "title": "Primeiro golpe",
-                "text": "O número que sobe é o dano, e a barra embaixo de cada personagem é a vida dele. Agora os outros agem, cada um na sua vez; o computador joga pelo inimigo."
+                "title": "Dano",
+                "text": "O número que subiu foi o dano, e a barra embaixo de cada personagem é a vida dele. Quem chega a 0 de vida cai."
+            },
+            "enemyTurn": {
+                "title": "A vez do inimigo",
+                "text": "Entre as suas jogadas, o computador joga pelo inimigo, na ordem da fila. O Espadachim golpeou o seu Cavaleiro três vezes seguidas, e ele perdeu bastante vida."
+            },
+            "heal": {
+                "title": "Habilidade de apoio",
+                "text": "É a vez do Sacerdote. {{skill}} custa 1 de energia e é para o seu time: os alvos dela são os aliados, não os inimigos. Vamos curar o Cavaleiro."
             },
             "passive": {
                 "title": "Passiva",
-                "text": "A última carta, com a etiqueta Passiva, não é para clicar: é uma habilidade que funciona sozinha. Cada personagem tem a sua; leia para saber quando ela ajuda."
+                "text": "Veja a última habilidade do Arqueiro, com a etiqueta Passiva. Ela não se clica: funciona sozinha, sempre que a condição dela acontece. Cada personagem tem a sua."
             },
-            "area": {
-                "title": "Golpe em área",
-                "text": "Esta habilidade não pede alvo: atinge todos os que estão marcados. Confirme no botão Usar."
-            },
-            "allySkill": {
-                "title": "Habilidade de apoio",
-                "text": "Esta habilidade é para o seu time: os marcados agora são seus aliados. Clique em quem deve receber."
-            },
-            "noEnergy": {
-                "title": "Faltou energia",
-                "text": "As cartas apagadas custam mais energia do que o time tem agora. O ataque sem custo está sempre disponível, e no próximo turno a energia volta cheia."
+            "eagleEye": {
+                "title": "Olho de Águia",
+                "text": "A passiva do Arqueiro causa 50% a mais de dano em quem tem mais de 70% da vida, e a Banshee ainda está assim. Até o ataque sem custo dele bate forte agora."
             },
             "status": {
                 "title": "Efeitos",
-                "text": "Os selos embaixo de um personagem são efeitos que duram alguns turnos, como queimadura, atordoamento e escudo. O número é quantos turnos faltam; passe o mouse no selo para ver o que ele faz."
+                "text": "Os selos embaixo de um personagem são efeitos que duram alguns turnos. A flecha deixou a Banshee com a defesa reduzida. O número no selo é quantos turnos faltam; passe o mouse no selo para ver o que ele faz."
+            },
+            "fireball": {
+                "title": "Queimadura",
+                "text": "{{skill}} custa 1 de energia, causa dano alto e deixa o alvo queimando por 2 turnos: a queimadura continua tirando vida dele. Vamos queimar o Vampiro."
+            },
+            "area": {
+                "title": "Golpe em área",
+                "text": "Sobrou 1 de energia, o bastante para {{skill}}. Esta habilidade não pede alvo: atinge todos os inimigos de uma vez, reduz o ataque deles e os provoca por 2 turnos. Provocados, os golpes de alvo único deles só podem mirar no Cavaleiro, que aguenta mais."
             },
             "newTurn": {
                 "title": "Turno novo",
-                "text": "Todos já agiram, então começou outro turno. A energia voltou cheia, com 1 a mais, e a fila foi montada de novo pela velocidade."
+                "text": "Todos agiram, então começou o turno 2. A energia voltou cheia, agora com 4, e a fila foi montada de novo pela velocidade."
+            },
+            "speed": {
+                "title": "Velocidade",
+                "text": "O Bárbaro não é mais o primeiro da fila: a passiva da Dríade o atingiu e o deixou mais lento. A velocidade decide a ordem, então quem muda a velocidade muda quem age antes."
+            },
+            "blessing": {
+                "title": "Apoio para o time todo",
+                "text": "{{skill}} custa 2 de energia e não pede alvo: atinge todos os aliados de uma vez. Por 2 turnos, eles ficam mais rápidos e com mais ataque."
+            },
+            "slow": {
+                "title": "Deixar o inimigo lento",
+                "text": "{{skill}} custa 1 de energia, causa dano e reduz a velocidade do alvo por 2 turnos. Lenta, a Banshee vai agir depois do seu time."
+            },
+            "stun": {
+                "title": "Atordoar",
+                "text": "{{skill}} custa 1 de energia e tem chance de atordoar: quem fica atordoado perde a próxima vez. Vamos mirar no Espadachim, o inimigo que mais bateu no seu time."
+            },
+            "stunned": {
+                "title": "Atordoado",
+                "text": "Deu certo: o Espadachim ficou atordoado e vai perder a próxima vez dele. Veja o selo embaixo dele."
+            },
+            "noEnergy": {
+                "title": "Sem energia",
+                "text": "A energia deste turno acabou, então as habilidades com custo ficaram apagadas. O ataque sem custo continua disponível, e no próximo turno a energia volta cheia."
+            },
+            "combustion": {
+                "title": "Combustão",
+                "text": "A passiva do Piromante causa 40% a mais de dano em quem está queimando ou com a defesa reduzida. A Banshee está com a defesa reduzida e com pouca vida: {{skill}} deve derrubá-la."
             },
             "defeated": {
                 "title": "Personagem derrotado",
-                "text": "Quem chega a 0 de vida cai e sai da fila. A batalha acaba quando um dos times fica sem ninguém de pé."
+                "text": "A Banshee chegou a 0 de vida e caiu: ela sai da fila e não volta mais. A batalha acaba quando um dos times fica sem ninguém de pé. Última jogada guiada: o Cavaleiro ataca o Vampiro."
             },
             "berserk": {
                 "title": "Berserk",
                 "text": "A partir do turno 9 o dano de todas as habilidades aumenta 50% a cada turno, para os dois times. É o que impede uma batalha de durar para sempre."
             }
-        },
-        "quitTitle": "O treino não foi concluído",
-        "quit": "Você desistiu da batalha de treino, então o tutorial ainda não conta como feito. Termine uma batalha de treino, vencendo ou perdendo, para liberar as outras partidas.",
-        "retry": "Refazer o tutorial"
+        }
     },
     "errors": {
         "required": "{{field}} é obrigatório",
@@ -869,9 +915,9 @@
             "effects": "O que fazem a queimadura, o veneno, o atordoamento, o escudo e os outros efeitos."
         },
         "unlockTitle": "O que fica liberado ao terminar",
-        "welcomeNote": "Termine a batalha de treino, vencendo ou perdendo, para liberar o resto do jogo. Desistir no meio não conta.",
+        "welcomeNote": "Vença a batalha de treino para liberar o resto do jogo. Se perder ou desistir, é só refazer o tutorial.",
         "lockedTitle": "Termine o tutorial primeiro",
-        "lockedText": "Esta partida fica liberada quando você termina a batalha de treino. São poucos minutos, e ela ensina o que você vai precisar aqui.",
+        "lockedText": "Esta partida fica liberada quando você vence a batalha de treino. São poucos minutos, e ela ensina o que você vai precisar aqui.",
         "goToTutorial": "Ir para o tutorial",
         "lockedTab": "travada até você fazer o tutorial"
     }
