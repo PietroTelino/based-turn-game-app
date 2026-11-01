@@ -40,6 +40,7 @@ export default function App() {
                 <Route path="/replay/:id" element={<BattlePage replay />} />
                 <Route path="/multiplayer" element={<MultiplayerPage mode='casual' />} />
                 <Route path="/multiplayer/ranked" element={<MultiplayerPage mode='ranked' />} />
+                <Route path="/multiplayer/collection" element={<MultiplayerPage mode='collection' />} />
                 {/* A ranqueada era uma página própria: o endereço antigo leva à aba nova. */}
                 <Route path="/ranked" element={<Navigate to="/multiplayer/ranked" replace />} />
                 <Route path="/room/:code" element={<RoomPage />} />

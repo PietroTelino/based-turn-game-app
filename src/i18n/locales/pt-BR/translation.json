@@ -554,7 +554,8 @@
         "modes": "Modos do multijogador",
         "tabs": {
             "casual": "Partida casual",
-            "ranked": "Partida ranqueada"
+            "ranked": "Partida ranqueada",
+            "collection": "Coleção"
         },
         "casualLead": "Crie uma sala e passe o código para alguém, ou entre na sala de outra pessoa. A partida não vale pontos. Cada jogada tem 30 segundos: se o tempo acabar, o jogo faz uma jogada ao acaso."
     },

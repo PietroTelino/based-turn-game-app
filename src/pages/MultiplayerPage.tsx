@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/Layout';
+import { Collection } from '@/components/battle/Collection';
 import { ModeTabs } from '@/components/battle/ModeTabs';
 import { RankedLobby } from '@/components/battle/RankedLobby';
 import { TutorialLock } from '@/components/battle/TutorialLock';
@@ -10,12 +11,13 @@ import '@/styles/battle.css';
 /** O código tem sempre este tamanho (CODE_LENGTH em room.service.ts, na API). */
 const CODE_LENGTH = 6;
 
-/** As duas abas do multiplayer: cada uma é uma rota. */
-export type MultiplayerMode = 'casual' | 'ranked';
+/** As abas do multiplayer: cada uma é uma rota. */
+export type MultiplayerMode = 'casual' | 'ranked' | 'collection';
 
 /**
  * Multiplayer: jogar contra outras pessoas. Na partida casual, por uma sala
- * com código; na ranqueada, pela fila, valendo pontos.
+ * com código; na ranqueada, pela fila, valendo pontos. A coleção (a mesma de
+ * Um Jogador) mostra as cartas de todos os personagens.
  */
 export function MultiplayerPage({ mode = 'casual' }: { mode?: MultiplayerMode }) {
     const { t } = useTranslation();
@@ -36,11 +38,19 @@ export function MultiplayerPage({ mode = 'casual' }: { mode?: MultiplayerMode })
                     tabs={[
                         { to: '/multiplayer', label: t('multiplayer.tabs.casual'), locked },
                         { to: '/multiplayer/ranked', label: t('multiplayer.tabs.ranked'), locked },
+                        { to: '/multiplayer/collection', label: t('multiplayer.tabs.collection') },
                     ]}
                 />
 
-                {locked && <TutorialLock />}
-                {tutorialDone === true && (mode === 'ranked' ? <RankedLobby /> : <CasualLobby />)}
+                {/* A coleção não é partida: fica aberta mesmo sem o tutorial. */}
+                {mode === 'collection' ? (
+                    <Collection />
+                ) : (
+                    <>
+                        {locked && <TutorialLock />}
+                        {tutorialDone === true && (mode === 'ranked' ? <RankedLobby /> : <CasualLobby />)}
+                    </>
+                )}
             </div>
         </Layout>
     );

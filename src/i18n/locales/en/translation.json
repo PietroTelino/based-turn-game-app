@@ -554,7 +554,8 @@
         "modes": "Multiplayer modes",
         "tabs": {
             "casual": "Casual match",
-            "ranked": "Ranked match"
+            "ranked": "Ranked match",
+            "collection": "Collection"
         },
         "casualLead": "Create a room and share the code with someone, or join someone else’s room. The match is not worth points. Each move has 30 seconds: if time runs out, the game makes a random move."
     },

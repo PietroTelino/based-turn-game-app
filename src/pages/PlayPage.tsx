@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/Layout';
 import { CharacterArt } from '@/components/battle/CharacterArt';
-import { CharacterCard } from '@/components/battle/CharacterCard';
+import { Collection } from '@/components/battle/Collection';
 import { DifficultyMark, DifficultyPicker } from '@/components/battle/DifficultyPicker';
 import { DraftBoard } from '@/components/battle/DraftBoard';
 import { ModeTabs } from '@/components/battle/ModeTabs';
@@ -15,7 +15,7 @@ import { useDifficulty } from '@/hooks/useDifficulty';
 import { useTutorialStatus } from '@/hooks/useTutorialStatus';
 import { usePlay } from '@/hooks/usePlay';
 import { ratingKey } from '@/battle/rating';
-import type { AiDifficulty, BattleSummary, CampaignStage, Character, CharacterRole } from '@/types/battle';
+import type { AiDifficulty, BattleSummary, CampaignStage, Character } from '@/types/battle';
 import '@/styles/battle.css';
 
 /** As abas do single player: cada uma é uma rota. */
@@ -298,67 +298,6 @@ function LockIcon() {
             <path d='M4.5 7V5.2a3.5 3.5 0 0 1 7 0V7' fill='none' strokeWidth='1.8' />
             <rect x='3' y='7' width='10' height='7.5' rx='1.4' />
         </svg>
-    );
-}
-
-/** A ordem dos filtros de categoria na coleção (só aparecem as que algum personagem tem). */
-const ROLE_ORDER: CharacterRole[] = ['tank', 'fighter', 'attacker', 'assassin', 'mage', 'support', 'shapeshifter'];
-
-/** "Súcubo" -> "sucubo": a busca ignora acento e maiúscula. */
-function normalize(text: string): string {
-    return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-}
-
-/**
- * A coleção: a carta de cada personagem do jogo, só para ler (a frente tem os
- * atributos; o verso, as habilidades). Dá para filtrar por categoria e buscar
- * pelo nome.
- */
-function Collection({ characters }: { characters: Character[] }) {
-    const { t } = useTranslation();
-    const [query, setQuery] = useState('');
-    const [role, setRole] = useState<CharacterRole | null>(null);
-    const roles = useMemo(() => ROLE_ORDER.filter((item) => characters.some((character) => character.role === item)), [characters]);
-    const visible = useMemo(() => {
-        const search = normalize(query.trim());
-
-        return characters.filter((character) => (!role || character.role === role) && (!search || normalize(character.name).includes(search)));
-    }, [characters, query, role]);
-
-    return (
-        <div className='bt-collection'>
-            <div className='bt-collection__bar'>
-                <p className='bt-lead'>{t('singlePlayer.collectionLead', { count: characters.length })}</p>
-
-                <div className='bt-collection__tools'>
-                    <div className='bt-collection__filters' role='group' aria-label={t('ranked.draft.filterLabel')}>
-                        <button type='button' className='bt-collection__filter' aria-pressed={role === null} onClick={() => setRole(null)}>
-                            {t('ranked.draft.allRoles')}
-                        </button>
-                        {roles.map((item) => (
-                            <button key={item} type='button' className='bt-collection__filter' aria-pressed={role === item} onClick={() => setRole(role === item ? null : item)}>
-                                {t(`play.roles.${item}`)}
-                            </button>
-                        ))}
-                    </div>
-
-                    <label className='bt-collection__search'>
-                        <span className='bt-visually-hidden'>{t('ranked.draft.searchLabel')}</span>
-                        <input type='search' value={query} placeholder={t('ranked.draft.searchPlaceholder')} onChange={(event) => setQuery(event.target.value)} />
-                    </label>
-                </div>
-            </div>
-
-            {visible.length === 0 ? (
-                <p className='bt-lead'>{t('ranked.draft.noneFound')}</p>
-            ) : (
-                <div className='bt-roster'>
-                    {visible.map((character) => (
-                        <CharacterCard key={character.id} character={character} position={-1} isLocked={false} isReadOnly onToggle={() => undefined} />
-                    ))}
-                </div>
-            )}
-        </div>
     );
 }
 
