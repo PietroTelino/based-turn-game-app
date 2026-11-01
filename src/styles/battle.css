@@ -5637,57 +5637,91 @@
 
 /* ------------------------------------------------- Seleção de personagens (ranqueada) */
 
-.bt-draft {
+/*
+ * Tela cheia, por cima da página, como a seleção de um jogo de arena: o seu
+ * time à esquerda, o do adversário à direita e os personagens no centro. Só a
+ * lista do centro rola; o resto cabe sempre na janela. Fundo escuro com o
+ * cenário da muralha bem apagado, para os retratos se destacarem.
+ */
+.bt.bt-draft {
+    --draft-side: clamp(200px, 19vw, 280px);
+    --draft-line: rgb(200 162 75 / 0.45);
+    --draft-panel: rgb(18 17 30 / 0.72);
+    --draft-text: #efe3c4;
+    --draft-muted: #b9ab8a;
+    position: fixed;
+    inset: 0;
+    z-index: 60;
     display: grid;
-    gap: 16px;
+    /* As telas do jogo (.bt) têm largura máxima e margem automática: aqui não. */
+    width: auto;
+    max-width: none;
+    margin: 0;
+    grid-template-columns: var(--draft-side) minmax(0, 1fr) var(--draft-side);
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 14px 18px;
+    height: 100dvh;
+    padding: 14px 18px 16px;
+    overflow: hidden;
+    background:
+        radial-gradient(ellipse at 50% 30%, rgb(28 26 43 / 0.55), rgb(12 11 20 / 0.94) 75%),
+        #14121f url('../assets/scenery/muralha.webp') center / cover no-repeat;
+    color: var(--draft-text);
+    font-family: var(--bt-body);
 }
 
-/* Cabeçalho: de quem é a vez, o relógio e a ordem dos passos. */
+/* Cabeçalho: título, de quem é a vez, o relógio e a ordem dos passos. */
 .bt-draft__head {
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    justify-items: stretch;
-    gap: 12px 24px;
+    grid-column: 1 / -1;
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    text-align: center;
 }
 
-.bt-draft__status {
-    display: grid;
-    gap: 4px;
+.bt-draft__title {
+    margin: 0;
+    color: var(--bt-gold-bright);
+    font-family: var(--bt-display);
+    font-weight: 700;
+    font-size: clamp(22px, 2.4vw, 32px);
+    line-height: 1.1;
 }
 
 .bt-draft__turn {
     margin: 0;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
-    color: #4a3b2a;
+    color: var(--draft-muted);
 }
 
 .bt-draft__turn--mine {
-    color: var(--bt-ally);
+    color: #9fc0ff;
 }
 
 .bt-draft__clock {
-    display: grid;
-    justify-items: center;
-    gap: 4px;
-    min-width: 88px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
 }
 
 .bt-draft__seconds {
+    min-width: 2ch;
     font-family: var(--bt-display);
     font-weight: 700;
-    font-size: 40px;
+    font-size: 38px;
     line-height: 1;
     font-variant-numeric: tabular-nums;
 }
 
+/* As duas barras do prazo encolhem em direção ao número. */
 .bt-draft__bar {
-    width: 88px;
-    height: 6px;
+    display: flex;
+    width: clamp(90px, 18vw, 260px);
+    height: 5px;
     overflow: hidden;
-    border: 1px solid var(--bt-ink);
     border-radius: 999px;
-    background: #fff8e2;
+    background: rgb(239 227 196 / 0.15);
 }
 
 .bt-draft__bar span {
@@ -5697,60 +5731,63 @@
     transition: width 0.25s linear;
 }
 
+.bt-draft__bar--left {
+    justify-content: flex-end;
+}
+
 .bt-draft__clock--hurry .bt-draft__seconds {
-    color: var(--bt-enemy);
+    color: #ff8a7a;
 }
 
 .bt-draft__clock--hurry .bt-draft__bar span {
-    background: var(--bt-enemy);
+    background: #e2533f;
 }
 
 /* A ordem: um selo por passo, na cor do time; o feito mostra o rosto escolhido. */
 .bt-draft__order {
-    grid-column: 1 / -1;
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
-    margin: 0;
-    padding: 10px 0 0;
-    border-top: 1px solid rgb(28 26 43 / 0.25);
+    justify-content: center;
+    gap: 5px;
+    margin: 2px 0 0;
+    padding: 0;
     list-style: none;
 }
 
 .bt-draft__chip {
     display: grid;
     place-items: center;
-    width: 38px;
-    height: 38px;
+    width: 30px;
+    height: 30px;
     overflow: hidden;
-    border: 2px solid var(--bt-ink);
-    border-radius: 8px;
-    background: #fff8e2;
+    border: 2px solid var(--draft-line);
+    border-radius: 6px;
+    background: rgb(239 227 196 / 0.08);
     font-weight: 800;
-    font-size: 14px;
-}
-
-.bt-draft__chip--mine {
-    border-color: var(--bt-ally);
-    color: var(--bt-ally);
-}
-
-.bt-draft__chip--theirs {
-    border-color: var(--bt-enemy);
-    color: var(--bt-enemy);
-}
-
-.bt-draft__chip--ban:not(.bt-draft__chip--done) {
-    background: repeating-linear-gradient(135deg, #fff8e2 0 5px, #ecdcb4 5px 10px);
     font-size: 12px;
 }
 
+.bt-draft__chip--mine {
+    border-color: #6f94e0;
+    color: #9fc0ff;
+}
+
+.bt-draft__chip--theirs {
+    border-color: #d0604f;
+    color: #ff9a8a;
+}
+
+.bt-draft__chip--ban:not(.bt-draft__chip--done) {
+    background: repeating-linear-gradient(135deg, rgb(239 227 196 / 0.08) 0 4px, rgb(239 227 196 / 0.16) 4px 8px);
+    font-size: 10px;
+}
+
 .bt-draft__chip--ban.bt-draft__chip--done .bt-draft__chip-face {
-    filter: grayscale(1);
+    filter: grayscale(1) brightness(0.8);
 }
 
 .bt-draft__chip--current {
-    box-shadow: 0 0 0 3px var(--bt-gold-bright);
+    box-shadow: 0 0 0 2px var(--bt-gold-bright);
     animation: bt-draft-pulse 1.2s ease-in-out infinite;
 }
 
@@ -5762,136 +5799,249 @@
 
 @keyframes bt-draft-pulse {
     50% {
-        box-shadow: 0 0 0 5px rgb(236 208 122 / 0.45);
+        box-shadow: 0 0 0 4px rgb(236 208 122 / 0.4);
     }
 }
 
-/* Os dois times, lado a lado: o seu em azul, o do adversário em vermelho. */
-.bt-draft__teams {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px;
-}
-
+/* Os times, nas laterais. As vagas preenchem a coluna; o banimento fica no pé. */
 .bt-draft__team {
-    justify-items: stretch;
-    border-top-width: 6px;
-}
-
-.bt-draft__team--mine {
-    border-top-color: var(--bt-ally);
-}
-
-.bt-draft__team--theirs {
-    border-top-color: var(--bt-enemy);
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 8px;
+    min-height: 0;
 }
 
 .bt-draft__team-title {
     margin: 0;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #6f94e0;
     font-family: var(--bt-display);
     font-weight: 700;
-    font-size: 20px;
+    font-size: 19px;
 }
 
-.bt-draft__ban {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-height: 44px;
-    padding: 3px 10px;
-    border: 1px dashed rgb(28 26 43 / 0.45);
-    border-radius: 8px;
-}
-
-.bt-draft__ban-label {
-    min-width: 56px;
-    font-size: 13px;
-    font-weight: 800;
-    color: #6b5531;
+.bt-draft__team--theirs .bt-draft__team-title {
+    border-bottom-color: #d0604f;
+    text-align: right;
 }
 
 .bt-draft__slots {
     display: grid;
-    gap: 4px;
+    grid-auto-rows: minmax(0, 1fr);
+    gap: 6px;
+    min-height: 0;
     margin: 0;
     padding: 0;
     list-style: none;
 }
 
-.bt-draft__slot {
+.bt-draft__slot,
+.bt-draft__ban {
     display: flex;
     align-items: center;
-    min-height: 44px;
-    padding: 3px 10px;
-    border: 1px dashed rgb(28 26 43 / 0.45);
+    gap: 12px;
+    min-height: 0;
+    padding: 6px 10px;
+    border: 1px solid var(--draft-line);
     border-radius: 8px;
+    background: var(--draft-panel);
 }
 
-.bt-draft__slot:has(.bt-draft__chosen) {
-    border-style: solid;
-    background: rgb(255 248 226 / 0.7);
+.bt-draft__ban {
+    border-style: dashed;
 }
 
-/* A vaga que está sendo preenchida agora. */
+.bt-draft__team--theirs .bt-draft__slot,
+.bt-draft__team--theirs .bt-draft__ban {
+    flex-direction: row-reverse;
+    text-align: right;
+}
+
+/* A vaga que está sendo preenchida agora: faixa de ouro na beirada, como um holofote. */
 .bt-draft__slot--filling {
-    border: 2px solid var(--bt-gold);
-    background: #fff8e2;
+    border-color: var(--bt-gold);
+    box-shadow: inset 4px 0 0 var(--bt-gold-bright);
+    background: rgb(200 162 75 / 0.16);
+}
+
+.bt-draft__team--theirs .bt-draft__slot--filling {
+    box-shadow: inset -4px 0 0 var(--bt-gold-bright);
+}
+
+.bt-draft__slot-face,
+.bt-draft__ban-face {
+    flex: none;
+    display: block;
+    width: clamp(36px, 7.5vh, 64px);
+    height: clamp(36px, 7.5vh, 64px);
+    overflow: hidden;
+    border: 2px solid var(--draft-line);
+    border-radius: 50%;
+    background: rgb(239 227 196 / 0.08);
+}
+
+.bt-draft__team--mine .bt-draft__slot--done .bt-draft__slot-face {
+    border-color: #6f94e0;
+}
+
+.bt-draft__team--theirs .bt-draft__slot--done .bt-draft__slot-face {
+    border-color: #d0604f;
+}
+
+.bt-draft__ban-face {
+    width: 40px;
+    height: 40px;
+    filter: grayscale(1) brightness(0.85);
+}
+
+.bt-draft__slot-text {
+    display: grid;
+    min-width: 0;
+    line-height: 1.2;
+}
+
+.bt-draft__slot-label {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--draft-muted);
+}
+
+.bt-draft__slot--filling .bt-draft__slot-label {
+    color: var(--bt-gold-bright);
+}
+
+.bt-draft__slot-name {
+    overflow: hidden;
+    font-family: var(--bt-display);
+    font-weight: 700;
+    font-size: 18px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.bt-draft__slot-name--ban {
+    font-size: 15px;
+    text-decoration: line-through;
+    color: var(--draft-muted);
 }
 
 .bt-draft__empty {
     font-size: 14px;
-    color: #7c6f57;
-}
-
-.bt-draft__chosen {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: 700;
-}
-
-.bt-draft__chosen-name {
-    display: grid;
-    line-height: 1.2;
-}
-
-.bt-draft__chosen--ban .bt-draft__face {
-    filter: grayscale(1);
-}
-
-.bt-draft__chosen--ban .bt-draft__chosen-name {
-    text-decoration: line-through;
+    color: var(--draft-muted);
 }
 
 .bt-draft__auto {
-    font-size: 12px;
+    margin-left: 6px;
+    font-family: var(--bt-body);
+    font-size: 11px;
     font-weight: 600;
-    color: #7c6f57;
+    color: var(--draft-muted);
 }
 
-.bt-draft__face {
-    flex: none;
-    display: block;
-    width: 34px;
-    height: 34px;
-    overflow: hidden;
-    border: 2px solid var(--bt-ink);
-    border-radius: 50%;
-    background: var(--bt-paper);
-}
-
-/* Lista de personagens e, ao lado, a carta do destacado com o botão de confirmar. */
-.bt-draft__pick {
+/* O centro: filtros e busca no alto, a lista rolando no meio, a ficha e o botão embaixo. */
+.bt-draft__center {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 280px;
-    align-items: start;
-    gap: 16px;
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 10px;
+    min-height: 0;
+    padding: 10px 12px 12px;
+    border: 1px solid var(--draft-line);
+    border-radius: 10px;
+    background: var(--draft-panel);
+}
+
+.bt-draft__tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 14px;
+}
+
+.bt-draft__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.bt-draft__filter {
+    padding: 4px 11px 5px;
+    border: 1px solid var(--draft-line);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--draft-text);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.bt-draft__filter:hover {
+    border-color: var(--bt-gold);
+}
+
+.bt-draft__filter--on {
+    border-color: var(--bt-gold-bright);
+    background: var(--bt-gold);
+    color: var(--bt-ink);
+}
+
+.bt-draft__search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: min(100%, 240px);
+    padding: 0 10px;
+    border: 1px solid var(--draft-line);
+    border-radius: 8px;
+    background: rgb(12 11 20 / 0.6);
+}
+
+.bt-draft__search svg {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    stroke: var(--draft-muted);
+}
+
+.bt-draft__search input {
+    width: 100%;
+    min-height: 36px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--draft-text);
+    font-size: 15px;
+}
+
+.bt-draft__search:focus-within {
+    border-color: var(--bt-gold-bright);
+}
+
+.bt-draft__filter:focus-visible,
+.bt-draft__tile:focus-visible {
+    outline: 3px solid #9fc0ff;
+    outline-offset: 2px;
+}
+
+.bt-draft__scroll {
+    min-height: 0;
+    overflow-y: auto;
+    padding: 4px 2px 4px 0;
+    scrollbar-color: var(--bt-gold) transparent;
+}
+
+.bt-draft__none {
+    margin: 24px 0;
+    text-align: center;
+    color: var(--draft-muted);
 }
 
 .bt-draft__roster {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+    gap: 12px 10px;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -5900,133 +6050,343 @@
 .bt-draft__tile {
     display: grid;
     justify-items: center;
-    gap: 3px;
+    gap: 5px;
     width: 100%;
-    padding: 10px 6px 8px;
-    border: 2px solid rgb(28 26 43 / 0.5);
-    border-radius: 8px;
-    background: linear-gradient(var(--bt-paper-light), var(--bt-paper));
-    color: var(--bt-ink);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--draft-text);
     cursor: pointer;
-    text-align: center;
 }
 
-.bt-draft__tile .bt-draft__face {
-    width: 60px;
-    height: 60px;
+.bt-draft__portrait {
+    position: relative;
+    display: block;
+    width: 100%;
+    max-width: 92px;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border: 2px solid var(--draft-line);
+    border-radius: 6px;
+    background: rgb(239 227 196 / 0.08);
+    transition: border-color 0.15s ease, transform 0.15s ease;
 }
 
-.bt-draft__tile:hover:not(:disabled) {
-    border-color: var(--bt-ink);
-}
-
-.bt-draft__tile:focus-visible {
-    outline: 3px solid var(--bt-ally);
-    outline-offset: 2px;
-}
-
-/* Na sua vez, quem vale ganha a moldura de ouro ao passar o mouse e ao ser destacado. */
-.bt-draft__tile--valid:hover {
+.bt-draft__tile:hover:not(:disabled) .bt-draft__portrait {
     border-color: var(--bt-gold);
 }
 
-.bt-draft__tile--selected {
-    border-color: var(--bt-ink);
-    box-shadow: 0 0 0 3px var(--bt-gold-bright), 0 3px 0 var(--bt-ink);
-    background: #fff8e2;
+/* Na sua vez, quem vale levanta um pouco ao passar o mouse. */
+.bt-draft__tile--valid:hover .bt-draft__portrait {
+    transform: translateY(-2px);
+}
+
+.bt-draft__tile--selected .bt-draft__portrait {
+    border-color: var(--bt-gold-bright);
+    box-shadow: 0 0 0 3px var(--bt-gold), 0 0 18px rgb(236 208 122 / 0.45);
 }
 
 .bt-draft__tile:disabled {
     cursor: default;
 }
 
-.bt-draft__tile--banned {
-    opacity: 0.55;
+.bt-draft__tile--banned .bt-draft__portrait,
+.bt-draft__tile--mine .bt-draft__portrait {
+    filter: grayscale(1) brightness(0.55);
 }
 
-.bt-draft__tile--banned .bt-draft__face {
-    filter: grayscale(1);
+.bt-draft__tile--theirs .bt-draft__portrait {
+    border-color: #d0604f;
 }
 
-.bt-draft__tile--mine {
-    border-color: var(--bt-ally);
-    background: #e6ecf7;
+/* A marca no retrato: banido, no seu time ou no dele. */
+.bt-draft__mark {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 1px 0 2px;
+    background: rgb(12 11 20 / 0.8);
+    font-size: 11px;
+    font-weight: 800;
+    text-align: center;
+}
+
+.bt-draft__tile--banned .bt-draft__mark {
+    color: #ff9a8a;
+}
+
+.bt-draft__tile--mine .bt-draft__mark {
+    color: #9fc0ff;
+}
+
+.bt-draft__tile--theirs .bt-draft__mark {
+    color: #ff9a8a;
 }
 
 .bt-draft__tile-name {
+    max-width: 100%;
+    overflow: hidden;
+    font-size: 14px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* A ficha do destacado e o botão de confirmar. */
+.bt-draft__detail {
+    display: grid;
+    grid-template-columns: auto minmax(150px, auto) minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px 16px;
+    min-height: 92px;
+    padding: 10px 12px;
+    border-top: 1px solid var(--draft-line);
+}
+
+.bt-draft__detail-face {
+    display: block;
+    width: 72px;
+    height: 72px;
+    overflow: hidden;
+    border: 2px solid var(--bt-gold);
+    border-radius: 8px;
+}
+
+.bt-draft__detail-main {
+    display: grid;
+    gap: 6px;
+}
+
+.bt-draft__detail-name {
+    display: grid;
+    margin: 0;
     font-family: var(--bt-display);
     font-weight: 700;
-    font-size: 16px;
-    line-height: 1.15;
+    font-size: 22px;
+    line-height: 1.1;
 }
 
-.bt-draft__tile-tag {
-    font-size: 12px;
+.bt-draft__detail-role {
+    font-family: var(--bt-body);
+    font-size: 13px;
     font-weight: 700;
-    color: #6b5531;
+    color: var(--bt-gold-bright);
 }
 
-.bt-draft__tile--banned .bt-draft__tile-tag {
-    color: var(--bt-enemy);
-}
-
-.bt-draft__tile--mine .bt-draft__tile-tag {
-    color: var(--bt-ally);
-}
-
-.bt-draft__detail {
-    position: sticky;
-    top: 12px;
+.bt-draft__stats {
     display: grid;
-    gap: 12px;
+    grid-template-columns: repeat(2, auto);
+    gap: 1px 14px;
+    margin: 0;
+    font-size: 13px;
+}
+
+.bt-draft__stats div {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.bt-draft__stats dt {
+    color: var(--draft-muted);
+}
+
+.bt-draft__stats dd {
+    margin: 0;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
+.bt-draft__skills {
+    display: grid;
+    gap: 3px;
+    max-height: 120px;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0 4px 0 0;
+    list-style: none;
+    font-size: 13px;
+    line-height: 1.3;
+}
+
+.bt-draft__skills li {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.bt-draft__skills b {
+    color: var(--draft-text);
+}
+
+.bt-draft__skill-cost {
+    margin: 0 6px;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--bt-gold-bright);
+}
+
+.bt-draft__skill-text {
+    color: var(--draft-muted);
 }
 
 .bt-draft__hint {
+    grid-column: 1 / 4;
     margin: 0;
-    padding: 14px 16px;
-    border: 2px dashed rgb(28 26 43 / 0.4);
-    border-radius: 8px;
+    color: var(--draft-muted);
     font-weight: 700;
 }
 
-.dark .bt-draft__hint {
-    color: var(--bt-paper);
-    border-color: rgb(239 227 196 / 0.4);
-}
-
 .bt-draft__confirm {
-    width: 100%;
+    grid-column: 4;
+    min-width: 180px;
+    padding-inline: 22px;
 }
 
-@media (max-width: 900px) {
-    .bt-draft__pick {
-        grid-template-columns: minmax(0, 1fr);
+/* Telas baixas (notebook): tudo encolhe um pouco para continuar cabendo. */
+@media (max-height: 760px) {
+    .bt.bt-draft {
+        gap: 8px 14px;
+        padding-top: 8px;
     }
 
-    /* No celular a carta e o botão vão para baixo, presos ao pé da tela. */
+    .bt-draft__seconds {
+        font-size: 30px;
+    }
+
     .bt-draft__detail {
-        position: sticky;
-        top: auto;
-        bottom: 8px;
-        order: 2;
+        min-height: 76px;
+        padding: 6px 10px;
     }
 
-    .bt-draft__detail .bt-card {
+    .bt-draft__detail-face {
+        width: 56px;
+        height: 56px;
+    }
+
+    .bt-draft__skills {
+        max-height: 84px;
+    }
+}
+
+/* Tela estreita: os times viram duas faixas de rostos no alto, e o centro ocupa o resto. */
+@media (max-width: 900px) {
+    .bt.bt-draft {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-rows: auto auto minmax(0, 1fr);
+        gap: 8px 10px;
+        padding: 8px 10px 10px;
+    }
+
+    .bt-draft__center {
+        grid-column: 1 / -1;
+        grid-row: 3;
+        padding: 8px;
+    }
+
+    .bt-draft__team {
+        grid-template-rows: auto auto;
+    }
+
+    .bt-draft__team-title {
+        font-size: 15px;
+    }
+
+    .bt-draft__slots {
+        display: flex;
+        gap: 4px;
+    }
+
+    .bt-draft__slot {
+        padding: 2px;
+        border: 0;
+        background: transparent;
+    }
+
+    .bt-draft__team--theirs .bt-draft__slots {
+        justify-content: flex-end;
+    }
+
+    .bt-draft__slot-text,
+    .bt-draft__ban {
         display: none;
     }
-}
 
-@media (max-width: 640px) {
-    .bt-draft__head {
-        grid-template-columns: 1fr;
+    .bt-draft__slot-face {
+        width: 30px;
+        height: 30px;
     }
 
-    .bt-draft__teams {
-        grid-template-columns: minmax(0, 1fr);
+    .bt-draft__slots {
+        gap: 2px;
+    }
+
+    .bt-draft__slot {
+        padding: 1px;
+    }
+
+    /* Os filtros viram uma faixa que rola de lado, para a lista ganhar altura. */
+    .bt-draft__filters {
+        flex-wrap: nowrap;
+        min-width: 0;
+        max-width: 100%;
+        overflow-x: auto;
+        padding-bottom: 2px;
+    }
+
+    .bt-draft__filter {
+        flex: none;
+    }
+
+    .bt-draft__search {
+        width: 100%;
+    }
+
+    .bt-draft__slot--filling .bt-draft__slot-face {
+        border-color: var(--bt-gold-bright);
+        box-shadow: 0 0 0 2px var(--bt-gold);
+    }
+
+    .bt-draft__team--theirs .bt-draft__slot--filling {
+        box-shadow: none;
+    }
+
+    .bt-draft__slot--filling {
+        box-shadow: none;
+        background: transparent;
+    }
+
+    .bt-draft__order {
+        display: none;
     }
 
     .bt-draft__roster {
-        grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    }
+
+    .bt-draft__detail {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .bt-draft__skills,
+    .bt-draft__stats {
+        display: none;
+    }
+
+    .bt-draft__detail-face {
+        width: 48px;
+        height: 48px;
+    }
+
+    .bt-draft__hint {
+        grid-column: 1 / -1;
+    }
+
+    .bt-draft__confirm {
+        grid-column: 1 / -1;
+        min-width: 0;
     }
 }
 
@@ -6035,7 +6395,8 @@
         animation: none;
     }
 
-    .bt-draft__bar span {
+    .bt-draft__bar span,
+    .bt-draft__portrait {
         transition: none;
     }
 }

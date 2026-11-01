@@ -490,7 +490,8 @@
             "chainJump": "The lightning jumped to {{target}}",
             "guarded": "{{unit}} protected {{target}} and took the hit",
             "revived": "{{unit}} brought {{target}} back with {{hp}} health",
-            "wokeUp": "{{unit}} woke up"
+            "wokeUp": "{{unit}} woke up",
+            "timedOut": "{{unit}} ran out of time: automatic move."
         },
         "waitingOpponent": "Waiting for the opponent's move...",
         "waitingOpponentLong": "It's the other player's turn. As soon as they play, the move shows up here.",
@@ -513,8 +514,8 @@
         "passiveCharge": "{{passive}}: +{{percent}}% damage",
         "passiveNow": "Damage now",
         "ranked": "Ranked",
-        "timerYours": "The time you have to play",
-        "timerTheirs": "The time your opponent has to play. If it runs out, you win.",
+        "timerYours": "The time you have to play. If it runs out, the game makes a random move for you.",
+        "timerTheirs": "The time your opponent has to play. If it runs out, the game makes a random move for them.",
         "timedOutText": "Your time to play ran out on turn {{turn}}.",
         "enemyTimedOutText": "Your opponent did not play in time on turn {{turn}}.",
         "ratingUp": "+{{count}} points",
@@ -557,7 +558,7 @@
             "casual": "Casual match",
             "ranked": "Ranked match"
         },
-        "casualLead": "Create a room and share the code with someone, or join someone else’s room. The match is not worth points."
+        "casualLead": "Create a room and share the code with someone, or join someone else’s room. The match is not worth points. Each move has 30 seconds: if time runs out, the game makes a random move."
     },
     "room": {
         "title": "Battle room",
@@ -618,7 +619,7 @@
         "inBattleTitle": "You have a match in progress",
         "inBattleText": "Finish the ranked match in progress (or surrender it) before looking for another one.",
         "backToBattle": "Back to the match",
-        "rules": "Each move has a minute and a half. Whoever lets the time run out or surrenders loses the match. The queue starts by looking for someone of your rank and, if no one shows up, widens the search.",
+        "rules": "Each move has 30 seconds: if time runs out, the game makes a random move for you. Giving up loses the match. The queue starts looking for someone at your rank and widens the search if nobody shows up.",
         "readyToSearch": "Your team is built after matchmaking, in the character draft.",
         "draft": {
             "loading": "Opening the character draft...",
@@ -645,13 +646,26 @@
             "bannedTag": "Banned",
             "inYourTeam": "On your team",
             "inTheirTeam": "On their team",
-            "pickHint": "Click a character to see their card and confirm.",
+            "pickHint": "Click a character to see their details and confirm with the button (or double-click).",
             "waitHint": "Wait for your opponent’s turn. Meanwhile, click characters to read their cards.",
             "chooseBan": "Choose who to ban",
             "choosePick": "Choose a character",
             "confirmBan": "Ban {{name}}",
             "confirmPick": "Pick {{name}}",
-            "chooseError": "Could not send your choice. Try again."
+            "chooseError": "Could not send your choice. Try again.",
+            "filterLabel": "Filter by role",
+            "allRoles": "All",
+            "searchLabel": "Search character",
+            "searchPlaceholder": "Search character",
+            "noneFound": "No character with that name in this role.",
+            "youShort": "Yours",
+            "themShort": "Theirs",
+            "picking": "Picking...",
+            "banning": "Banning...",
+            "free": "no cost",
+            "cost_one": "{{count}} energy",
+            "cost_other": "{{count}} energy",
+            "passive": "passive"
         }
     },
     "replay": {

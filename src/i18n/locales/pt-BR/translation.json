@@ -490,7 +490,8 @@
             "chainJump": "O raio saltou para {{target}}",
             "guarded": "{{unit}} protegeu {{target}} e recebeu o golpe",
             "revived": "{{unit}} trouxe {{target}} de volta com {{hp}} de vida",
-            "wokeUp": "{{unit}} acordou"
+            "wokeUp": "{{unit}} acordou",
+            "timedOut": "O tempo de {{unit}} acabou: jogada automática."
         },
         "waitingOpponent": "Esperando a jogada do adversário...",
         "waitingOpponentLong": "É a vez do outro jogador. Assim que ele jogar, a jogada aparece aqui.",
@@ -513,8 +514,8 @@
         "passiveCharge": "{{passive}}: +{{percent}}% de dano",
         "passiveNow": "Dano agora",
         "ranked": "Ranqueada",
-        "timerYours": "O tempo que você tem para jogar",
-        "timerTheirs": "O tempo que o adversário tem para jogar. Se acabar, a vitória é sua.",
+        "timerYours": "O tempo que você tem para jogar. Se acabar, o jogo faz uma jogada ao acaso por você.",
+        "timerTheirs": "O tempo que o adversário tem para jogar. Se acabar, o jogo faz uma jogada ao acaso por ele.",
         "timedOutText": "Seu tempo para jogar acabou no turno {{turn}}.",
         "enemyTimedOutText": "O adversário não jogou a tempo no turno {{turn}}.",
         "ratingUp": "+{{count}} pontos",
@@ -557,7 +558,7 @@
             "casual": "Partida casual",
             "ranked": "Partida ranqueada"
         },
-        "casualLead": "Crie uma sala e passe o código para alguém, ou entre na sala de outra pessoa. A partida não vale pontos."
+        "casualLead": "Crie uma sala e passe o código para alguém, ou entre na sala de outra pessoa. A partida não vale pontos. Cada jogada tem 30 segundos: se o tempo acabar, o jogo faz uma jogada ao acaso."
     },
     "room": {
         "title": "Sala de batalha",
@@ -618,7 +619,7 @@
         "inBattleTitle": "Você tem uma partida em andamento",
         "inBattleText": "Termine a partida ranqueada que está em andamento (ou desista dela) antes de procurar outra.",
         "backToBattle": "Voltar para a partida",
-        "rules": "Cada jogada tem 1 minuto e meio. Quem deixa o tempo acabar ou desiste perde a partida. A fila começa procurando alguém do seu rank e, se ninguém aparecer, vai abrindo a busca.",
+        "rules": "Cada jogada tem 30 segundos: se o tempo acabar, o jogo faz uma jogada ao acaso por você. Quem desiste perde a partida. A fila começa procurando alguém do seu rank e, se ninguém aparecer, vai abrindo a busca.",
         "readyToSearch": "O time é montado depois do pareamento, na seleção de personagens.",
         "draft": {
             "loading": "Abrindo a seleção de personagens...",
@@ -645,13 +646,26 @@
             "bannedTag": "Banido",
             "inYourTeam": "No seu time",
             "inTheirTeam": "No time dele",
-            "pickHint": "Clique num personagem para ver a carta dele e confirmar.",
+            "pickHint": "Clique num personagem para ver a ficha dele e confirme no botão (ou dê um clique duplo).",
             "waitHint": "Aguarde a vez do adversário. Enquanto isso, clique nos personagens para ler as cartas.",
             "chooseBan": "Escolha quem banir",
             "choosePick": "Escolha um personagem",
             "confirmBan": "Banir {{name}}",
             "confirmPick": "Escolher {{name}}",
-            "chooseError": "Não foi possível enviar a escolha. Tente de novo."
+            "chooseError": "Não foi possível enviar a escolha. Tente de novo.",
+            "filterLabel": "Filtrar por categoria",
+            "allRoles": "Todos",
+            "searchLabel": "Buscar personagem",
+            "searchPlaceholder": "Buscar personagem",
+            "noneFound": "Nenhum personagem com esse nome nesta categoria.",
+            "youShort": "Seu",
+            "themShort": "Dele",
+            "picking": "Escolhendo...",
+            "banning": "Banindo...",
+            "free": "sem custo",
+            "cost_one": "{{count}} de energia",
+            "cost_other": "{{count}} de energia",
+            "passive": "passiva"
         }
     },
     "replay": {

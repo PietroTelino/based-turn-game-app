@@ -25,6 +25,8 @@ const BEAT_DURATION = {
     /** Passiva de começo de vez: o mesmo tempo de uma habilidade, porque usa a mesma animação. */
     passive_triggered: 700,
     unit_skipped: 1000,
+    /** O prazo acabou: um aviso curto antes da jogada automática. */
+    turn_timed_out: 900,
     surrendered: 500,
     effects: 800,
     battle_ended: 300,
@@ -222,6 +224,7 @@ export function applyEvents(state: BattleState, events: BattleEvent[]): BattleSt
             case 'status_applied':
             case 'status_expired':
             case 'unit_skipped':
+            case 'turn_timed_out':
                 break;
         }
     }

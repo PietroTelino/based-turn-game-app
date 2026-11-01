@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import { claimBattleTimeout, getBattle, getBattleEvents, getBattleReplay, sendBattleAction, surrenderBattle } from '@/api/battles';
+import { getBattle, getBattleEvents, getBattleReplay, sendBattleAction, surrenderBattle } from '@/api/battles';
 import { sfx } from '@/audio/sfx';
 import { findPassive, findSkill } from '@/battle/forms';
 import { impactsOf, passiveFxOf, skillFxOf } from '@/battle/fx';
@@ -77,8 +77,6 @@ const INTRO_DURATION = 1300;
 const POLL_INTERVAL = 1200;
 /** `state.step` de uma batalha recém-criada, em que ninguém jogou ainda. */
 const FIRST_STEP = 1;
-/** Partida ranqueada: quanto esperar depois do prazo do adversário antes de pedir a vitória, em ms (folga para a diferença de relógio). */
-const TIMEOUT_GRACE = 1500;
 /** As velocidades do replay. */
 export const REPLAY_SPEEDS = [1, 2, 4] as const;
 
@@ -208,6 +206,9 @@ function describe(
 
         case 'surrendered':
             return { text: t(event.team === playerTeam ? 'battle.log.surrendered' : 'battle.log.enemySurrendered'), team: event.team };
+
+        case 'turn_timed_out':
+            return { text: t('battle.log.timedOut', { unit: units.get(event.unitId)?.name }), team: event.team };
 
         case 'battle_ended':
             return { text: t(event.winner === playerTeam ? 'battle.log.won' : 'battle.log.lost'), team: null };
@@ -486,6 +487,11 @@ function effectsOf(
             }
         }
 
+        // Entre jogadores, o prazo acabou: a faixa avisa antes da jogada automática aparecer.
+        if (event.type === 'turn_timed_out') {
+            effects.banner = t('battle.log.timedOut', { unit: units.get(event.unitId)?.name });
+        }
+
         if (event.type === 'unit_skipped') {
             effects.banner = t('battle.log.skipped', {
                 unit: units.get(event.unitId)?.name,
@@ -527,9 +533,10 @@ function effectsOf(
  * a tela está parada, ela pergunta à API pelos eventos que vieram depois dos
  * que já mostrou (`view.cursor`) e os anima do mesmo jeito.
  *
- * Partida ranqueada (`view.ranked`): quem está na vez tem prazo para jogar.
- * A tela mostra a contagem (`turnSecondsLeft`) e, se o prazo do adversário
- * acabar, pede a vitória sozinha.
+ * Entre jogadores (casual ou ranqueada), quem está na vez tem 30 segundos.
+ * A tela mostra a contagem (`turnSecondsLeft`). Quando o prazo acaba, a API
+ * faz uma jogada ao acaso por quem estava na vez, e a tela fica sabendo na
+ * pergunta seguinte, como de uma jogada do outro.
  *
  * Replay (`options.replay`): a batalha já acabou. A tela busca o estado de
  * quando ela foi criada e todos os eventos, e anima tudo do começo, como se
@@ -550,9 +557,9 @@ export function useBattle(battleId: string, opening?: BattleResponse, options: {
     const [selectedSkillId, setSelectedSkillId] = useState<string | null>(null);
     /** A pergunta "quer mesmo desistir?" está aberta. */
     const [isConfirming, setIsConfirming] = useState(false);
-    /** Ranqueada: o instante (relógio desta máquina, em ms) em que o prazo de quem está na vez acaba. */
+    /** Entre jogadores: o instante (relógio desta máquina, em ms) em que o prazo de quem está na vez acaba. */
     const [deadline, setDeadline] = useState<number | null>(null);
-    /** Ranqueada: o relógio, andando de segundo em segundo enquanto há prazo correndo. */
+    /** Entre jogadores: o relógio, andando de segundo em segundo enquanto há prazo correndo. */
     const [clock, setClock] = useState(() => Date.now());
     /** Replay: quantos passos já foram mostrados, de quantos. */
     const [progress, setProgress] = useState({ done: 0, total: 0 });
@@ -801,8 +808,7 @@ export function useBattle(battleId: string, opening?: BattleResponse, options: {
 
     /**
      * Envia um pedido à API e anima a resposta. Serve para a jogada, para a
-     * desistência e para o pedido de vitória por tempo. `quiet` não mostra o
-     * erro: é para o pedido que a tela faz sozinha.
+     * desistência. `quiet` não mostra o erro.
      */
     async function submit(request: (battleId: string) => Promise<BattleResponse>, quiet = false) {
         if (!view || !state) return;
@@ -878,7 +884,7 @@ export function useBattle(battleId: string, opening?: BattleResponse, options: {
         }
     }
 
-    // Ranqueada: com a tela parada e a batalha em andamento, o prazo de quem
+    // Entre jogadores: com a tela parada e a batalha em andamento, o prazo de quem
     // está na vez corre. O relógio anda de meio em meio segundo, para a
     // contagem na tela não pular números.
     const hasDeadline = !isReplay && phase === 'idle' && !isConfirming && deadline !== null && view?.status === 'in_progress';
@@ -892,18 +898,6 @@ export function useBattle(battleId: string, opening?: BattleResponse, options: {
     }, [hasDeadline]);
 
     const turnSecondsLeft = hasDeadline && deadline !== null ? Math.max(0, Math.ceil((deadline - clock) / 1000)) : null;
-    /** O prazo do adversário acabou (com uma folga): a tela pede a vitória. */
-    const shouldClaim = hasDeadline && deadline !== null && !canAct && activeUnit !== null && clock >= deadline + TIMEOUT_GRACE;
-
-    useEffect(() => {
-        if (!shouldClaim) return;
-
-        // Se a API disser que ainda é cedo (relógios diferentes), o erro é
-        // engolido e o prazo é lido de novo da batalha.
-        void submit(claimBattleTimeout, true);
-        // `submit` muda a cada desenho; o que dispara o pedido é só o prazo ter acabado.
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [shouldClaim]);
 
     const replay: ReplayControls | null = isReplay
         ? {
@@ -941,7 +935,7 @@ export function useBattle(battleId: string, opening?: BattleResponse, options: {
         selected,
         activeUnit,
         canAct,
-        /** Ranqueada: quantos segundos quem está na vez ainda tem. `null` quando não há prazo correndo. */
+        /** Entre jogadores: quantos segundos quem está na vez ainda tem. `null` quando não há prazo correndo. */
         turnSecondsLeft,
         /** Os controles do replay. `null` numa batalha de verdade. */
         replay,

@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { CharacterArt } from '@/components/battle/CharacterArt';
-import { CharacterCard } from '@/components/battle/CharacterCard';
-import type { Character } from '@/types/battle';
+import type { Character, CharacterRole } from '@/types/battle';
 import type { DraftAction, DraftTeam, DraftView } from '@/types/ranked';
 
 interface DraftBoardProps {
@@ -18,6 +18,8 @@ interface DraftBoardProps {
 const HURRY_MS = 10_000;
 /** O prazo de cada passo (DRAFT_TURN_MS na API): é a barra cheia. */
 const TURN_MS = 30_000;
+/** A ordem dos filtros de categoria (só aparecem as que algum personagem tem). */
+const ROLE_ORDER: CharacterRole[] = ['tank', 'fighter', 'attacker', 'assassin', 'mage', 'support', 'shapeshifter'];
 
 /** Quanto falta para `deadline`, atualizado algumas vezes por segundo. */
 function useTimeLeft(deadline: number | null): number {
@@ -34,25 +36,54 @@ function useTimeLeft(deadline: number | null): number {
     return deadline === null ? 0 : Math.max(0, deadline - now);
 }
 
+/** "Súcubo" -> "sucubo": a busca ignora acento e maiúscula. */
+function normalize(text: string): string {
+    return text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+}
+
 /**
- * A seleção de personagens da ranqueada: os dois times à vista, a ordem dos
- * passos, o relógio do passo da vez e a lista de personagens para banir ou
- * escolher. Clicar num personagem só o destaca (e mostra a carta dele); a
- * escolha vale no botão de confirmar.
+ * A seleção de personagens da ranqueada, numa tela só (como a de um jogo de
+ * arena): o seu time à esquerda, o do adversário à direita e, no centro, o
+ * relógio, a ordem dos passos e os personagens, com busca e filtro por
+ * categoria. Só a lista do centro rola. Clicar num personagem o destaca e
+ * mostra a ficha dele embaixo; a escolha vale no botão de confirmar.
+ *
+ * Ocupa a janela inteira, por cima do resto da página, enquanto a seleção
+ * dura: nada fica escondido embaixo da dobra. Vai direto no <body> (portal),
+ * para nenhum contêiner da página limitar o tamanho dela.
  */
 export function DraftBoard({ draft, deadline, characters, isChoosing, onChoose }: DraftBoardProps) {
     const { t } = useTranslation();
     const [selected, setSelected] = useState<string | null>(null);
+    const [query, setQuery] = useState('');
+    const [role, setRole] = useState<CharacterRole | null>(null);
     const timeLeft = useTimeLeft(deadline);
+
+    // A página por baixo não rola enquanto a seleção está aberta.
+    useEffect(() => {
+        const previous = document.body.style.overflow;
+
+        document.body.style.overflow = 'hidden';
+
+        return () => {
+            document.body.style.overflow = previous;
+        };
+    }, []);
 
     const enemy: DraftTeam = draft.you === 'A' ? 'B' : 'A';
     const current = draft.current;
     const isMyTurn = current !== null && current.team === draft.you && draft.status === 'drafting';
     const nameOf = (id: string) => characters.find((character) => character.id === id)?.name ?? id;
     const opponent = draft.players[enemy];
-
-    const selectedCharacter = characters.find((character) => character.id === selected) ?? null;
     const seconds = Math.ceil(timeLeft / 1000);
+    const selectedCharacter = characters.find((character) => character.id === selected) ?? null;
+
+    const roles = useMemo(() => ROLE_ORDER.filter((item) => characters.some((character) => character.role === item)), [characters]);
+    const visible = useMemo(() => {
+        const search = normalize(query.trim());
+
+        return characters.filter((character) => (!role || character.role === role) && (!search || normalize(character.name).includes(search)));
+    }, [characters, query, role]);
 
     let status: string;
 
@@ -64,16 +95,21 @@ export function DraftBoard({ draft, deadline, characters, isChoosing, onChoose }
         status = t(current.kind === 'ban' ? 'ranked.draft.theirTurnBan' : 'ranked.draft.theirTurnPick', { name: opponent });
     }
 
-    return (
-        <div className='bt-draft'>
-            <section className='bt-panel bt-draft__head' aria-live='polite'>
-                <div className='bt-draft__status'>
-                    <h3 className='bt-subtitle'>{t('ranked.draft.title')}</h3>
-                    <p className={`bt-draft__turn ${isMyTurn ? 'bt-draft__turn--mine' : ''}`}>{status}</p>
-                </div>
+    return createPortal(
+        <div className='bt bt-draft' role='dialog' aria-modal='true' aria-labelledby='bt-draft-title'>
+            <header className='bt-draft__head'>
+                <p id='bt-draft-title' className='bt-draft__title'>
+                    {t('ranked.draft.title')}
+                </p>
+                <p className={`bt-draft__turn ${isMyTurn ? 'bt-draft__turn--mine' : ''}`} aria-live='polite'>
+                    {status}
+                </p>
 
                 {current && draft.status === 'drafting' && (
                     <div className={`bt-draft__clock ${timeLeft <= HURRY_MS ? 'bt-draft__clock--hurry' : ''}`} role='timer' aria-label={t('ranked.draft.timeLeft', { seconds })}>
+                        <span className='bt-draft__bar bt-draft__bar--left' aria-hidden='true'>
+                            <span style={{ width: `${Math.min(100, (timeLeft / TURN_MS) * 100)}%` }} />
+                        </span>
                         <span className='bt-draft__seconds'>{seconds}</span>
                         <span className='bt-draft__bar' aria-hidden='true'>
                             <span style={{ width: `${Math.min(100, (timeLeft / TURN_MS) * 100)}%` }} />
@@ -108,61 +144,127 @@ export function DraftBoard({ draft, deadline, characters, isChoosing, onChoose }
                         );
                     })}
                 </ol>
-            </section>
+            </header>
 
-            <div className='bt-draft__teams'>
-                <TeamColumn draft={draft} team={draft.you} title={t('ranked.draft.yourTeam')} nameOf={nameOf} mine />
-                <TeamColumn draft={draft} team={enemy} title={t('ranked.draft.theirTeam', { name: opponent })} nameOf={nameOf} />
-            </div>
+            <TeamColumn draft={draft} team={draft.you} title={t('ranked.draft.yourTeam')} nameOf={nameOf} mine />
 
-            <div className='bt-draft__pick'>
-                <ul className='bt-draft__roster' aria-label={t('ranked.draft.rosterLabel')}>
-                    {characters.map((character) => {
-                        const banned = draft.banned.includes(character.id);
-                        const mine = draft.teams[draft.you].includes(character.id);
-                        const theirs = draft.teams[enemy].includes(character.id);
-                        const valid = draft.choices.includes(character.id);
+            <main className='bt-draft__center'>
+                <div className='bt-draft__tools'>
+                    <div className='bt-draft__filters' role='group' aria-label={t('ranked.draft.filterLabel')}>
+                        <button type='button' className={`bt-draft__filter ${role === null ? 'bt-draft__filter--on' : ''}`} aria-pressed={role === null} onClick={() => setRole(null)}>
+                            {t('ranked.draft.allRoles')}
+                        </button>
+                        {roles.map((item) => (
+                            <button
+                                key={item}
+                                type='button'
+                                className={`bt-draft__filter ${role === item ? 'bt-draft__filter--on' : ''}`}
+                                aria-pressed={role === item}
+                                onClick={() => setRole(role === item ? null : item)}
+                            >
+                                {t(`play.roles.${item}`)}
+                            </button>
+                        ))}
+                    </div>
 
-                        return (
-                            <li key={character.id}>
-                                <button
-                                    type='button'
-                                    className={[
-                                        'bt-draft__tile',
-                                        banned && 'bt-draft__tile--banned',
-                                        mine && 'bt-draft__tile--mine',
-                                        selected === character.id && 'bt-draft__tile--selected',
-                                        isMyTurn && valid && 'bt-draft__tile--valid',
-                                    ]
-                                        .filter(Boolean)
-                                        .join(' ')}
-                                    // Fora da sua vez dá para destacar e ler a carta; banido e repetido no seu time, não.
-                                    disabled={banned || mine}
-                                    aria-pressed={selected === character.id}
-                                    onClick={() => setSelected(character.id)}
-                                >
-                                    <span className='bt-draft__face'>
-                                        <CharacterArt characterId={character.id} kind='face' className='bt-queue__sprite' />
-                                    </span>
-                                    <span className='bt-draft__tile-name'>{character.name}</span>
-                                    <span className='bt-draft__tile-tag'>
-                                        {banned
-                                            ? t('ranked.draft.bannedTag')
-                                            : mine
-                                              ? t('ranked.draft.inYourTeam')
-                                              : theirs
-                                                ? t('ranked.draft.inTheirTeam')
-                                                : t(`play.roles.${character.role}`)}
-                                    </span>
-                                </button>
-                            </li>
-                        );
-                    })}
-                </ul>
+                    <label className='bt-draft__search'>
+                        <svg viewBox='0 0 16 16' aria-hidden='true'>
+                            <circle cx='7' cy='7' r='4.6' fill='none' strokeWidth='1.8' />
+                            <path d='M10.4 10.4 14 14' strokeWidth='1.8' strokeLinecap='round' />
+                        </svg>
+                        <span className='bt-visually-hidden'>{t('ranked.draft.searchLabel')}</span>
+                        <input type='search' value={query} placeholder={t('ranked.draft.searchPlaceholder')} onChange={(event) => setQuery(event.target.value)} />
+                    </label>
+                </div>
 
-                <aside className='bt-draft__detail'>
+                <div className='bt-draft__scroll'>
+                    {visible.length === 0 ? (
+                        <p className='bt-draft__none'>{t('ranked.draft.noneFound')}</p>
+                    ) : (
+                        <ul className='bt-draft__roster' aria-label={t('ranked.draft.rosterLabel')}>
+                            {visible.map((character) => {
+                                const banned = draft.banned.includes(character.id);
+                                const mine = draft.teams[draft.you].includes(character.id);
+                                const theirs = draft.teams[enemy].includes(character.id);
+                                const valid = draft.choices.includes(character.id);
+
+                                return (
+                                    <li key={character.id}>
+                                        <button
+                                            type='button'
+                                            className={[
+                                                'bt-draft__tile',
+                                                banned && 'bt-draft__tile--banned',
+                                                mine && 'bt-draft__tile--mine',
+                                                theirs && 'bt-draft__tile--theirs',
+                                                selected === character.id && 'bt-draft__tile--selected',
+                                                isMyTurn && valid && 'bt-draft__tile--valid',
+                                            ]
+                                                .filter(Boolean)
+                                                .join(' ')}
+                                            // Fora da sua vez dá para destacar e ler a ficha; banido e repetido no seu time, não.
+                                            disabled={banned || mine}
+                                            aria-pressed={selected === character.id}
+                                            title={banned ? t('ranked.draft.bannedTag') : mine ? t('ranked.draft.inYourTeam') : theirs ? t('ranked.draft.inTheirTeam') : undefined}
+                                            onClick={() => setSelected(character.id)}
+                                            onDoubleClick={() => isMyTurn && valid && !isChoosing && onChoose(character.id)}
+                                        >
+                                            <span className='bt-draft__portrait'>
+                                                <CharacterArt characterId={character.id} kind='face' className='bt-queue__sprite' />
+                                                {(banned || mine || theirs) && (
+                                                    <span className='bt-draft__mark'>
+                                                        {banned ? t('ranked.draft.bannedTag') : mine ? t('ranked.draft.youShort') : t('ranked.draft.themShort')}
+                                                    </span>
+                                                )}
+                                            </span>
+                                            <span className='bt-draft__tile-name'>{character.name}</span>
+                                        </button>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    )}
+                </div>
+
+                <section className='bt-draft__detail' aria-live='polite'>
                     {selectedCharacter ? (
-                        <CharacterCard character={selectedCharacter} position={-1} isLocked={false} isReadOnly onToggle={() => undefined} />
+                        <>
+                            <span className='bt-draft__detail-face'>
+                                <CharacterArt characterId={selectedCharacter.id} kind='face' className='bt-queue__sprite' />
+                            </span>
+                            <div className='bt-draft__detail-main'>
+                                <p className='bt-draft__detail-name'>
+                                    {selectedCharacter.name}
+                                    <span className='bt-draft__detail-role'>{t(`play.roles.${selectedCharacter.role}`)}</span>
+                                </p>
+                                <dl className='bt-draft__stats'>
+                                    {(['maxHp', 'atk', 'def', 'speed'] as const).map((stat) => (
+                                        <div key={stat}>
+                                            <dt>{t(`play.stats.${stat === 'maxHp' ? 'hp' : stat}`)}</dt>
+                                            <dd>{selectedCharacter.stats[stat]}</dd>
+                                        </div>
+                                    ))}
+                                </dl>
+                            </div>
+                            <ul className='bt-draft__skills'>
+                                {selectedCharacter.skills.map((skill) => (
+                                    <li key={skill.id}>
+                                        <b>{skill.name}</b>
+                                        <span className='bt-draft__skill-cost'>
+                                            {skill.energyCost === 0 ? t('ranked.draft.free') : t('ranked.draft.cost', { count: skill.energyCost })}
+                                        </span>
+                                        <span className='bt-draft__skill-text'>{skill.description}</span>
+                                    </li>
+                                ))}
+                                {selectedCharacter.passives.map((passive) => (
+                                    <li key={passive.id}>
+                                        <b>{passive.name}</b>
+                                        <span className='bt-draft__skill-cost'>{t('ranked.draft.passive')}</span>
+                                        <span className='bt-draft__skill-text'>{passive.description}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </>
                     ) : (
                         <p className='bt-draft__hint'>{t(isMyTurn ? 'ranked.draft.pickHint' : 'ranked.draft.waitHint')}</p>
                     )}
@@ -174,14 +276,17 @@ export function DraftBoard({ draft, deadline, characters, isChoosing, onChoose }
                             disabled={!selected || !draft.choices.includes(selected) || isChoosing}
                             onClick={() => selected && onChoose(selected)}
                         >
-                            {selected
+                            {selected && draft.choices.includes(selected)
                                 ? t(current.kind === 'ban' ? 'ranked.draft.confirmBan' : 'ranked.draft.confirmPick', { name: nameOf(selected) })
                                 : t(current.kind === 'ban' ? 'ranked.draft.chooseBan' : 'ranked.draft.choosePick')}
                         </button>
                     )}
-                </aside>
-            </div>
-        </div>
+                </section>
+            </main>
+
+            <TeamColumn draft={draft} team={enemy} title={t('ranked.draft.theirTeam', { name: opponent })} nameOf={nameOf} />
+        </div>,
+        document.body,
     );
 }
 
@@ -195,41 +300,44 @@ function TeamColumn({ draft, team, title, nameOf, mine = false }: { draft: Draft
     const filling = current && current.team === team ? (current.kind === 'ban' ? 'ban' : picks.length) : null;
 
     return (
-        <section className={`bt-panel bt-draft__team ${mine ? 'bt-draft__team--mine' : 'bt-draft__team--theirs'}`} aria-label={title}>
-            <h4 className='bt-draft__team-title'>{title}</h4>
-
-            <div className={`bt-draft__ban ${filling === 'ban' ? 'bt-draft__slot--filling' : ''}`}>
-                <span className='bt-draft__ban-label'>{t('ranked.draft.banLabel')}</span>
-                {ban ? <SlotFace action={ban} nameOf={nameOf} /> : <span className='bt-draft__empty'>{t('ranked.draft.emptySlot')}</span>}
-            </div>
+        <aside className={`bt-draft__team ${mine ? 'bt-draft__team--mine' : 'bt-draft__team--theirs'}`} aria-label={title}>
+            <h2 className='bt-draft__team-title'>{title}</h2>
 
             <ol className='bt-draft__slots'>
                 {Array.from({ length: 5 }, (_, index) => {
                     const pick = picks[index];
+                    const isFilling = filling === index;
 
                     return (
-                        <li key={index} className={`bt-draft__slot ${filling === index ? 'bt-draft__slot--filling' : ''}`}>
-                            {pick ? <SlotFace action={pick} nameOf={nameOf} /> : <span className='bt-draft__empty'>{t('ranked.draft.pickSlot', { n: index + 1 })}</span>}
+                        <li key={index} className={`bt-draft__slot ${isFilling ? 'bt-draft__slot--filling' : ''} ${pick ? 'bt-draft__slot--done' : ''}`}>
+                            <span className='bt-draft__slot-face'>{pick && <CharacterArt characterId={pick.characterId} kind='face' className='bt-queue__sprite' />}</span>
+                            <span className='bt-draft__slot-text'>
+                                <span className='bt-draft__slot-label'>{isFilling ? t('ranked.draft.picking') : t('ranked.draft.pickSlot', { n: index + 1 })}</span>
+                                {pick && <PickName action={pick} nameOf={nameOf} />}
+                            </span>
                         </li>
                     );
                 })}
             </ol>
-        </section>
+
+            <div className={`bt-draft__ban ${filling === 'ban' ? 'bt-draft__slot--filling' : ''}`}>
+                <span className='bt-draft__ban-face'>{ban && <CharacterArt characterId={ban.characterId} kind='face' className='bt-queue__sprite' />}</span>
+                <span className='bt-draft__slot-text'>
+                    <span className='bt-draft__slot-label'>{filling === 'ban' ? t('ranked.draft.banning') : t('ranked.draft.banLabel')}</span>
+                    {ban ? <PickName action={ban} nameOf={nameOf} /> : <span className='bt-draft__empty'>{t('ranked.draft.emptySlot')}</span>}
+                </span>
+            </div>
+        </aside>
     );
 }
 
-function SlotFace({ action, nameOf }: { action: DraftAction; nameOf: (id: string) => string }) {
+function PickName({ action, nameOf }: { action: DraftAction; nameOf: (id: string) => string }) {
     const { t } = useTranslation();
 
     return (
-        <span className={`bt-draft__chosen ${action.kind === 'ban' ? 'bt-draft__chosen--ban' : ''}`}>
-            <span className='bt-draft__face'>
-                <CharacterArt characterId={action.characterId} kind='face' className='bt-queue__sprite' />
-            </span>
-            <span className='bt-draft__chosen-name'>
-                {nameOf(action.characterId)}
-                {action.auto && <span className='bt-draft__auto'>{t('ranked.draft.auto')}</span>}
-            </span>
+        <span className={`bt-draft__slot-name ${action.kind === 'ban' ? 'bt-draft__slot-name--ban' : ''}`}>
+            {nameOf(action.characterId)}
+            {action.auto && <span className='bt-draft__auto'>{t('ranked.draft.auto')}</span>}
         </span>
     );
 }

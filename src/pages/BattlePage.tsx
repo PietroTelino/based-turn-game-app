@@ -22,7 +22,7 @@ function formatClock(seconds: number): string {
 }
 
 /** Abaixo disto o relógio da vez fica vermelho. */
-const URGENT_SECONDS = 15;
+const URGENT_SECONDS = 10;
 
 function BattleScreen({ battleId, opening, isReplay = false }: { battleId: string; opening?: BattleResponse; isReplay?: boolean }) {
     const { t } = useTranslation();

@@ -330,6 +330,8 @@ export type BattleEvent =
     /** `sourceId` trouxe de volta o aliado caído `unitId`, com `hp` de vida. */
     | { type: 'revived'; sourceId: string; unitId: string; hp: number }
     | { type: 'surrendered'; team: TeamId }
+    /** Entre jogadores: o prazo de quem estava na vez acabou, e a jogada que vem logo depois (de `unitId`) foi feita ao acaso. */
+    | { type: 'turn_timed_out'; unitId: string; team: TeamId }
     | { type: 'battle_ended'; winner: TeamId };
 
 /**
@@ -402,14 +404,15 @@ export interface BattleView {
     ranked: boolean;
     /** Partida ranqueada encerrada: os pontos que você ganhou (ou perdeu, negativo). */
     ratingChange: number | null;
-    /**
-     * Partida ranqueada em andamento: quanto tempo quem está na vez ainda tem
-     * para jogar, em ms, no instante da resposta. `null` quando não há prazo.
-     */
     /** Contra a IA: o nível dela (`null` entre jogadores, no treino e nas batalhas antigas). */
     difficulty: AiDifficulty | null;
     /** Batalha da campanha: a fase. */
     campaignStage: number | null;
+    /**
+     * Partida entre jogadores em andamento: quanto tempo quem está na vez ainda
+     * tem para jogar, em ms, no instante da resposta. Em zero, a jogada é feita
+     * ao acaso por ele. `null` quando não há prazo (contra a IA).
+     */
     turnTimeLeftMs: number | null;
     createdAt: string;
     updatedAt: string;

@@ -59,12 +59,6 @@ export async function surrenderBattle(id: string): Promise<BattleResponse> {
     return data;
 }
 
-/** Partida ranqueada: o adversário passou do prazo sem jogar, e quem espera pede a vitória. */
-export async function claimBattleTimeout(id: string): Promise<BattleResponse> {
-    const { data } = await api.post<BattleResponse>(`/battles/${id}/timeout`);
-    return data;
-}
-
 /** Uma batalha encerrada, do começo ao fim, para assistir de novo. */
 export async function getBattleReplay(id: string): Promise<ReplayResponse> {
     const { data } = await api.get<ReplayResponse>(`/battles/${id}/replay`);
