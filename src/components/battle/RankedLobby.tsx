@@ -1,9 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { CharacterCard } from '@/components/battle/CharacterCard';
+import { DraftBoard } from '@/components/battle/DraftBoard';
 import { RankBadge } from '@/components/battle/RankBadge';
 import { RankProgress } from '@/components/battle/RankProgress';
-import { TEAM_SIZE } from '@/hooks/usePlay';
 import { useRanked } from '@/hooks/useRanked';
 import { RANK_IDS } from '@/types/ranked';
 
@@ -13,22 +12,24 @@ function formatClock(seconds: number): string {
 }
 
 /**
- * A aba ranqueada do multiplayer: o rank do jogador, a escolha do time e a
- * fila com pareamento automático.
+ * A aba ranqueada do multiplayer: o rank do jogador, a fila com pareamento
+ * automático e, depois dele, a seleção de personagens contra o adversário.
  */
 export function RankedLobby() {
     const { t } = useTranslation();
-    const { profile, characters, phase, queue, team, waited, isSending, isSearching, canChoose, toggle, search, cancel } = useRanked();
+    const { profile, characters, phase, queue, waited, isSending, isSearching, isDrafting, canSearch, search, cancel, draft, deadline, isChoosing, choose } = useRanked();
 
     return (
         <>
-            <p className='bt-lead'>{t('ranked.subtitle')}</p>
+            {!isDrafting && <p className='bt-lead'>{t('ranked.subtitle')}</p>}
 
             {phase === 'loading' && <p className='bt-message'>{t('ranked.loading')}</p>}
             {phase === 'error' && <p className='bt-message bt-message--error'>{t('ranked.loadError')}</p>}
 
             {phase === 'ready' && profile && queue && (
                 <>
+                    {/* Na seleção de personagens, a tela é toda dela. */}
+                    {!isDrafting && (
                     <section className='bt-panel bt-ranked__profile' aria-label={t('ranked.yourRank')}>
                         <RankProgress profile={profile} />
 
@@ -42,6 +43,7 @@ export function RankedLobby() {
                             ))}
                         </ol>
                     </section>
+                    )}
 
                     {queue.status === 'matched' && queue.battleId ? (
                         <section className='bt-panel' aria-live='polite'>
@@ -51,41 +53,23 @@ export function RankedLobby() {
                                 {t('ranked.backToBattle')}
                             </Link>
                         </section>
+                    ) : isDrafting ? (
+                        draft ? (
+                            <DraftBoard draft={draft} deadline={deadline} characters={characters} isChoosing={isChoosing} onChoose={choose} />
+                        ) : (
+                            <p className='bt-message'>{t('ranked.draft.loading')}</p>
+                        )
                     ) : (
                         <>
-                            <div>
-                                <h3 className='bt-subtitle'>{t('ranked.teamTitle')}</h3>
-                                <p className='bt-lead'>{t('ranked.teamText', { size: TEAM_SIZE })}</p>
-                            </div>
-
-                            <div className='bt-roster'>
-                                {characters.map((character) => {
-                                    const position = team.indexOf(character.id);
-
-                                    return (
-                                        <CharacterCard
-                                            key={character.id}
-                                            character={character}
-                                            position={position}
-                                            isLocked={position === -1 && (team.length >= TEAM_SIZE || isSearching)}
-                                            isReadOnly={!canChoose}
-                                            onToggle={toggle}
-                                        />
-                                    );
-                                })}
-                            </div>
-
-                            <section className='bt-panel bt-room__bar' aria-label={t('ranked.queueLabel')}>
+                            <section className='bt-panel bt-room__bar bt-ranked__queue' aria-label={t('ranked.queueLabel')}>
                                 <p className='bt-room__note' aria-live='polite'>
                                     {isSearching ? (
                                         <>
                                             <span className='bt-ranked__pulse' aria-hidden='true' />
                                             {t('ranked.searching', { time: formatClock(waited) })}
                                         </>
-                                    ) : team.length === TEAM_SIZE ? (
-                                        t('ranked.teamReady')
                                     ) : (
-                                        t('play.selectedMissing', { count: team.length, max: TEAM_SIZE, missing: TEAM_SIZE - team.length })
+                                        t('ranked.readyToSearch')
                                     )}
                                 </p>
                                 <div className='bt-room__buttons'>
@@ -94,13 +78,14 @@ export function RankedLobby() {
                                             {t('ranked.cancel')}
                                         </button>
                                     ) : (
-                                        <button type='button' className='bt-btn bt-btn--big' disabled={!canChoose || team.length !== TEAM_SIZE} onClick={search}>
+                                        <button type='button' className='bt-btn bt-btn--big' disabled={!canSearch} onClick={search}>
                                             {t('ranked.search')}
                                         </button>
                                     )}
                                 </div>
                             </section>
 
+                            <p className='bt-callout'>{t('ranked.draft.howItWorks')}</p>
                             <p className='bt-callout'>{t('ranked.rules')}</p>
                         </>
                     )}

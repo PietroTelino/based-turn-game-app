@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { QueueView, RankedProfile } from '@/types/ranked';
+import type { DraftView, QueueView, RankedProfile } from '@/types/ranked';
 
 /** Os pontos, o rank e a situação na fila de quem está logado. */
 export async function getRankedProfile(): Promise<RankedProfile> {
@@ -7,9 +7,9 @@ export async function getRankedProfile(): Promise<RankedProfile> {
     return data;
 }
 
-/** Entra na fila com o time escolhido. Se já houver alguém esperando, a resposta já traz a partida. */
-export async function enterRankedQueue(team: string[]): Promise<QueueView> {
-    const { data } = await api.post<QueueView>('/ranked/queue', { team });
+/** Entra na fila. O time é montado depois, na seleção de personagens, à vista do adversário. */
+export async function enterRankedQueue(): Promise<QueueView> {
+    const { data } = await api.post<QueueView>('/ranked/queue');
     return data;
 }
 
@@ -21,5 +21,17 @@ export async function getRankedQueue(): Promise<QueueView> {
 
 export async function leaveRankedQueue(): Promise<QueueView> {
     const { data } = await api.delete<QueueView>('/ranked/queue');
+    return data;
+}
+
+/** A seleção de personagens em que você está. É a consulta que a tela repete durante a seleção. */
+export async function getRankedDraft(): Promise<DraftView> {
+    const { data } = await api.get<DraftView>('/ranked/draft');
+    return data;
+}
+
+/** Bane ou escolhe um personagem no passo da vez (que precisa ser seu). */
+export async function sendDraftChoice(characterId: string): Promise<DraftView> {
+    const { data } = await api.post<DraftView>('/ranked/draft', { characterId });
     return data;
 }

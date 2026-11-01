@@ -11,14 +11,57 @@ export type RankId = (typeof RANK_IDS)[number];
 
 /** Como o jogador está na fila agora. */
 export interface QueueView {
-    /** idle: fora da fila | searching: procurando adversário | matched: tem uma partida ranqueada em andamento */
-    status: 'idle' | 'searching' | 'matched';
+    /**
+     * idle: fora da fila | searching: procurando adversário | drafting: pareado,
+     * escolhendo os personagens | matched: tem uma partida ranqueada em andamento
+     */
+    status: 'idle' | 'searching' | 'drafting' | 'matched';
+    /** A seleção de personagens, enquanto ela acontece. */
+    draftId: string | null;
     /** A partida, quando há uma em andamento. */
     battleId: string | null;
     /** Há quanto tempo está procurando, em segundos. */
     waitedSeconds: number;
-    /** O time com que entrou na fila, enquanto procura. */
-    team: string[] | null;
+}
+
+export type DraftTeam = 'A' | 'B';
+export type DraftKind = 'ban' | 'pick';
+
+/** Um passo da seleção: de quem é a vez e o que ele faz. */
+export interface DraftStep {
+    team: DraftTeam;
+    kind: DraftKind;
+}
+
+/** O que foi feito num passo. `auto`: o tempo acabou e o jogo escolheu pelo jogador. */
+export interface DraftAction extends DraftStep {
+    characterId: string;
+    auto: boolean;
+}
+
+/**
+ * A seleção de personagens da ranqueada, como você a vê: cada um bane um
+ * personagem e depois os dois escolhem alternando, à vista um do outro.
+ */
+export interface DraftView {
+    id: string;
+    /** drafting: escolhendo | starting: criando a partida | done: a partida existe */
+    status: 'drafting' | 'starting' | 'done';
+    /** O seu time. */
+    you: DraftTeam;
+    /** O nome de quem está em cada time. */
+    players: Record<DraftTeam, string>;
+    /** A ordem completa dos passos. */
+    order: DraftStep[];
+    actions: DraftAction[];
+    /** O passo da vez e quanto tempo resta nele. `null` quando a seleção acabou. */
+    current: { index: number; team: DraftTeam; kind: DraftKind; timeLeftMs: number } | null;
+    banned: string[];
+    teams: Record<DraftTeam, string[]>;
+    /** Na sua vez: os personagens que valem agora. Vazio na vez do outro. */
+    choices: string[];
+    /** A partida, quando a seleção acaba. */
+    battleId: string | null;
 }
 
 /** A ranqueada como o jogador logado a enxerga: os pontos, o rank e a fila. */
