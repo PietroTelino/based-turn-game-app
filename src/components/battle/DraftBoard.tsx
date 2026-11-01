@@ -12,6 +12,14 @@ interface DraftBoardProps {
     characters: Character[];
     isChoosing: boolean;
     onChoose: (characterId: string) => void;
+    /** O título no alto. Sem ele, o da ranqueada. */
+    title?: string;
+    /** O título da coluna do adversário. Sem ele, "Time de <nome>". */
+    opponentTitle?: string;
+    /** Botão de sair da seleção (contra a IA). A ranqueada não tem: lá a seleção só acaba na partida. */
+    onLeave?: () => void;
+    /** O cenário de fundo (o da fase, na campanha). Sem ele, a muralha. */
+    arena?: string;
 }
 
 /** Abaixo disto o relógio fica vermelho. */
@@ -42,8 +50,10 @@ function normalize(text: string): string {
 }
 
 /**
- * A seleção de personagens da ranqueada, numa tela só (como a de um jogo de
- * arena): o seu time à esquerda, o do adversário à direita e, no centro, o
+ * A seleção de personagens, numa tela só (como a de um jogo de arena): na
+ * ranqueada, contra outro jogador (com banimento); na partida rápida e na
+ * campanha, contra a IA (useAiDraft). O seu time à esquerda, o do adversário
+ * à direita e, no centro, o
  * relógio, a ordem dos passos e os personagens, com busca e filtro por
  * categoria. Só a lista do centro rola. Clicar num personagem o destaca e
  * mostra a ficha dele embaixo; a escolha vale no botão de confirmar.
@@ -52,7 +62,7 @@ function normalize(text: string): string {
  * dura: nada fica escondido embaixo da dobra. Vai direto no <body> (portal),
  * para nenhum contêiner da página limitar o tamanho dela.
  */
-export function DraftBoard({ draft, deadline, characters, isChoosing, onChoose }: DraftBoardProps) {
+export function DraftBoard({ draft, deadline, characters, isChoosing, onChoose, title, opponentTitle, onLeave, arena }: DraftBoardProps) {
     const { t } = useTranslation();
     const [selected, setSelected] = useState<string | null>(null);
     const [query, setQuery] = useState('');
@@ -96,16 +106,22 @@ export function DraftBoard({ draft, deadline, characters, isChoosing, onChoose }
     }
 
     return createPortal(
-        <div className='bt bt-draft' role='dialog' aria-modal='true' aria-labelledby='bt-draft-title'>
+        <div className='bt bt-draft' role='dialog' aria-modal='true' aria-labelledby='bt-draft-title' {...(arena && { 'data-arena': arena })}>
             <header className='bt-draft__head'>
+                {onLeave && (
+                    <button type='button' className='bt-draft__leave' disabled={draft.status !== 'drafting'} onClick={onLeave}>
+                        {t('ranked.draft.leave')}
+                    </button>
+                )}
                 <p id='bt-draft-title' className='bt-draft__title'>
-                    {t('ranked.draft.title')}
+                    {title ?? t('ranked.draft.title')}
                 </p>
                 <p className={`bt-draft__turn ${isMyTurn ? 'bt-draft__turn--mine' : ''}`} aria-live='polite'>
                     {status}
                 </p>
 
-                {current && draft.status === 'drafting' && (
+                {/* Contra a IA não há prazo (deadline null): sem relógio. */}
+                {current && draft.status === 'drafting' && deadline !== null && (
                     <div className={`bt-draft__clock ${timeLeft <= HURRY_MS ? 'bt-draft__clock--hurry' : ''}`} role='timer' aria-label={t('ranked.draft.timeLeft', { seconds })}>
                         <span className='bt-draft__bar bt-draft__bar--left' aria-hidden='true'>
                             <span style={{ width: `${Math.min(100, (timeLeft / TURN_MS) * 100)}%` }} />
@@ -284,7 +300,7 @@ export function DraftBoard({ draft, deadline, characters, isChoosing, onChoose }
                 </section>
             </main>
 
-            <TeamColumn draft={draft} team={enemy} title={t('ranked.draft.theirTeam', { name: opponent })} nameOf={nameOf} />
+            <TeamColumn draft={draft} team={enemy} title={opponentTitle ?? t('ranked.draft.theirTeam', { name: opponent })} nameOf={nameOf} />
         </div>,
         document.body,
     );
@@ -296,6 +312,8 @@ function TeamColumn({ draft, team, title, nameOf, mine = false }: { draft: Draft
     const ban = draft.actions.find((action) => action.team === team && action.kind === 'ban');
     const picks = draft.actions.filter((action) => action.team === team && action.kind === 'pick');
     const current = draft.current;
+    /** Há banimento nesta seleção (a ranqueada tem; contra a IA, não). */
+    const hasBan = draft.order.some((step) => step.team === team && step.kind === 'ban');
     /** A vaga que está sendo preenchida agora (para destacar). */
     const filling = current && current.team === team ? (current.kind === 'ban' ? 'ban' : picks.length) : null;
 
@@ -320,13 +338,15 @@ function TeamColumn({ draft, team, title, nameOf, mine = false }: { draft: Draft
                 })}
             </ol>
 
-            <div className={`bt-draft__ban ${filling === 'ban' ? 'bt-draft__slot--filling' : ''}`}>
-                <span className='bt-draft__ban-face'>{ban && <CharacterArt characterId={ban.characterId} kind='face' className='bt-queue__sprite' />}</span>
-                <span className='bt-draft__slot-text'>
-                    <span className='bt-draft__slot-label'>{filling === 'ban' ? t('ranked.draft.banning') : t('ranked.draft.banLabel')}</span>
-                    {ban ? <PickName action={ban} nameOf={nameOf} /> : <span className='bt-draft__empty'>{t('ranked.draft.emptySlot')}</span>}
-                </span>
-            </div>
+            {hasBan && (
+                <div className={`bt-draft__ban ${filling === 'ban' ? 'bt-draft__slot--filling' : ''}`}>
+                    <span className='bt-draft__ban-face'>{ban && <CharacterArt characterId={ban.characterId} kind='face' className='bt-queue__sprite' />}</span>
+                    <span className='bt-draft__slot-text'>
+                        <span className='bt-draft__slot-label'>{filling === 'ban' ? t('ranked.draft.banning') : t('ranked.draft.banLabel')}</span>
+                        {ban ? <PickName action={ban} nameOf={nameOf} /> : <span className='bt-draft__empty'>{t('ranked.draft.emptySlot')}</span>}
+                    </span>
+                </div>
+            )}
         </aside>
     );
 }

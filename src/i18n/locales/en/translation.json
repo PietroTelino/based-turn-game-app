@@ -297,9 +297,7 @@
         "subtitle": "Pick {{size}} characters: every battle is {{size}} versus {{size}}. The order you pick them is the order they take the field.",
         "loading": "Loading characters...",
         "loadError": "Could not load the characters. Check that the API is running and reload the page.",
-        "selected": "{{count}} of {{max}} picked",
         "selectedMissing": "{{count}} of {{max}} picked. Pick {{missing}} more to start.",
-        "start": "Start battle",
         "starting": "Creating battle...",
         "startError": "Could not create the battle. Try again.",
         "skills": "Skills",
@@ -665,7 +663,8 @@
             "free": "no cost",
             "cost_one": "{{count}} energy",
             "cost_other": "{{count}} energy",
-            "passive": "passive"
+            "passive": "passive",
+            "leave": "Back"
         }
     },
     "replay": {
@@ -858,14 +857,21 @@
     },
     "singlePlayer": {
         "title": "Single Player",
-        "subtitle": "Play against the AI: start with the tutorial, play a quick match with any team you like or move through the campaign, stage by stage.",
+        "subtitle": "Play against the AI: start with the tutorial, play a quick match or push through the campaign, stage by stage. The collection has every character.",
         "modes": "Single player modes",
         "tabs": {
             "tutorial": "Tutorial",
             "quick": "Quick match",
-            "campaign": "Campaign"
+            "campaign": "Campaign",
+            "collection": "Collection"
         },
-        "quickLead": "Build your team and face a team picked at random by the AI, on a random battlefield."
+        "quickLead": "Pick the AI level and build your team in a draft against it: you take turns, one character at a time. The arena is random.",
+        "quickTitle": "New quick match",
+        "openDraft": "Pick characters",
+        "draftTitle": "Quick match · {{level}} AI",
+        "ai": "The AI",
+        "aiTeam": "AI's team",
+        "collectionLead": "All {{count}} characters in the game. Hover over a card (or tap the corner button) to see its skills."
     },
     "difficulty": {
         "label": "AI difficulty",
@@ -879,7 +885,6 @@
         }
     },
     "campaign": {
-        "lead": "Each stage has its own enemy team and battlefield. Beating a stage, on any difficulty, unlocks the next one.",
         "loading": "Loading the campaign...",
         "loadError": "Could not load the campaign. Check that the API is running and reload the page.",
         "stageLabel": "Stage {{stage}}",
@@ -899,10 +904,9 @@
         "clearedOn": "Beaten on:",
         "choose": "Play this stage",
         "chosen": "Chosen stage",
-        "teamTitle": "Your team",
-        "teamText": "Pick {{size}} characters to face stage {{stage}}.",
         "pickStage": "Choose an unlocked stage above to build your team.",
-        "start": "Start stage {{stage}}"
+        "draftText": "Stage {{stage}}: you take turns picking, with no bans, and the AI takes the stage team. Winning on any level opens the next stage.",
+        "draftTitle": "Stage {{stage}}: {{name}}"
     },
     "tutorialGate": {
         "welcomeTitle": "Start here: the tutorial is required",

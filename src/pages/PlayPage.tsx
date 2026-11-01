@@ -1,22 +1,25 @@
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/Layout';
 import { CharacterArt } from '@/components/battle/CharacterArt';
 import { CharacterCard } from '@/components/battle/CharacterCard';
 import { DifficultyMark, DifficultyPicker } from '@/components/battle/DifficultyPicker';
+import { DraftBoard } from '@/components/battle/DraftBoard';
 import { ModeTabs } from '@/components/battle/ModeTabs';
 import { TutorialLobby } from '@/components/battle/TutorialLobby';
 import { TutorialLock } from '@/components/battle/TutorialLock';
+import { useAiDraft } from '@/hooks/useAiDraft';
 import { useCampaign } from '@/hooks/useCampaign';
 import { useDifficulty } from '@/hooks/useDifficulty';
 import { useTutorialStatus } from '@/hooks/useTutorialStatus';
-import { TEAM_SIZE, usePlay } from '@/hooks/usePlay';
+import { usePlay } from '@/hooks/usePlay';
 import { ratingKey } from '@/battle/rating';
-import type { AiDifficulty, BattleSummary, CampaignStage, Character } from '@/types/battle';
+import type { AiDifficulty, BattleSummary, CampaignStage, Character, CharacterRole } from '@/types/battle';
 import '@/styles/battle.css';
 
 /** As abas do single player: cada uma é uma rota. */
-export type SinglePlayerMode = 'tutorial' | 'quick' | 'campaign';
+export type SinglePlayerMode = 'tutorial' | 'quick' | 'campaign' | 'collection';
 
 function battleLabelKey(battle: BattleSummary): string {
     if (battle.status === 'in_progress') return 'play.inProgress';
@@ -27,20 +30,27 @@ function battleLabelKey(battle: BattleSummary): string {
 
 /**
  * Single player: jogar contra a IA. O tutorial é a batalha de treino, com o
- * guia, e é obrigatório: enquanto o jogador não o termina, as outras abas
- * mostram a trava. Na partida rápida o time inimigo é sorteado; na campanha,
- * cada fase tem o seu. Nas duas o jogador escolhe o nível da IA e monta o time.
+ * guia, e é obrigatório: enquanto o jogador não o termina, as abas de partida
+ * mostram a trava. Na partida rápida e na campanha o jogador escolhe o nível
+ * da IA e monta o time numa seleção de personagens contra ela (DraftBoard, sem
+ * banimento); na campanha a IA escolhe o time da fase. A coleção mostra as
+ * cartas de todos os personagens, para ler com calma. Cada aba cabe na tela
+ * sem rolar a página; só listas longas rolam por dentro.
  */
 export function PlayPage({ mode = 'quick' }: { mode?: SinglePlayerMode }) {
     const { t } = useTranslation();
     const play = usePlay();
     const [difficulty, setDifficulty] = useDifficulty();
-    const { battles, isLoading, hasError } = play;
+    const { isLoading, hasError } = play;
     const tutorialDone = useTutorialStatus();
     /** Falta o tutorial: as abas de partida mostram a trava no lugar do conteúdo. */
     const locked = tutorialDone === false;
+    /** A aba é de partida (a coleção e o tutorial não são). */
+    const isMatch = mode === 'quick' || mode === 'campaign';
     /** O conteúdo de uma aba de partida (enquanto não se sabe do tutorial, nada aparece). */
-    const showGame = mode !== 'tutorial' && tutorialDone === true;
+    const showGame = isMatch && tutorialDone === true;
+    /** A aba usa o catálogo carregado (as de partida e a coleção). */
+    const needsCatalog = showGame || mode === 'collection';
 
     return (
         <Layout title={t('nav.play')}>
@@ -56,28 +66,23 @@ export function PlayPage({ mode = 'quick' }: { mode?: SinglePlayerMode }) {
                         { to: '/play/tutorial', label: t('singlePlayer.tabs.tutorial') },
                         { to: '/play', label: t('singlePlayer.tabs.quick'), locked },
                         { to: '/play/campaign', label: t('singlePlayer.tabs.campaign'), locked },
+                        { to: '/play/collection', label: t('singlePlayer.tabs.collection') },
                     ]}
                 />
 
                 {/* O tutorial carrega o próprio time; as outras abas, o catálogo e o histórico. */}
                 {mode === 'tutorial' && <TutorialLobby required={locked} />}
 
-                {mode !== 'tutorial' && locked && <TutorialLock />}
+                {isMatch && locked && <TutorialLock />}
 
-                {showGame && isLoading && <p className='bt-message'>{t('play.loading')}</p>}
-                {showGame && hasError && <p className='bt-message bt-message--error'>{t('play.loadError')}</p>}
+                {needsCatalog && isLoading && <p className='bt-message'>{t('play.loading')}</p>}
+                {needsCatalog && hasError && <p className='bt-message bt-message--error'>{t('play.loadError')}</p>}
 
-                {showGame && !isLoading && !hasError && mode === 'quick' && (
-                    <>
-                        <p className='bt-lead'>{t('singlePlayer.quickLead')}</p>
-                        <DifficultyPicker value={difficulty} onChange={setDifficulty} disabled={play.isStarting} />
-                        <TeamPicker play={play} />
-                        <StartBar play={play} label={t('play.start')} onStart={() => play.start({ difficulty })} />
-                        <History battles={battles} />
-                    </>
-                )}
+                {showGame && !isLoading && !hasError && mode === 'quick' && <QuickMatch play={play} difficulty={difficulty} onDifficulty={setDifficulty} />}
 
                 {showGame && !isLoading && !hasError && mode === 'campaign' && <Campaign play={play} difficulty={difficulty} onDifficulty={setDifficulty} />}
+
+                {mode === 'collection' && !isLoading && !hasError && <Collection characters={play.characters} />}
             </div>
         </Layout>
     );
@@ -85,18 +90,100 @@ export function PlayPage({ mode = 'quick' }: { mode?: SinglePlayerMode }) {
 
 type Play = ReturnType<typeof usePlay>;
 
-/** A aba da campanha: as fases, o nível e o time para a fase escolhida. */
-function Campaign({ play, difficulty, onDifficulty }: { play: Play; difficulty: AiDifficulty; onDifficulty: (difficulty: AiDifficulty) => void }) {
+/** O que a aba de partida recebe da página. */
+interface MatchTabProps {
+    play: Play;
+    difficulty: AiDifficulty;
+    onDifficulty: (difficulty: AiDifficulty) => void;
+}
+
+/**
+ * A partida rápida: o nível da IA e o botão que abre a seleção de
+ * personagens; ao lado, as últimas batalhas. O time da IA sai da seleção, e
+ * o cenário é sorteado pela API.
+ */
+function QuickMatch({ play, difficulty, onDifficulty }: MatchTabProps) {
+    const { t } = useTranslation();
+    const [isDrafting, setIsDrafting] = useState(false);
+
+    return (
+        <div className='bt-mode bt-mode--fill'>
+            <section className='bt-launch' aria-label={t('singlePlayer.quickTitle')}>
+                <div className='bt-launch__intro'>
+                    <h3 className='bt-subtitle'>{t('singlePlayer.quickTitle')}</h3>
+                    <p className='bt-launch__text'>{t('singlePlayer.quickLead')}</p>
+                </div>
+                <DifficultyPicker value={difficulty} onChange={onDifficulty} disabled={play.isStarting} />
+                <button type='button' className='bt-btn bt-btn--big bt-launch__go' disabled={play.isStarting} onClick={() => setIsDrafting(true)}>
+                    {t('singlePlayer.openDraft')}
+                </button>
+            </section>
+
+            <History battles={play.battles} />
+
+            {isDrafting && (
+                <AiDraft
+                    play={play}
+                    title={t('singlePlayer.draftTitle', { level: t(`difficulty.${difficulty}`) })}
+                    onLeave={() => setIsDrafting(false)}
+                    onComplete={async (team, enemyTeam) => {
+                        if (!(await play.start(team, { difficulty, enemyTeam }))) setIsDrafting(false);
+                    }}
+                />
+            )}
+        </div>
+    );
+}
+
+/**
+ * A seleção de personagens contra a IA, por cima da página (DraftBoard). Na
+ * campanha, `aiTeam` é o time da fase: a IA escolhe exatamente ele, na ordem.
+ */
+function AiDraft({
+    play,
+    title,
+    aiTeam,
+    arena,
+    onLeave,
+    onComplete,
+}: {
+    play: Play;
+    title: string;
+    aiTeam?: string[];
+    arena?: string;
+    onLeave: () => void;
+    onComplete: (team: string[], enemyTeam: string[]) => void;
+}) {
+    const { t } = useTranslation();
+    const names = useMemo(() => ({ A: t('ranked.draft.you'), B: t('singlePlayer.ai') }), [t]);
+    const { draft, choose } = useAiDraft({ characters: play.characters, names, onComplete, ...(aiTeam && { aiTeam }) });
+
+    return (
+        <DraftBoard
+            draft={draft}
+            deadline={null}
+            characters={play.characters}
+            isChoosing={play.isStarting}
+            onChoose={choose}
+            title={title}
+            opponentTitle={t('singlePlayer.aiTeam')}
+            onLeave={onLeave}
+            {...(arena && { arena })}
+        />
+    );
+}
+
+/** A aba da campanha: as fases e, embaixo, o nível e o botão que abre a seleção para a fase escolhida. */
+function Campaign({ play, difficulty, onDifficulty }: MatchTabProps) {
     const { t } = useTranslation();
     const { stages, selected, isLoading, hasError, select } = useCampaign();
+    const [isDrafting, setIsDrafting] = useState(false);
 
     if (isLoading) return <p className='bt-message'>{t('campaign.loading')}</p>;
     if (hasError) return <p className='bt-message bt-message--error'>{t('campaign.loadError')}</p>;
 
     return (
-        <>
-            <p className='bt-lead'>{t('campaign.lead')}</p>
-
+        <div className='bt-mode'>
             <ol className='bt-stages'>
                 {stages.map((stage) => (
                     <StageCard
@@ -110,23 +197,32 @@ function Campaign({ play, difficulty, onDifficulty }: { play: Play; difficulty: 
             </ol>
 
             {selected ? (
-                <>
+                <section className='bt-launch bt-launch--row' aria-label={t('campaign.stageLabel', { stage: selected.stage })}>
                     <DifficultyPicker value={difficulty} onChange={onDifficulty} disabled={play.isStarting} />
-                    <div>
-                        <h3 className='bt-subtitle'>{t('campaign.teamTitle')}</h3>
-                        <p className='bt-lead'>{t('campaign.teamText', { size: TEAM_SIZE, stage: selected.stage })}</p>
+                    <div className='bt-launch__side'>
+                        <p className='bt-launch__text'>{t('campaign.draftText', { stage: selected.stage })}</p>
+                        <button type='button' className='bt-btn bt-btn--big bt-launch__go' disabled={play.isStarting} onClick={() => setIsDrafting(true)}>
+                            {t('singlePlayer.openDraft')}
+                        </button>
                     </div>
-                    <TeamPicker play={play} />
-                    <StartBar
-                        play={play}
-                        label={t('campaign.start', { stage: selected.stage })}
-                        onStart={() => play.start({ difficulty, campaignStage: selected.stage })}
-                    />
-                </>
+                </section>
             ) : (
                 <p className='bt-lead'>{t('campaign.pickStage')}</p>
             )}
-        </>
+
+            {isDrafting && selected && (
+                <AiDraft
+                    play={play}
+                    title={t('campaign.draftTitle', { stage: selected.stage, name: t(`campaign.stages.${selected.key}.name`) })}
+                    aiTeam={selected.enemyTeam}
+                    arena={selected.arena}
+                    onLeave={() => setIsDrafting(false)}
+                    onComplete={async (team) => {
+                        if (!(await play.start(team, { difficulty, campaignStage: selected.stage }))) setIsDrafting(false);
+                    }}
+                />
+            )}
+        </div>
     );
 }
 
@@ -205,47 +301,64 @@ function LockIcon() {
     );
 }
 
-/** As cartas dos personagens para montar o time. */
-function TeamPicker({ play }: { play: Play }) {
-    const { characters, team, toggle } = play;
+/** A ordem dos filtros de categoria na coleção (só aparecem as que algum personagem tem). */
+const ROLE_ORDER: CharacterRole[] = ['tank', 'fighter', 'attacker', 'assassin', 'mage', 'support', 'shapeshifter'];
 
-    return (
-        <div className='bt-roster'>
-            {characters.map((character) => {
-                const position = team.indexOf(character.id);
-
-                return (
-                    <CharacterCard
-                        key={character.id}
-                        character={character}
-                        position={position}
-                        isLocked={position === -1 && team.length >= TEAM_SIZE}
-                        onToggle={toggle}
-                    />
-                );
-            })}
-        </div>
-    );
+/** "Súcubo" -> "sucubo": a busca ignora acento e maiúscula. */
+function normalize(text: string): string {
+    return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 }
 
-/** A barra presa ao pé da tela: quantos já foram escolhidos e o botão de começar. */
-function StartBar({ play, label, onStart }: { play: Play; label: string; onStart: () => void }) {
+/**
+ * A coleção: a carta de cada personagem do jogo, só para ler (a frente tem os
+ * atributos; o verso, as habilidades). Dá para filtrar por categoria e buscar
+ * pelo nome.
+ */
+function Collection({ characters }: { characters: Character[] }) {
     const { t } = useTranslation();
-    const { team, isStarting } = play;
+    const [query, setQuery] = useState('');
+    const [role, setRole] = useState<CharacterRole | null>(null);
+    const roles = useMemo(() => ROLE_ORDER.filter((item) => characters.some((character) => character.role === item)), [characters]);
+    const visible = useMemo(() => {
+        const search = normalize(query.trim());
+
+        return characters.filter((character) => (!role || character.role === role) && (!search || normalize(character.name).includes(search)));
+    }, [characters, query, role]);
 
     return (
-        <section className='bt-panel bt-room__bar'>
-            <p className='bt-room__note' aria-live='polite'>
-                {team.length === TEAM_SIZE
-                    ? t('play.selected', { count: team.length, max: TEAM_SIZE })
-                    : t('play.selectedMissing', { count: team.length, max: TEAM_SIZE, missing: TEAM_SIZE - team.length })}
-            </p>
-            <div className='bt-room__buttons'>
-                <button type='button' className='bt-btn bt-btn--big' disabled={team.length !== TEAM_SIZE || isStarting} onClick={onStart}>
-                    {isStarting ? t('play.starting') : label}
-                </button>
+        <div className='bt-collection'>
+            <div className='bt-collection__bar'>
+                <p className='bt-lead'>{t('singlePlayer.collectionLead', { count: characters.length })}</p>
+
+                <div className='bt-collection__tools'>
+                    <div className='bt-collection__filters' role='group' aria-label={t('ranked.draft.filterLabel')}>
+                        <button type='button' className='bt-collection__filter' aria-pressed={role === null} onClick={() => setRole(null)}>
+                            {t('ranked.draft.allRoles')}
+                        </button>
+                        {roles.map((item) => (
+                            <button key={item} type='button' className='bt-collection__filter' aria-pressed={role === item} onClick={() => setRole(role === item ? null : item)}>
+                                {t(`play.roles.${item}`)}
+                            </button>
+                        ))}
+                    </div>
+
+                    <label className='bt-collection__search'>
+                        <span className='bt-visually-hidden'>{t('ranked.draft.searchLabel')}</span>
+                        <input type='search' value={query} placeholder={t('ranked.draft.searchPlaceholder')} onChange={(event) => setQuery(event.target.value)} />
+                    </label>
+                </div>
             </div>
-        </section>
+
+            {visible.length === 0 ? (
+                <p className='bt-lead'>{t('ranked.draft.noneFound')}</p>
+            ) : (
+                <div className='bt-roster'>
+                    {visible.map((character) => (
+                        <CharacterCard key={character.id} character={character} position={-1} isLocked={false} isReadOnly onToggle={() => undefined} />
+                    ))}
+                </div>
+            )}
+        </div>
     );
 }
 
@@ -255,7 +368,7 @@ function History({ battles }: { battles: BattleSummary[] }) {
 
     return (
         <section className='bt-history'>
-            <h2 className='bt-subtitle'>{t('play.recent')}</h2>
+            <h3 className='bt-subtitle'>{t('play.recent')}</h3>
             {battles.length === 0 ? (
                 <p className='bt-lead'>{t('play.noBattles')}</p>
             ) : (

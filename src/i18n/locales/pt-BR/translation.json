@@ -297,9 +297,7 @@
         "subtitle": "Escolha {{size}} personagens: toda batalha é {{size}} contra {{size}}. A ordem da escolha é a ordem em que eles entram em campo.",
         "loading": "Carregando personagens...",
         "loadError": "Não foi possível carregar os personagens. Confira se a API está no ar e recarregue a página.",
-        "selected": "{{count}} de {{max}} escolhidos",
         "selectedMissing": "{{count}} de {{max}} escolhidos. Escolha mais {{missing}} para começar.",
-        "start": "Começar batalha",
         "starting": "Criando batalha...",
         "startError": "Não foi possível criar a batalha. Tente de novo.",
         "skills": "Habilidades",
@@ -665,7 +663,8 @@
             "free": "sem custo",
             "cost_one": "{{count}} de energia",
             "cost_other": "{{count}} de energia",
-            "passive": "passiva"
+            "passive": "passiva",
+            "leave": "Voltar"
         }
     },
     "replay": {
@@ -858,14 +857,21 @@
     },
     "singlePlayer": {
         "title": "Um Jogador",
-        "subtitle": "Jogue contra a IA: comece pelo tutorial, jogue uma partida rápida com o time que você quiser ou avance na campanha, fase por fase.",
+        "subtitle": "Jogue contra a IA: comece pelo tutorial, jogue uma partida rápida ou avance na campanha, fase por fase. Na coleção estão todos os personagens.",
         "modes": "Modos de um jogador",
         "tabs": {
             "tutorial": "Tutorial",
             "quick": "Partida rápida",
-            "campaign": "Campanha"
+            "campaign": "Campanha",
+            "collection": "Coleção"
         },
-        "quickLead": "Monte o seu time e enfrente um time sorteado pela IA, num cenário sorteado."
+        "quickLead": "Escolha o nível da IA e monte o seu time numa seleção contra ela: vocês escolhem alternando, um personagem por vez. O cenário é sorteado.",
+        "quickTitle": "Nova partida rápida",
+        "openDraft": "Escolher personagens",
+        "draftTitle": "Partida rápida · IA {{level}}",
+        "ai": "A IA",
+        "aiTeam": "Time da IA",
+        "collectionLead": "Os {{count}} personagens do jogo. Passe o mouse numa carta (ou toque no botão do canto) para ver as habilidades."
     },
     "difficulty": {
         "label": "Dificuldade da IA",
@@ -879,7 +885,6 @@
         }
     },
     "campaign": {
-        "lead": "Cada fase tem um time inimigo e um cenário próprios. Vencer uma fase, em qualquer dificuldade, abre a seguinte.",
         "loading": "Carregando a campanha...",
         "loadError": "Não foi possível carregar a campanha. Confira se a API está no ar e recarregue a página.",
         "stageLabel": "Fase {{stage}}",
@@ -899,10 +904,9 @@
         "clearedOn": "Vencida em:",
         "choose": "Jogar esta fase",
         "chosen": "Fase escolhida",
-        "teamTitle": "Seu time",
-        "teamText": "Escolha {{size}} personagens para enfrentar a fase {{stage}}.",
         "pickStage": "Escolha uma fase aberta acima para montar o time.",
-        "start": "Começar a fase {{stage}}"
+        "draftText": "Fase {{stage}}: vocês escolhem alternando, sem banimento, e a IA leva o time da fase. Vencer, em qualquer nível, abre a fase seguinte.",
+        "draftTitle": "Fase {{stage}}: {{name}}"
     },
     "tutorialGate": {
         "welcomeTitle": "Comece por aqui: o tutorial é obrigatório",
