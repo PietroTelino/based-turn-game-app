@@ -600,6 +600,24 @@
     --fx-hand-y: 0.239;
 }
 
+/* Bárbaro: figura de 856 x 840 (com o machado grande); poses de 901 x 1173, a partir de (35, -333). */
+.bt-posed--barbaro {
+    aspect-ratio: 856 / 840;
+    --pose-left: 4.09%;
+    --pose-top: -39.64%;
+    --pose-width: 105.26%;
+    --pose-height: 139.64%;
+}
+
+/* Espadachim: figura de 619 x 840; poses de 1176 x 922, a partir de (-202, -82). */
+.bt-posed--espadachim {
+    aspect-ratio: 619 / 840;
+    --pose-left: -32.63%;
+    --pose-top: -9.76%;
+    --pose-width: 189.98%;
+    --pose-height: 109.76%;
+}
+
 /*
  * Golpe corpo a corpo (bt-lunge, 1,1 s): no recuo ela ergue a arma (windup)
  * e, no avanço, desce o golpe (strike), que acerta aos 63%, quando o dano
@@ -756,6 +774,141 @@
     90%,
     100% {
         opacity: 1;
+    }
+}
+
+/*
+ * Golpe com custo (o Golpe Trovejante, bt-unit--heavy): quem tem as poses
+ * heavy-windup e heavy-strike usa elas no lugar da windup e da strike do
+ * ataque básico, no mesmo tempo. Se faltar uma das duas, aquele momento fica
+ * com a pose do ataque básico.
+ */
+.bt-unit--heavy .bt-posed:has(.bt-posed__pose--heavy-windup) .bt-posed__pose--windup,
+.bt-unit--heavy .bt-posed:has(.bt-posed__pose--heavy-strike) .bt-posed__pose--strike {
+    animation: none;
+}
+
+.bt-unit--heavy .bt-posed__pose--heavy-windup {
+    animation: bt-pose-windup 1.1s linear;
+}
+
+.bt-unit--heavy .bt-posed__pose--heavy-strike {
+    animation: bt-pose-strike 1.1s linear;
+}
+
+/*
+ * Golpe de vários acertos (a Dança das Lâminas, bt-unit--combo): quem tem as
+ * poses combo-1, combo-2 e combo-3 prepara (windup) e dá três golpes
+ * seguidos, um em cada pose, no lugar do golpe único (strike). O último
+ * acerta aos 63%, quando os danos aparecem. A figura avança mais cedo
+ * (bt-lunge-combo) e balança a cada golpe.
+ */
+.bt-unit.bt-unit--combo .bt-unit__sprite:has(.bt-posed__pose--combo-1) {
+    animation-name: bt-lunge-combo;
+}
+
+.bt-unit--combo .bt-posed:has(.bt-posed__pose--combo-1) .bt-posed__pose--windup {
+    animation-name: bt-pose-combo-windup;
+}
+
+.bt-unit--combo .bt-posed:has(.bt-posed__pose--combo-1) .bt-posed__pose--strike {
+    animation: none;
+}
+
+.bt-unit--combo .bt-posed__pose--combo-1 {
+    animation: bt-pose-combo-1 1.1s linear;
+}
+
+.bt-unit--combo .bt-posed__pose--combo-2 {
+    animation: bt-pose-combo-2 1.1s linear;
+}
+
+.bt-unit--combo .bt-posed__pose--combo-3 {
+    animation: bt-pose-combo-3 1.1s linear;
+}
+
+@keyframes bt-pose-combo-windup {
+    0%,
+    6% {
+        opacity: 0;
+    }
+    9%,
+    28% {
+        opacity: 1;
+    }
+    31%,
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes bt-pose-combo-1 {
+    0%,
+    28% {
+        opacity: 0;
+    }
+    31%,
+    42% {
+        opacity: 1;
+    }
+    45%,
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes bt-pose-combo-2 {
+    0%,
+    42% {
+        opacity: 0;
+    }
+    45%,
+    53% {
+        opacity: 1;
+    }
+    56%,
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes bt-pose-combo-3 {
+    0%,
+    53% {
+        opacity: 0;
+    }
+    56%,
+    86% {
+        opacity: 1;
+    }
+    90%,
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes bt-lunge-combo {
+    18%,
+    28% {
+        transform: translateX(-7%) rotate(-2deg);
+    }
+    36% {
+        transform: translateX(36%) rotate(2deg);
+    }
+    43% {
+        transform: translateX(32%) rotate(-1deg);
+    }
+    49% {
+        transform: translateX(39%) rotate(2deg);
+    }
+    55% {
+        transform: translateX(34%) rotate(0deg);
+    }
+    63% {
+        transform: translateX(42%) rotate(3deg);
+    }
+    74% {
+        transform: translateX(36%) rotate(1deg);
     }
 }
 

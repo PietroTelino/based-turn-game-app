@@ -33,12 +33,14 @@ Cuidados para a figura combinar com as outras:
 ## Poses de ação
 
 Além da figura parada, um personagem pode ter desenhos de cada momento da
-ação, trocados durante a animação (hoje, a Inquisidora, o Piromante, o Sacerdote, o Vampiro, o Ladino, o Cavaleiro, a Súcubo, a Harpia e o Arqueiro):
+ação, trocados durante a animação (hoje, a Inquisidora, o Piromante, o Sacerdote, o Vampiro, o Ladino, o Cavaleiro, a Súcubo, a Harpia, o Arqueiro, o Espadachim e o Bárbaro):
 
 | Arquivo | Quando aparece |
 | --- | --- |
 | `<id>-pose-windup.webp` | Golpe corpo a corpo: preparando o golpe (recuo). |
 | `<id>-pose-strike.webp` | Golpe corpo a corpo: o golpe acertando (avanço). |
+| `<id>-pose-heavy-windup.webp`, `-heavy-strike` | Golpe corpo a corpo que gasta energia (o Golpe Trovejante): no lugar da `windup` e da `strike` do ataque básico (opcionais; a que faltar fica com a do básico). |
+| `<id>-pose-combo-1.webp`, `-combo-2`, `-combo-3` | Golpe de vários acertos no mesmo alvo (a Dança das Lâminas): um quadro por golpe, depois da `windup`, no lugar da `strike` (opcionais; vale ter os três). |
 | `<id>-pose-charge.webp` | Magia: juntando a magia, antes de lançar (opcional). |
 | `<id>-pose-cast.webp` | Habilidade à distância, em área ou de suporte: lançando. |
 | `<id>-pose-bolt.webp` | Projétil: no lugar da `cast` (opcional). |

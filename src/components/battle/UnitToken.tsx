@@ -54,6 +54,10 @@ export function UnitToken({ unit, units, isActive, acting, isHit, isHealed, isMo
         isActive && 'bt-unit--active',
         // Corpo a corpo avança no alvo; o resto conjura no lugar, na cor do elemento.
         acting && (acting.delivery === 'melee' ? 'bt-unit--acting' : `bt-unit--casting bt-el--${acting.element}`),
+        // Vários golpes seguidos no mesmo alvo: quem tem as poses combo-* troca de pose a cada golpe.
+        acting?.combo && 'bt-unit--combo',
+        // Golpe com custo: quem tem as poses heavy-* (o Bárbaro) usa elas no lugar das do ataque básico.
+        acting?.heavy && 'bt-unit--heavy',
         // Projétil e área podem ter pose própria (o raio do Sacerdote, os meteoros do Piromante) no lugar da de conjurar.
         acting?.delivery === 'area' && 'bt-unit--area',
         acting?.delivery === 'projectile' && 'bt-unit--projectile',

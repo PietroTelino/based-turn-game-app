@@ -17,6 +17,10 @@ export interface SkillFx {
     delivery: Delivery;
     /** Ataque em área feito de projéteis (chuva de flechas): cai do alto em vez de usar o desenho do elemento. */
     rain: boolean;
+    /** Golpe corpo a corpo de vários acertos (a Dança das Lâminas): quem tem as poses `combo-*` anima um golpe por acerto. */
+    combo: boolean;
+    /** Golpe corpo a corpo que gasta energia (o Golpe Trovejante): quem tem as poses `heavy-*` usa elas no lugar das do ataque básico. */
+    heavy: boolean;
     sourceId: string;
     targetIds: string[];
     /** Não é uma habilidade: é a passiva de começo de vez da unidade agindo sozinha. */
@@ -52,6 +56,8 @@ export function skillFxOf(event: Extract<BattleEvent, { type: 'skill_used' | 'co
         element: skill?.element ?? 'physical',
         delivery,
         rain: delivery === 'area' && skill?.ranged === true,
+        combo: delivery === 'melee' && (skill?.effects.filter((effect) => effect.type === 'damage').length ?? 0) > 1,
+        heavy: delivery === 'melee' && (skill?.energyCost ?? 0) > 0,
         sourceId: event.unitId,
         targetIds: event.targetIds,
         passive: false,
@@ -82,6 +88,8 @@ export function passiveFxOf(event: Extract<BattleEvent, { type: 'passive_trigger
         element: passive.element ?? 'physical',
         delivery,
         rain: false,
+        combo: false,
+        heavy: false,
         sourceId: event.unitId,
         targetIds: event.targetIds,
         passive: true,

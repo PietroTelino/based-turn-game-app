@@ -14,7 +14,7 @@
  *
  * Poses de ação: além do <id>.webp, o personagem pode ter os desenhos
  * <id>-pose-<momento>.webp (windup, strike, charge, cast, bolt, area e os quadros extras
- * bolt-end, area-start, area-charge, area-end), trocados durante a
+ * heavy-windup, heavy-strike, combo-1, combo-2, combo-3, bolt-end, area-start, area-charge, area-end), trocados durante a
  * animação em battle.css. Ver getPoseFrames.
  */
 export type ArtKind = 'figure' | 'face' | 'card';
@@ -42,9 +42,24 @@ const RENAMED: Record<string, string> = {
     espinho: 'guardiao',
 };
 
-export type PoseName = 'windup' | 'strike' | 'charge' | 'cast' | 'bolt' | 'bolt-end' | 'area-start' | 'area-charge' | 'area' | 'area-end';
+export type PoseName =
+    | 'windup'
+    | 'strike'
+    | 'heavy-windup'
+    | 'heavy-strike'
+    | 'combo-1'
+    | 'combo-2'
+    | 'combo-3'
+    | 'charge'
+    | 'cast'
+    | 'bolt'
+    | 'bolt-end'
+    | 'area-start'
+    | 'area-charge'
+    | 'area'
+    | 'area-end';
 
-const POSES: PoseName[] = ['windup', 'strike', 'charge', 'cast', 'bolt', 'bolt-end', 'area-start', 'area-charge', 'area', 'area-end'];
+const POSES: PoseName[] = ['windup', 'strike', 'heavy-windup', 'heavy-strike', 'combo-1', 'combo-2', 'combo-3', 'charge', 'cast', 'bolt', 'bolt-end', 'area-start', 'area-charge', 'area', 'area-end'];
 
 /**
  * Os desenhos de cada momento da ação (preparar e acertar o golpe; juntar,
