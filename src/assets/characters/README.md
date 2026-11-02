@@ -32,8 +32,10 @@ Cuidados para a figura combinar com as outras:
 
 ## Poses de ação
 
+As formas têm poses próprias, com o id da forma no nome (`druida-urso-pose-strike.webp`).
+
 Além da figura parada, um personagem pode ter desenhos de cada momento da
-ação, trocados durante a animação (hoje, a Inquisidora, o Piromante, o Sacerdote, o Vampiro, o Ladino, o Cavaleiro, a Súcubo, a Harpia, o Arqueiro, o Espadachim, o Bárbaro, a Banshee, o Necromante, o Guerreiro Esqueleto, o Guardião, o Criomante, a Dríade, o Paladino, o Bardo e o Xamã):
+ação, trocados durante a animação (hoje, a Inquisidora, o Piromante, o Sacerdote, o Vampiro, o Ladino, o Cavaleiro, a Súcubo, a Harpia, o Arqueiro, o Espadachim, o Bárbaro, a Banshee, o Necromante, o Guerreiro Esqueleto, o Guardião, o Criomante, a Dríade, o Paladino, o Bardo, o Xamã e o Druida, com as formas de urso e de lobo):
 
 | Arquivo | Quando aparece |
 | --- | --- |
@@ -41,6 +43,7 @@ ação, trocados durante a animação (hoje, a Inquisidora, o Piromante, o Sacer
 | `<id>-pose-strike.webp` | Golpe corpo a corpo: o golpe acertando (avanço). |
 | `<id>-pose-cast-charge.webp` | Magia de suporte (sem projétil nem área, como o Erguer Esqueleto): no lugar da `charge` (opcional). |
 | `<id>-pose-rise-1.webp`, `-rise-2`, `-rise-3` | Invocação surgindo em campo (o Guerreiro Esqueleto): saindo do chão, de joelhos e em guarda, antes da figura parada (opcionais; vale ter os três). |
+| `<id>-<forma>-pose-shift-0.webp`, `-shift-1`, `-shift-2` | Transformação (o Druida virando urso ou lobo), nos arquivos da forma nova: o personagem como está parado, virando o bicho e quase bicho, antes da figura parada da forma (vale ter os três). |
 | `<id>-pose-heavy-windup.webp`, `-heavy-strike` | Golpe corpo a corpo que gasta energia (o Golpe Trovejante): no lugar da `windup` e da `strike` do ataque básico (opcionais; a que faltar fica com a do básico). |
 | `<id>-pose-combo-1.webp`, `-combo-2`, `-combo-3` | Golpe de vários acertos no mesmo alvo (a Dança das Lâminas): um quadro por golpe, depois da `windup`, no lugar da `strike` (opcionais; vale ter os três). |
 | `<id>-pose-charge.webp` | Magia: juntando a magia, antes de lançar (opcional). |

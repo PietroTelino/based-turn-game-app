@@ -16,6 +16,10 @@
  * <id>-pose-<momento>.webp (windup, strike, charge, cast, bolt, area e os quadros extras
  * heavy-windup, heavy-strike, cast-charge, rise-1, rise-2, rise-3, combo-1, combo-2, combo-3, bolt-end, area-start, area-charge, area-end), trocados durante a
  * animação em battle.css. Ver getPoseFrames.
+ *
+ * As formas têm poses próprias, com o id da forma no nome:
+ * druida-urso-pose-strike.webp. A transformação usa os quadros shift-0 (o
+ * personagem antes, como aparece parado), shift-1 e shift-2, da forma nova.
  */
 export type ArtKind = 'figure' | 'face' | 'card';
 
@@ -61,27 +65,31 @@ export type PoseName =
     | 'area-end'
     | 'rise-1'
     | 'rise-2'
-    | 'rise-3';
+    | 'rise-3'
+    | 'shift-0'
+    | 'shift-1'
+    | 'shift-2';
 
-const POSES: PoseName[] = ['windup', 'strike', 'heavy-windup', 'heavy-strike', 'combo-1', 'combo-2', 'combo-3', 'charge', 'cast-charge', 'cast', 'bolt', 'bolt-end', 'area-start', 'area-charge', 'area', 'area-end', 'rise-1', 'rise-2', 'rise-3'];
+const POSES: PoseName[] = ['windup', 'strike', 'heavy-windup', 'heavy-strike', 'combo-1', 'combo-2', 'combo-3', 'charge', 'cast-charge', 'cast', 'bolt', 'bolt-end', 'area-start', 'area-charge', 'area', 'area-end', 'rise-1', 'rise-2', 'rise-3', 'shift-0', 'shift-1', 'shift-2'];
 
 /**
  * Os desenhos de cada momento da ação (preparar e acertar o golpe; juntar,
  * lançar a magia; o projétil e a magia em área podem ter pose própria),
- * ou null se o personagem não tem nenhum. A forma de quem se transforma não
- * tem poses: nela vale a figura parada.
+ * ou null se o personagem não tem nenhum. Na forma de quem se transforma,
+ * valem as poses da forma (druida-urso-pose-*), se houver.
  */
-/** O id com que as ilustrações do personagem foram salvas (ids antigos apontam para o nome novo). */
-export function getArtId(characterId: string): string {
-    return RENAMED[characterId] ?? characterId;
+/**
+ * O id com que as ilustrações do personagem foram salvas (ids antigos apontam
+ * para o nome novo). Com `form`, o da forma: druida-urso.
+ */
+export function getArtId(characterId: string, form?: string): string {
+    const id = RENAMED[characterId] ?? characterId;
+
+    return form === undefined ? id : `${id}-${form}`;
 }
 
 export function getPoseFrames(characterId: string, form?: string): { pose: PoseName; src: string }[] | null {
-    if (form !== undefined) {
-        return null;
-    }
-
-    const id = RENAMED[characterId] ?? characterId;
+    const id = getArtId(characterId, form);
     const frames = POSES.flatMap((pose) => {
         const src = ART.get(`${id}-pose-${pose}`);
 
@@ -97,4 +105,25 @@ export function getCharacterArt(characterId: string, kind: ArtKind, form?: strin
     const find = (name: string) => ART.get(kind === 'figure' ? name : `${name}-${kind}`);
 
     return (form === undefined ? undefined : find(`${id}-${form}`)) ?? find(id);
+}
+
+/** As imagens já pedidas ao navegador, guardadas para ele não descartar. */
+const preloaded = new Map<string, HTMLImageElement>();
+
+/**
+ * Carrega antes as imagens de uma forma (a figura e as poses), para a
+ * transformação não mostrar a figura vazia enquanto elas chegam.
+ */
+export function preloadForm(characterId: string, form: string): void {
+    const urls = [getCharacterArt(characterId, 'figure', form), ...(getPoseFrames(characterId, form) ?? []).map((frame) => frame.src)];
+
+    for (const url of urls) {
+        if (!url || preloaded.has(url)) continue;
+
+        const image = new Image();
+
+        image.src = url;
+        image.decode().catch(() => undefined);
+        preloaded.set(url, image);
+    }
 }

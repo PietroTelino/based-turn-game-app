@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CharacterArt } from './CharacterArt';
+import { preloadForm } from './artFiles';
 import { ImpactFx } from './ImpactFx';
 import { StatusBadges } from './StatusBadges';
 import type { Impact, SkillFx } from '@/battle/fx';
@@ -39,6 +41,13 @@ function hpColor(ratio: number): string {
 /** Uma unidade no campo: desenho, nome, barra de vida e os números que sobem. */
 export function UnitToken({ unit, units, isActive, acting, isHit, isHealed, isMorphing, isFalling, isTargetable, isCoachTarget = false, preview, impact, floaters, onSelect }: UnitTokenProps) {
     const { t } = useTranslation();
+    const formIds = unit.forms?.map((form) => form.id).join(',') ?? '';
+
+    // Quem se transforma: as imagens das formas já ficam carregadas para a troca.
+    useEffect(() => {
+        for (const form of formIds.split(',').filter(Boolean)) preloadForm(unit.characterId, form);
+    }, [unit.characterId, formIds]);
+
     const ratio = unit.hp / unit.stats.maxHp;
     const isDown = unit.hp <= 0;
     const statuses = unit.statuses ?? [];
@@ -103,7 +112,8 @@ export function UnitToken({ unit, units, isActive, acting, isHit, isHealed, isMo
             {/* A figura é maior que a área clicável e passa por cima das vizinhas. */}
             <span className='bt-unit__stage'>
                 <span className='bt-unit__shadow' aria-hidden='true' />
-                <CharacterArt characterId={unit.characterId} form={unit.form} kind='figure' className='bt-unit__sprite' />
+                {/* A chave troca a figura inteira quando a forma muda: as poses da forma nova começam do zero. */}
+                <CharacterArt key={unit.form ?? ''} characterId={unit.characterId} form={unit.form} kind='figure' className='bt-unit__sprite' />
 
                 {impact && <ImpactFx key={impact.id} impact={impact} />}
 

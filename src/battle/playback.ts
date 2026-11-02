@@ -29,6 +29,8 @@ const BEAT_DURATION = {
     turn_timed_out: 900,
     surrendered: 500,
     effects: 800,
+    /** Efeitos com uma transformação: os quadros da troca de forma (o Druida virando urso) levam mais tempo. */
+    transformed: 1100,
     battle_ended: 300,
 } as const;
 
@@ -107,6 +109,12 @@ export function toBeats(events: BattleEvent[]): Beat[] {
         const kind = event.type === 'turn_started' && event.fury > 0 ? 'berserk_turn' : event.type;
 
         beats.push({ events: [event], duration: BEAT_DURATION[kind as keyof typeof BEAT_DURATION] });
+    }
+
+    for (const beat of beats) {
+        if (beat.events.some((event) => event.type === 'transformed')) {
+            beat.duration = Math.max(beat.duration, BEAT_DURATION.transformed);
+        }
     }
 
     return beats;
