@@ -2,6 +2,7 @@ import { CharacterSprite } from './CharacterSprite';
 import { getArtId, getCharacterArt, getPoseFrames } from './artFiles';
 import type { ArtKind } from './artFiles';
 
+
 interface CharacterArtProps {
     characterId: string;
     kind: ArtKind;
