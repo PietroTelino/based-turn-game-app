@@ -633,6 +633,27 @@
     --pose-height: 111.31%;
 }
 
+/* Guardião: figura de 683 x 840; poses de 777 x 944, a partir de (-65, -104). */
+.bt-posed--guardiao {
+    aspect-ratio: 683 / 840;
+    --pose-left: -9.52%;
+    --pose-top: -12.38%;
+    --pose-width: 113.76%;
+    --pose-height: 112.38%;
+}
+
+/* Criomante: figura de 599 x 840; poses de 931 x 1134, a partir de (-160, -294). */
+.bt-posed--criomante {
+    aspect-ratio: 599 / 840;
+    --pose-left: -26.71%;
+    --pose-top: -35%;
+    --pose-width: 155.43%;
+    --pose-height: 135%;
+    /* A mão estendida no Estilhaço: de onde o projétil de gelo sai (FxLayer). */
+    --fx-hand-x: 1.179;
+    --fx-hand-y: 0.2;
+}
+
 /* Bárbaro: figura de 856 x 840 (com o machado grande); poses de 901 x 1173, a partir de (35, -333). */
 .bt-posed--barbaro {
     aspect-ratio: 856 / 840;
@@ -1022,6 +1043,16 @@
 
 .bt-unit--casting:not(.bt-unit--projectile, .bt-unit--area) .bt-posed__pose--cast-charge {
     animation: bt-pose-charge 0.75s linear;
+}
+
+/*
+ * Quem não tem a pose charge, mas tem a do suporte (cast-charge) ou a da área
+ * (area-charge), também junta antes e lança depois (o Guardião): a pose de
+ * lançar só entra quando a de juntar sai.
+ */
+.bt-unit--casting:not(.bt-unit--projectile, .bt-unit--area) .bt-posed:has(.bt-posed__pose--cast-charge) .bt-posed__pose--cast,
+.bt-unit--area .bt-posed:has(.bt-posed__pose--area-charge) .bt-posed__pose--area {
+    animation-name: bt-pose-release;
 }
 
 /*

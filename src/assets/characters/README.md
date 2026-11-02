@@ -33,7 +33,7 @@ Cuidados para a figura combinar com as outras:
 ## Poses de ação
 
 Além da figura parada, um personagem pode ter desenhos de cada momento da
-ação, trocados durante a animação (hoje, a Inquisidora, o Piromante, o Sacerdote, o Vampiro, o Ladino, o Cavaleiro, a Súcubo, a Harpia, o Arqueiro, o Espadachim, o Bárbaro, a Banshee, o Necromante e o Guerreiro Esqueleto):
+ação, trocados durante a animação (hoje, a Inquisidora, o Piromante, o Sacerdote, o Vampiro, o Ladino, o Cavaleiro, a Súcubo, a Harpia, o Arqueiro, o Espadachim, o Bárbaro, a Banshee, o Necromante, o Guerreiro Esqueleto, o Guardião e o Criomante):
 
 | Arquivo | Quando aparece |
 | --- | --- |
