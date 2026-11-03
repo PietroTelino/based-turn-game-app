@@ -7,6 +7,7 @@ import { ToastProvider } from './contexts/ToastContext';
 import { ConfirmProvider } from './contexts/ConfirmContext';
 import App from './App';
 import './index.css';
+import './styles/ui.css';
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>

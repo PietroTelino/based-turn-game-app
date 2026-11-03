@@ -154,7 +154,7 @@ export function RoomPage() {
     const { code } = useParams();
 
     return (
-        <Layout title={t('nav.multiplayer')}>
+        <Layout title={t('nav.multiplayer')} heading={false}>
             {/* key: trocar de sala recria a tela do zero */}
             {code && <RoomScreen key={code} code={code.toUpperCase()} />}
         </Layout>

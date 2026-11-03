@@ -13,9 +13,14 @@ interface LayoutProps {
      * as habilidades ocuparem o lugar dele.
      */
     hideMenu?: boolean;
+    /**
+     * Mostra o título no alto da página. As telas que têm o próprio título
+     * (Um Jogador, Multijogador, a sala, o painel) passam false.
+     */
+    heading?: boolean;
 }
 
-export function Layout({ title, children, hideMenu = false }: LayoutProps) {
+export function Layout({ title, children, hideMenu = false, heading = true }: LayoutProps) {
     const { t } = useTranslation();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -30,7 +35,7 @@ export function Layout({ title, children, hideMenu = false }: LayoutProps) {
     }, [isMenuOpen]);
 
     return (
-        <div className={`app-shell flex min-h-screen bg-gray-50 dark:bg-gray-950 ${hideMenu ? 'app-shell--hidden-menu' : ''}`}>
+        <div className={`app-shell flex min-h-screen ${hideMenu ? 'app-shell--hidden-menu' : 'app-shell--hub'}`}>
             {hideMenu ? (
                 isMenuOpen && (
                     <div className='app-drawer'>
@@ -46,7 +51,12 @@ export function Layout({ title, children, hideMenu = false }: LayoutProps) {
                     title={title}
                     {...(hideMenu && { menu: { isOpen: isMenuOpen, onToggle: () => setIsMenuOpen((open) => !open) } })}
                 />
-                <main className='app-main flex-1 p-6'>
+                <main className='app-main flex-1'>
+                    {!hideMenu && heading && (
+                        <header className='app-page-head'>
+                            <h1 className='app-page-title'>{title}</h1>
+                        </header>
+                    )}
                     {children}
                 </main>
             </div>

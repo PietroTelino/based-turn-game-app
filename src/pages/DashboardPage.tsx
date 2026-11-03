@@ -13,16 +13,15 @@ export function DashboardPage() {
     const { profile, stats, characters, isLoading, hasError } = useDashboard();
 
     return (
-        <Layout title={t('nav.dashboard')}>
-            <div className='flex flex-col gap-2'>
-                <h2 className='text-xl font-semibold text-gray-900 dark:text-white'>
-                    {t('dashboard.greeting', { name: user?.name })}
-                </h2>
-                <p className='text-sm text-gray-500 dark:text-gray-400'>
-                    {t('dashboard.welcome')}{' '}
-                    <span className='font-medium text-gray-700 dark:text-gray-200'>{user?.role}</span>.
-                </p>
-            </div>
+        <Layout title={t('nav.dashboard')} heading={false}>
+            <header className='bt bt-hero bt-dashboard__hero'>
+                <div className='bt-hero__text'>
+                    <h2 className='bt-title'>{t('dashboard.greeting', { name: user?.name })}</h2>
+                    <p className='bt-lead'>
+                        {t('dashboard.welcome')} <b>{user?.role}</b>.
+                    </p>
+                </div>
+            </header>
 
             {/* O que o jogo tem para mostrar do jogador: o rank e os personagens mais usados. */}
             <div className='bt bt-play bt-dashboard'>

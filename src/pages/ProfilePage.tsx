@@ -2,7 +2,6 @@ import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/Layout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChangePassword } from '@/hooks/useChangePassword';
-import { usePreferences } from '@/hooks/usePreferences';
 import { useDeleteAccount } from '@/hooks/useDeleteAccount';
 import { DeleteAccountModal } from '@/components/DeleteAccountModal';
 
@@ -10,11 +9,10 @@ export function ProfilePage() {
     const { t } = useTranslation();
     const { user } = useAuth();
     const passwordForm = useChangePassword();
-    const preferences = usePreferences();
     const deleteAccount = useDeleteAccount();
 
     return (
-        <Layout title='Perfil'>
+        <Layout title={t('nav.profile')}>
             <div className='flex flex-col gap-8 max-w-xl'>
                 <div className='bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 flex flex-col gap-4'>
                     <h2 className='text-base font-semibold text-gray-900 dark:text-white'>
@@ -33,32 +31,6 @@ export function ProfilePage() {
                             <span className='text-xs text-gray-500 dark:text-gray-400'>{t('profile.role')}</span>
                             <span className='text-gray-900 dark:text-white font-medium capitalize'>{user?.role}</span>
                         </div>
-                    </div>
-                </div>
-                <div className='bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 flex flex-col gap-4'>
-                    <div>
-                        <h2 className='text-base font-semibold text-gray-900 dark:text-white'>{t('profile.theme.title')}</h2>
-                        <p className='text-sm text-gray-500 dark:text-gray-400 mt-0.5'>
-                            {t('profile.theme.subtitle')}
-                        </p>
-                    </div>
-                    <div className='flex gap-3'>
-                        {(['light', 'dark'] as const).map((theme) => (
-                            <button
-                                key={theme}
-                                onClick={() => preferences.handleThemeChange(theme)}
-                                disabled={preferences.isSubmitting}
-                                className={`flex-1 py-3 px-4 rounded-xl border text-sm font-medium
-                                    transition-colors disabled:opacity-50 disabled:cursor-not-allowed
-                                    ${preferences.currentTheme === theme
-                                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-400'
-                                        : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                    }
-                                `}
-                            >
-                                {t(`profile.theme.${theme}`)}
-                            </button>
-                        ))}
                     </div>
                 </div>
                 <div className='bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 flex flex-col gap-4'>

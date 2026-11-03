@@ -1,0 +1,1663 @@
+/*
+ * Aparência das telas fora da batalha (menu, Um Jogador, Multijogador,
+ * painel, perfil...), tirada da seleção de personagens: noite de tinta com o
+ * cenário apagado ao fundo, painéis escuros translúcidos com um fio dourado,
+ * títulos em ouro e o pergaminho só nas cartas dos personagens.
+ *
+ * Tudo aqui fica dentro de `.app-shell--hub` (o Layout sem o menu escondido),
+ * para a batalha e a seleção de personagens não mudarem. A especificidade
+ * dupla (.app-shell.app-shell--hub) ganha das regras de battle.css sem
+ * depender da ordem em que os arquivos carregam.
+ */
+
+:root {
+    --ui-bg: #0d0c16;
+    --ui-panel: rgb(22 20 36 / 0.9);
+    --ui-panel-top: rgb(36 33 54 / 0.92);
+    --ui-raised: rgb(255 240 200 / 0.05);
+    --ui-raised-hover: rgb(255 240 200 / 0.09);
+    --ui-line: rgb(200 162 75 / 0.24);
+    --ui-line-strong: rgb(200 162 75 / 0.55);
+    --ui-text: #efe3c4;
+    --ui-muted: #b9ab8a;
+    --ui-faint: #8a7f68;
+    --ui-gold: #c8a24b;
+    --ui-gold-bright: #ecd07a;
+    --ui-ally: #9fc0ff;
+    --ui-enemy: #ef8a7e;
+    --ui-good: #9fd27b;
+    --ui-radius: 14px;
+    --ui-shadow: inset 0 1px 0 rgb(255 236 190 / 0.06), 0 14px 34px rgb(0 0 0 / 0.38);
+}
+
+html.dark,
+html.dark body {
+    background: var(--ui-bg);
+}
+
+/* ---------------------------------------------------------------- Fundo */
+
+/*
+ * O cenário da muralha bem apagado, parado atrás de tudo, com a luz no alto
+ * e as bordas na sombra: o mesmo fundo da seleção de personagens.
+ */
+/*
+ * O fundo é uma camada própria, presa na janela (position: fixed), e não um
+ * background-attachment: fixed: com ele, o navegador repinta a tela inteira a
+ * cada passo da rolagem, e a rolagem engasga (no Opera GX ficava travada).
+ * Uma camada fixa é pintada uma vez e só fica parada enquanto a página rola.
+ */
+.app-shell.app-shell--hub {
+    position: relative;
+    isolation: isolate;
+    color: var(--ui-text);
+}
+
+.app-shell.app-shell--hub::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+        radial-gradient(ellipse 90% 70% at 55% 0%, rgb(40 36 60 / 0.35), rgb(10 9 18 / 0.92) 70%),
+        var(--ui-bg) url('../assets/scenery/muralha.webp') center top / cover no-repeat;
+    transform: translateZ(0);
+    pointer-events: none;
+}
+
+.app-shell.app-shell--hidden-menu {
+    background: var(--ui-bg);
+}
+
+/* ------------------------------------------------------------ Menu lateral */
+
+.app-sidebar {
+    position: sticky;
+    top: 0;
+    width: 15rem;
+    height: 100dvh;
+    min-height: 0;
+    flex: none;
+    background: linear-gradient(180deg, rgb(20 18 32 / 0.92), rgb(11 10 19 / 0.95));
+    border-right: 1px solid var(--ui-line);
+    box-shadow: 8px 0 30px rgb(0 0 0 / 0.25);
+    color: var(--ui-muted);
+}
+
+.app-sidebar__brand {
+    gap: 0.6rem;
+    height: 4.5rem;
+    padding: 0 1.25rem;
+    border-bottom: 1px solid var(--ui-line);
+    font-size: 1.25rem;
+    color: var(--ui-gold-bright);
+    text-shadow: 0 2px 10px rgb(236 208 122 / 0.25);
+}
+
+.app-sidebar__crest {
+    flex: none;
+    width: 1.6rem;
+    height: 1.6rem;
+    fill: rgb(200 162 75 / 0.18);
+    stroke: var(--ui-gold-bright);
+    stroke-width: 1.6;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+.app-sidebar__nav {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+    padding: 1rem 0.75rem;
+    overflow-y: auto;
+}
+
+.app-nav-link {
+    gap: 0.75rem;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ui-muted);
+}
+
+.app-nav-link__icon {
+    flex: none;
+    width: 1.3rem;
+    height: 1.3rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    opacity: 0.85;
+}
+
+.app-nav-link:hover {
+    background: var(--ui-raised);
+    color: var(--ui-text);
+}
+
+/* A página aberta: um brilho dourado que vem da esquerda e o nome em ouro. */
+.app-nav-link--active,
+.app-nav-link--active:hover {
+    border-color: var(--ui-line);
+    background: linear-gradient(90deg, rgb(200 162 75 / 0.24), rgb(200 162 75 / 0.04));
+    box-shadow: inset 3px 0 0 var(--ui-gold-bright);
+    color: var(--ui-gold-bright);
+}
+
+.app-nav-link--active .app-nav-link__icon {
+    opacity: 1;
+    filter: drop-shadow(0 0 6px rgb(236 208 122 / 0.5));
+}
+
+.app-sidebar__section {
+    border-top: 1px solid var(--ui-line);
+}
+
+.app-sidebar__lang {
+    padding: 0.75rem 1rem;
+}
+
+.app-sidebar__select {
+    padding: 0.45rem 0.6rem;
+    border: 1px solid var(--ui-line);
+    border-radius: 8px;
+    background: rgb(255 240 200 / 0.04);
+    color: var(--ui-text);
+}
+
+.app-sidebar__select option {
+    background: #171527;
+}
+
+/* Quem está jogando: a inicial num escudo redondo, o nome e o botão de sair. */
+.app-sidebar__user {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.9rem 0.9rem 1rem 1rem;
+}
+
+.app-sidebar__avatar {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border: 1px solid var(--ui-line-strong);
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #3a3355, #1a1729);
+    color: var(--ui-gold-bright);
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.app-sidebar__who {
+    display: grid;
+    flex: 1;
+    min-width: 0;
+}
+
+.app-sidebar__name,
+.app-sidebar__meta {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.app-sidebar__name {
+    color: var(--ui-text);
+}
+
+.app-sidebar__meta {
+    color: var(--ui-faint);
+}
+
+.app-sidebar__logout {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: var(--ui-muted);
+    cursor: pointer;
+    transition:
+        background-color 0.15s,
+        color 0.15s;
+}
+
+.app-sidebar__logout svg {
+    width: 1.15rem;
+    height: 1.15rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+.app-sidebar__logout:hover {
+    border-color: rgb(239 138 126 / 0.4);
+    background: rgb(239 138 126 / 0.1);
+    color: var(--ui-enemy);
+}
+
+/* ------------------------------------------------------------- Cabeçalho */
+
+/*
+ * Nas telas com o menu à mostra, o título da página já está nela e o botão de
+ * sair está no menu: a faixa do alto some e a página começa lá em cima. Ela
+ * volta na batalha (com o botão "Menu") e no celular.
+ */
+.app-shell--hub .app-header {
+    display: none;
+}
+
+.app-header,
+.dark .app-header {
+    height: 3.25rem;
+    border-bottom: 1px solid var(--ui-line);
+    box-shadow: none;
+    background: rgb(14 13 23 / 0.96);
+}
+
+.app-header__title,
+.dark .app-header__title {
+    font-size: 1.2rem;
+    color: var(--ui-gold-bright);
+}
+
+.app-header__menu,
+.dark .app-header__menu {
+    border: 1px solid var(--ui-line-strong);
+    border-radius: 8px;
+    box-shadow: none;
+    background: rgb(255 240 200 / 0.05);
+    color: var(--ui-gold-bright);
+}
+
+.app-header__menu:hover {
+    background: rgb(255 240 200 / 0.1);
+}
+
+.app-header__menu[aria-expanded='true'] {
+    background: rgb(200 162 75 / 0.3);
+    color: var(--ui-text);
+}
+
+.app-header__logout,
+.dark .app-header__logout {
+    color: var(--ui-muted);
+}
+
+.app-header__logout:hover,
+.dark .app-header__logout:hover {
+    color: var(--ui-enemy);
+}
+
+.app-main {
+    padding: 2rem 2.25rem 2.5rem;
+}
+
+.app-shell--hidden-menu .app-main {
+    padding: 1rem;
+}
+
+@media (max-width: 767px) {
+    .app-sidebar {
+        position: relative;
+        height: auto;
+    }
+
+    .app-shell > .app-sidebar {
+        border-bottom: 1px solid var(--ui-line);
+        box-shadow: none;
+    }
+
+    .app-shell > .app-sidebar .app-sidebar__brand {
+        border-bottom: 0;
+    }
+
+    .app-shell > .app-sidebar .app-sidebar__nav {
+        gap: 6px;
+        padding: 0 0.75rem 0.75rem;
+    }
+
+    .app-shell > .app-sidebar .app-nav-link {
+        padding: 0.45rem 0.75rem;
+    }
+
+    .app-shell > .app-sidebar .app-nav-link--active,
+    .app-shell > .app-sidebar .app-nav-link--active:hover {
+        box-shadow: inset 0 -2px 0 var(--ui-gold-bright);
+    }
+
+    .app-shell > .app-sidebar .app-sidebar__lang {
+        top: 0.9rem;
+    }
+
+    /* No celular o menu não tem a área do jogador: o botão de sair volta para a faixa do alto. */
+    .app-shell--hub .app-header {
+        display: flex;
+        height: 2.75rem;
+        justify-content: flex-end;
+    }
+
+    .app-shell--hub .app-header__title {
+        display: none;
+    }
+
+    .app-main {
+        padding: 1rem;
+    }
+}
+
+/* ---------------------------------------------- Telas do jogo (fora da batalha) */
+
+.app-shell.app-shell--hub .bt {
+    max-width: none;
+    color: var(--ui-text);
+}
+
+.app-shell.app-shell--hub .bt-play {
+    gap: 22px;
+}
+
+/* O título da página e, na mesma faixa, as abas: tudo no alto. */
+.app-shell.app-shell--hub .bt-hero {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 14px 28px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--ui-line);
+}
+
+.app-shell.app-shell--hub .bt-hero__text {
+    display: grid;
+    gap: 6px;
+    min-width: min(100%, 300px);
+    flex: 1 1 320px;
+}
+
+.app-shell.app-shell--hub .bt-title {
+    color: var(--ui-gold-bright);
+    font-size: clamp(30px, 3.4vw, 42px);
+    text-shadow: 0 2px 18px rgb(236 208 122 / 0.22);
+}
+
+.app-shell.app-shell--hub .bt-hero .bt-lead {
+    max-width: 58ch;
+    margin: 0;
+    font-size: 15.5px;
+    color: var(--ui-muted);
+}
+
+.app-shell.app-shell--hub :is(.bt-subtitle, .bt-lead, .bt-message) {
+    color: inherit;
+}
+
+.app-shell.app-shell--hub .bt-subtitle {
+    color: var(--ui-text);
+}
+
+.app-shell.app-shell--hub .bt-lead {
+    color: var(--ui-muted);
+}
+
+/* As abas: um trilho escuro com os modos lado a lado; o aberto acende em ouro. */
+.app-shell.app-shell--hub .bt-modes {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 5px;
+    border: 1px solid var(--ui-line);
+    border-radius: 14px;
+    background: rgb(8 7 14 / 0.6);
+    box-shadow: inset 0 1px 6px rgb(0 0 0 / 0.4);
+}
+
+.app-shell.app-shell--hub .bt-modes__tab {
+    display: inline-flex;
+    align-items: center;
+    margin: 0;
+    padding: 8px 18px 9px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--ui-muted);
+    font-size: 18px;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.app-shell.app-shell--hub .bt-modes__tab:hover {
+    background: var(--ui-raised-hover);
+    color: var(--ui-text);
+}
+
+.app-shell.app-shell--hub .bt-modes__tab--active,
+.app-shell.app-shell--hub .bt-modes__tab--active:hover {
+    padding-bottom: 9px;
+    background: linear-gradient(#f3d98a, #c8a24b);
+    box-shadow:
+        inset 0 1px 0 rgb(255 250 230 / 0.6),
+        0 0 18px rgb(236 208 122 / 0.28);
+    color: #1c1a2b;
+}
+
+.app-shell.app-shell--hub .bt-modes__tab--active::after {
+    display: none;
+}
+
+.app-shell.app-shell--hub .bt-modes__tab:has(.bt-lock__icon--small):not(.bt-modes__tab--active) {
+    color: var(--ui-faint);
+}
+
+.app-shell.app-shell--hub .bt-modes__tab .bt-lock__icon {
+    fill: currentColor;
+    stroke: currentColor;
+}
+
+/* ----------------------------------------------------------------- Painéis */
+
+.app-shell.app-shell--hub :is(.bt-panel, .bt-launch, .bt-difficulty, .bt-stage) {
+    border: 1px solid var(--ui-line);
+    border-radius: var(--ui-radius);
+    background: linear-gradient(180deg, var(--ui-panel-top), var(--ui-panel));
+    box-shadow: var(--ui-shadow);
+    color: var(--ui-text);
+}
+
+.app-shell.app-shell--hub .bt-launch {
+    padding: 18px 22px 20px;
+}
+
+.app-shell.app-shell--hub .bt-launch .bt-difficulty {
+    border: 0;
+    background: none;
+    box-shadow: none;
+}
+
+.app-shell.app-shell--hub :is(.bt-launch__text, .bt-panel__text, .bt-welcome__text, .bt-stage__story, .bt-usage__note, .bt-usage__total) {
+    color: var(--ui-muted);
+}
+
+/* O tutorial, para quem ainda não fez: o painel de boas-vindas com a faixa dourada no alto. */
+.app-shell.app-shell--hub .bt-welcome {
+    border-top: 3px solid var(--ui-gold-bright);
+}
+
+.app-shell.app-shell--hub .bt-welcome__title {
+    color: var(--ui-gold-bright);
+}
+
+.app-shell.app-shell--hub .bt-welcome__note {
+    border-top-color: var(--ui-line);
+}
+
+.app-shell.app-shell--hub :is(.bt-lock__icon, .bt-stage__lock) {
+    fill: var(--ui-muted);
+    stroke: var(--ui-muted);
+}
+
+.app-shell.app-shell--hub .bt-lock__keyhole {
+    fill: #171527;
+    stroke: #171527;
+}
+
+/* ------------------------------------------------------------------ Botões */
+
+/* O botão principal: ouro, como a aba aberta, para "jogar" ser sempre o caminho mais visível. */
+.app-shell.app-shell--hub .bt-btn {
+    border: 1px solid #f6e3a6;
+    border-radius: 10px;
+    background: linear-gradient(#f3d98a, #c8a24b 85%);
+    box-shadow:
+        inset 0 1px 0 rgb(255 250 230 / 0.7),
+        0 4px 0 #6f5416,
+        0 10px 24px rgb(200 162 75 / 0.22);
+    color: #1c1a2b;
+    transition:
+        translate 0.08s,
+        box-shadow 0.08s,
+        filter 0.15s;
+}
+
+.app-shell.app-shell--hub .bt-btn:hover:not(:disabled) {
+    filter: brightness(1.07);
+}
+
+.app-shell.app-shell--hub .bt-btn:active:not(:disabled) {
+    box-shadow:
+        inset 0 1px 0 rgb(255 250 230 / 0.7),
+        0 1px 0 #6f5416;
+}
+
+.app-shell.app-shell--hub .bt-btn:disabled {
+    border-color: var(--ui-line);
+    background: rgb(255 240 200 / 0.07);
+    box-shadow: none;
+    color: var(--ui-faint);
+}
+
+/* Ação secundária: só o contorno. */
+.app-shell.app-shell--hub .bt-btn--plain {
+    border-color: var(--ui-line-strong);
+    background: rgb(255 240 200 / 0.04);
+    box-shadow: none;
+    color: var(--ui-text);
+}
+
+.app-shell.app-shell--hub .bt-btn--plain:hover:not(:disabled) {
+    background: var(--ui-raised-hover);
+    filter: none;
+}
+
+.app-shell.app-shell--hub .bt-btn--quiet {
+    border-color: rgb(239 138 126 / 0.6);
+    background: transparent;
+    box-shadow: none;
+    color: var(--ui-enemy);
+}
+
+.app-shell.app-shell--hub .bt-btn--quiet:hover:not(:disabled) {
+    background: rgb(239 138 126 / 0.1);
+    filter: none;
+}
+
+.app-shell.app-shell--hub .bt-link {
+    color: var(--ui-ally);
+    text-decoration: none;
+}
+
+.app-shell.app-shell--hub .bt-link:hover {
+    color: #c9dbff;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+/* ----------------------------------------------------- Campos e mensagens */
+
+.app-shell.app-shell--hub .bt-field-label {
+    color: var(--ui-muted);
+}
+
+.app-shell.app-shell--hub .bt-input,
+.app-shell.app-shell--hub .bt-collection__search input {
+    border: 1px solid var(--ui-line-strong);
+    border-radius: 10px;
+    background: rgb(8 7 14 / 0.55);
+    color: var(--ui-text);
+}
+
+.app-shell.app-shell--hub .bt-collection__search input::placeholder {
+    color: var(--ui-faint);
+}
+
+.app-shell.app-shell--hub .bt-message--error {
+    border: 1px solid rgb(239 138 126 / 0.6);
+    border-radius: 10px;
+    background: rgb(168 50 44 / 0.18);
+    color: #f6d9d3;
+}
+
+/* ------------------------------------------------------- Dificuldade da IA */
+
+.app-shell.app-shell--hub .bt-difficulty__option {
+    --bt-level: var(--ui-gold-bright);
+    border: 1px solid var(--ui-line);
+    border-radius: 12px;
+    background: var(--ui-raised);
+    transition:
+        border-color 0.15s ease,
+        background-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.app-shell.app-shell--hub .bt-difficulty__option--easy {
+    --bt-level: var(--ui-good);
+}
+
+.app-shell.app-shell--hub .bt-difficulty__option--hard {
+    --bt-level: #e5675c;
+}
+
+.app-shell.app-shell--hub .bt-difficulty__option:hover {
+    border-color: var(--ui-line-strong);
+    background: var(--ui-raised-hover);
+}
+
+/* O nível escolhido acende na cor dele. */
+.app-shell.app-shell--hub .bt-difficulty__option:has(.bt-difficulty__input:checked) {
+    border-color: var(--bt-level);
+    background: color-mix(in srgb, var(--bt-level) 12%, rgb(22 20 36 / 0.6));
+    box-shadow:
+        inset 0 0 0 1px var(--bt-level),
+        0 0 22px color-mix(in srgb, var(--bt-level) 28%, transparent);
+}
+
+.app-shell.app-shell--hub .bt-difficulty__hint {
+    color: var(--ui-muted);
+}
+
+.app-shell.app-shell--hub .bt-difficulty__skull {
+    fill: rgb(255 240 200 / 0.16);
+}
+
+.app-shell.app-shell--hub .bt-difficulty__skull--on {
+    fill: var(--bt-level, var(--ui-gold-bright));
+}
+
+.app-shell.app-shell--hub .bt-difficulty__eye {
+    fill: #171527;
+}
+
+/* Fora do painel de começar (o histórico), os crânios seguem a cor da etiqueta. */
+.app-shell.app-shell--hub .bt-stage__medal {
+    border: 1px solid var(--ui-line);
+    background: var(--ui-raised);
+    color: var(--ui-text);
+}
+
+/* ---------------------------------------------------------------- Campanha */
+
+.app-shell.app-shell--hub .bt-stage {
+    overflow: hidden;
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.app-shell.app-shell--hub .bt-stage--selected {
+    border-color: var(--ui-gold-bright);
+    box-shadow:
+        0 0 0 1px var(--ui-gold-bright),
+        0 0 26px rgb(236 208 122 / 0.25),
+        var(--ui-shadow);
+}
+
+.app-shell.app-shell--hub .bt-stage__scene,
+.app-shell.app-shell--hub .bt-mode .bt-stage__scene {
+    border-color: var(--ui-line);
+}
+
+.app-shell.app-shell--hub .bt-stage__number {
+    color: var(--ui-gold);
+}
+
+.app-shell.app-shell--hub .bt-stage__enemy {
+    border: 2px solid #e5675c;
+    box-shadow: 0 0 0 2px #171527;
+    background: #171527;
+}
+
+.app-shell.app-shell--hub .bt-stage__footer {
+    border-top-color: var(--ui-line);
+}
+
+/* --------------------------------------------------------------- Histórico */
+
+.app-shell.app-shell--hub .bt-history__item {
+    position: relative;
+    padding: 9px 14px 9px 18px;
+    overflow: hidden;
+    border: 1px solid var(--ui-line);
+    border-radius: 10px;
+    background: rgb(20 18 33 / 0.78);
+    transition: border-color 0.15s ease;
+}
+
+.app-shell.app-shell--hub .bt-history__item:hover {
+    border-color: var(--ui-line-strong);
+}
+
+/* A faixa do resultado, à esquerda. */
+.app-shell.app-shell--hub .bt-history__item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 4px;
+    background: var(--ui-faint);
+}
+
+.app-shell.app-shell--hub .bt-history__item--won::before {
+    background: var(--ui-good);
+}
+
+.app-shell.app-shell--hub .bt-history__item--lost::before {
+    background: #e5675c;
+}
+
+.app-shell.app-shell--hub .bt-history__item--live::before {
+    background: var(--ui-gold-bright);
+}
+
+.app-shell.app-shell--hub .bt-history__item--won b {
+    color: var(--ui-good);
+}
+
+.app-shell.app-shell--hub .bt-history__item--lost b {
+    color: var(--ui-enemy);
+}
+
+.app-shell.app-shell--hub .bt-history__item--live b {
+    color: var(--ui-gold-bright);
+}
+
+.app-shell.app-shell--hub .bt-history__date {
+    color: var(--ui-faint);
+}
+
+.app-shell.app-shell--hub .bt-history__tag {
+    border: 1px solid rgb(159 192 255 / 0.5);
+    background: rgb(159 192 255 / 0.08);
+    color: var(--ui-ally);
+}
+
+.app-shell.app-shell--hub .bt-history__tag--level {
+    border-color: rgb(236 208 122 / 0.45);
+    background: rgb(236 208 122 / 0.08);
+    color: var(--ui-gold-bright);
+}
+
+.app-shell.app-shell--hub .bt-history__tag--easy {
+    border-color: rgb(159 210 123 / 0.5);
+    background: rgb(159 210 123 / 0.08);
+    color: var(--ui-good);
+}
+
+.app-shell.app-shell--hub .bt-history__tag--hard {
+    border-color: rgb(239 138 126 / 0.55);
+    background: rgb(239 138 126 / 0.08);
+    color: var(--ui-enemy);
+}
+
+.app-shell.app-shell--hub .bt-history__tag--campaign,
+.app-shell.app-shell--hub .bt-history__tag--ranked {
+    border-color: rgb(200 162 75 / 0.6);
+    background: rgb(200 162 75 / 0.18);
+    color: #f3dfa0;
+}
+
+.app-shell.app-shell--hub .bt-history__points {
+    color: var(--ui-enemy);
+}
+
+.app-shell.app-shell--hub .bt-history__points--up {
+    color: var(--ui-good);
+}
+
+/* Barra de rolagem fina e escura nas listas que rolam por dentro. */
+.app-shell.app-shell--hub :is(.bt-history__list, .bt-stages, .app-sidebar__nav) {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(200 162 75 / 0.4) transparent;
+}
+
+/* --------------------------------------------------------------- Coleção */
+
+.app-shell.app-shell--hub .bt-collection__filter {
+    border: 1px solid var(--ui-line);
+    background: var(--ui-raised);
+    color: var(--ui-muted);
+}
+
+.app-shell.app-shell--hub .bt-collection__filter:hover {
+    border-color: var(--ui-line-strong);
+    color: var(--ui-text);
+}
+
+.app-shell.app-shell--hub .bt-collection__filter[aria-pressed='true'] {
+    border-color: #f6e3a6;
+    background: linear-gradient(#f3d98a, #c8a24b);
+    color: #1c1a2b;
+}
+
+/* --------------------------------------------- Rank, painel e personagens mais usados */
+
+.app-shell.app-shell--hub :is(.bt-rankcard__next, .bt-rankcard__record dt) {
+    color: var(--ui-muted);
+}
+
+.app-shell.app-shell--hub :is(.bt-rankcard__track, .bt-usage__track, .bt-replay__track) {
+    border: 1px solid var(--ui-line);
+    background: rgb(8 7 14 / 0.6);
+}
+
+.app-shell.app-shell--hub .bt-usage__face {
+    border: 1px solid var(--ui-line-strong);
+    background: #171527;
+}
+
+.app-shell.app-shell--hub .bt-ranked__ladder {
+    border-top-color: var(--ui-line);
+}
+
+.app-shell.app-shell--hub .bt-ranked__step--current {
+    border-color: var(--ui-line-strong);
+    background: rgb(200 162 75 / 0.12);
+    box-shadow: none;
+}
+
+/* --------------------------------------------------- Páginas em Tailwind */
+
+/*
+ * O painel, o perfil e as sessões usam as classes do Tailwind no tema escuro
+ * (dark:bg-gray-900...). Dentro da página, as cores que essas classes usam
+ * viram as do jogo: o cartão fica no painel translúcido, a borda no fio
+ * dourado e o texto apagado no pergaminho escuro.
+ */
+.app-shell.app-shell--hub .app-main {
+    --color-gray-950: rgb(8 7 14 / 0.6);
+    --color-gray-900: rgb(22 20 36 / 0.84);
+    --color-gray-800: rgb(255 240 200 / 0.06);
+    --color-gray-700: rgb(200 162 75 / 0.3);
+    --color-gray-500: #8a7f68;
+    --color-gray-400: #b9ab8a;
+    --color-gray-300: #d4c4a5;
+}
+
+.app-shell.app-shell--hub .app-main :is(.rounded-xl, .rounded-2xl) {
+    border-radius: var(--ui-radius);
+}
+
+.app-shell.app-shell--hub .app-main h1,
+.app-shell.app-shell--hub .app-main h2 {
+    color: var(--ui-gold-bright);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .app-shell.app-shell--hub :is(.bt-modes__tab, .bt-difficulty__option, .bt-btn, .bt-stage, .bt-history__item) {
+        transition: none;
+    }
+}
+
+/*
+ * A partida rápida cabe na janela e só o histórico rola. Sem a faixa do alto,
+ * a página vai da margem de cima à de baixo (72px no total).
+ */
+@media (min-width: 768px) and (min-height: 560px) {
+    .app-shell.app-shell--hub .bt-play:has(> .bt-mode--fill) {
+        height: calc(100dvh - 72px);
+        grid-template-rows: auto minmax(0, 1fr);
+    }
+}
+
+/* As cartas dos personagens continuam de pergaminho, com o texto em tinta. */
+.app-shell.app-shell--hub .bt-card {
+    color: var(--bt-ink);
+}
+
+/* O título das páginas sem título próprio (perfil, sessões...). */
+.app-page-head {
+    margin-bottom: 22px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--ui-line);
+}
+
+.app-shell .app-page-title {
+    margin: 0;
+    color: var(--ui-gold-bright);
+    font-family: var(--font-display);
+    font-size: clamp(30px, 3.4vw, 42px);
+    font-weight: 700;
+    line-height: 1.1;
+    text-shadow: 0 2px 18px rgb(236 208 122 / 0.22);
+}
+
+/* O painel: a saudação no alto, como o título das outras páginas. */
+.app-shell.app-shell--hub .app-main > .bt-dashboard__hero {
+    margin-bottom: 22px;
+}
+
+.app-shell.app-shell--hub .bt-dashboard__hero b {
+    color: var(--ui-text);
+}
+
+/*
+ * Todas as páginas na mesma coluna, centrada, com no máximo 1140px: a margem
+ * dos lados cresce em tela larga. Quem tem largura própria (o perfil) fica
+ * alinhado à esquerda da coluna, embaixo do título.
+ */
+.app-shell.app-shell--hub .app-main {
+    padding-inline: max(2.25rem, calc((100% - 1140px) / 2));
+}
+
+@media (max-width: 767px) {
+    .app-shell.app-shell--hub .app-main {
+        padding-inline: 1rem;
+    }
+}
+
+/* O botão principal dos formulários em Tailwind (salvar a senha...) também é dourado. */
+.app-shell.app-shell--hub .app-main button.bg-blue-600,
+.auth-card button.bg-blue-600 {
+    border: 1px solid #f6e3a6;
+    background: linear-gradient(#f3d98a, #c8a24b 85%);
+    box-shadow: inset 0 1px 0 rgb(255 250 230 / 0.7), 0 3px 0 #6f5416;
+    color: #1c1a2b;
+    font-weight: 700;
+}
+
+.app-shell.app-shell--hub .app-main button.bg-blue-600:hover:not(:disabled),
+.auth-card button.bg-blue-600:hover:not(:disabled) {
+    filter: brightness(1.07);
+}
+
+/* --------------------------------------------- Entrada, cadastro e senha */
+
+/* O formulário num painel escuro, como o resto do jogo, com o fio dourado. */
+.auth-card {
+    border: 1px solid var(--ui-line-strong);
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgb(36 33 54 / 0.92), rgb(18 16 30 / 0.94));
+    box-shadow:
+        inset 0 1px 0 rgb(255 236 190 / 0.08),
+        0 24px 60px rgb(0 0 0 / 0.55);
+    color: var(--ui-text);
+}
+
+.auth-card :is(h1, h2) {
+    color: var(--ui-gold-bright);
+}
+
+.auth-card a {
+    color: var(--ui-ally);
+}
+
+.auth-card label {
+    color: var(--ui-muted);
+}
+
+.auth-card :is(input, select, textarea) {
+    border-color: var(--ui-line-strong);
+    background: rgb(8 7 14 / 0.55);
+    color: var(--ui-text);
+}
+
+.auth-card :is(input, select, textarea)::placeholder {
+    color: var(--ui-faint);
+}
+
+.auth-card :is(p, span) {
+    color: var(--ui-muted);
+}
+
+.auth-card .text-red-500 {
+    color: var(--ui-enemy);
+}
+
+/* No celular as abas ocupam a largura toda, em partes iguais, numa linha só. */
+@media (max-width: 640px) {
+    .app-shell.app-shell--hub .bt-modes {
+        display: grid;
+        grid-auto-columns: minmax(0, 1fr);
+        grid-auto-flow: column;
+        width: 100%;
+    }
+
+    .app-shell.app-shell--hub .bt-modes__tab {
+        justify-content: center;
+        padding: 8px 4px 9px;
+        font-size: 15px;
+        line-height: 1.15;
+        text-align: center;
+    }
+}
+
+/* ------------------------------------------------------------------- Sala */
+
+.app-shell.app-shell--hub .bt-room__player {
+    border: 1px solid var(--ui-line);
+    border-radius: 12px;
+    background: var(--ui-raised);
+}
+
+.app-shell.app-shell--hub .bt-room__state,
+.app-shell.app-shell--hub .bt-room__versus {
+    color: var(--ui-muted);
+}
+
+/* Quem já está pronto acende em verde. */
+.app-shell.app-shell--hub .bt-room__player--ready {
+    border-color: rgb(159 210 123 / 0.6);
+    background: rgb(159 210 123 / 0.1);
+    box-shadow: 0 0 18px rgb(159 210 123 / 0.15);
+}
+
+.app-shell.app-shell--hub .bt-room__player--ready .bt-room__state {
+    color: var(--ui-good);
+}
+
+.app-shell.app-shell--hub .bt-room__player--empty {
+    border-style: dashed;
+    background: transparent;
+}
+
+/* ------------------------------------------------ Confirmação (sair da conta) */
+
+/*
+ * Uma caixa no meio da tela, por cima de tudo, com o resto escurecido atrás.
+ * Entra crescendo um pouco, para ficar claro que é uma pergunta nova.
+ */
+.ui-dialog {
+    max-width: none;
+    max-height: none;
+    margin: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--ui-text);
+    overflow: visible;
+}
+
+.ui-dialog::backdrop {
+    background: rgb(6 5 12 / 0.7);
+    animation: app-fade 0.18s ease-out;
+}
+
+.ui-dialog__box {
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+    width: min(26rem, calc(100vw - 2rem));
+    padding: 26px 26px 22px;
+    border: 1px solid var(--ui-line-strong);
+    border-radius: 18px;
+    background: linear-gradient(180deg, #24213a, #15131f);
+    box-shadow:
+        inset 0 1px 0 rgb(255 236 190 / 0.08),
+        0 28px 70px rgb(0 0 0 / 0.6);
+    text-align: center;
+    animation: ui-dialog-in 0.2s ease-out;
+}
+
+.ui-dialog__icon {
+    width: 46px;
+    height: 46px;
+    padding: 10px;
+    border: 1px solid rgb(239 138 126 / 0.45);
+    border-radius: 50%;
+    background: rgb(239 138 126 / 0.1);
+    fill: none;
+    stroke: var(--ui-enemy);
+    stroke-width: 1.7;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+.ui-dialog__title {
+    margin: 4px 0 0;
+    color: var(--ui-gold-bright);
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.15;
+}
+
+.ui-dialog__text {
+    max-width: 32ch;
+    margin: 0;
+    color: var(--ui-muted);
+    font-size: 15.5px;
+    line-height: 1.45;
+}
+
+.ui-dialog__buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    margin-top: 12px;
+}
+
+.ui-dialog__button {
+    min-height: 44px;
+    padding: 6px 14px;
+    border: 1px solid var(--ui-line-strong);
+    border-radius: 10px;
+    background: rgb(255 240 200 / 0.05);
+    color: var(--ui-text);
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background-color 0.15s,
+        filter 0.15s;
+}
+
+.ui-dialog__button:hover:not(:disabled) {
+    background: rgb(255 240 200 / 0.1);
+}
+
+.ui-dialog__button--danger {
+    border-color: #f0a093;
+    background: linear-gradient(#d8584b, #a8322c);
+    box-shadow: inset 0 1px 0 rgb(255 220 210 / 0.35), 0 3px 0 #5e1915;
+    color: #fff3e0;
+}
+
+.ui-dialog__button--danger:hover:not(:disabled) {
+    background: linear-gradient(#d8584b, #a8322c);
+    filter: brightness(1.08);
+}
+
+.ui-dialog__button:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.ui-dialog__button:focus-visible {
+    outline: 2px solid var(--ui-gold-bright);
+    outline-offset: 2px;
+}
+
+@keyframes ui-dialog-in {
+    from {
+        opacity: 0;
+        transform: scale(0.94) translateY(6px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ui-dialog__box,
+    .ui-dialog::backdrop {
+        animation: none;
+    }
+}
+
+/* ================================================================ Batalha */
+
+/*
+ * A tela da batalha (o Layout com o menu escondido) no mesmo visual: o painel
+ * de jogadas, os mostradores, o registro, o guia do tutorial e o resultado
+ * saem do pergaminho e vão para o painel escuro com o fio dourado. A arena e
+ * as figuras não mudam. As cartas de pergaminho só existem fora daqui.
+ */
+.app-shell.app-shell--hidden-menu .bt {
+    color: var(--ui-text);
+}
+
+/* A moldura da arena: o fio dourado, no lugar da borda grossa de tinta. */
+.app-shell.app-shell--hidden-menu .bt-arena {
+    border: 1px solid var(--ui-line-strong);
+    border-radius: var(--ui-radius);
+    box-shadow:
+        0 0 0 1px rgb(0 0 0 / 0.5),
+        0 18px 40px rgb(0 0 0 / 0.45);
+}
+
+/* -------------------------------------------- Painel de jogadas e registro */
+
+.app-shell.app-shell--hidden-menu :is(.bt-hud, .bt-log, .bt-coach, .bt-callout) {
+    border: 1px solid var(--ui-line);
+    border-radius: var(--ui-radius);
+    background: linear-gradient(180deg, var(--ui-panel-top), var(--ui-panel));
+    box-shadow: var(--ui-shadow);
+    color: var(--ui-text);
+}
+
+.app-shell.app-shell--hidden-menu :is(.bt-hud__title, .bt-log__title) {
+    color: var(--ui-gold-bright);
+}
+
+.app-shell.app-shell--hidden-menu :is(.bt-hud__hint, .bt-hud__waiting, .bt-log__empty) {
+    color: var(--ui-muted);
+}
+
+.app-shell.app-shell--hidden-menu .bt-hud__waiting {
+    border: 1px dashed var(--ui-line-strong);
+    border-radius: 10px;
+}
+
+/* As habilidades: botões escuros; a escolhida acende em ouro, como a aba aberta. */
+.app-shell.app-shell--hidden-menu .bt-skill {
+    border: 1px solid var(--ui-line);
+    border-radius: 10px;
+    background: var(--ui-raised);
+    box-shadow: none;
+    color: var(--ui-text);
+    transition:
+        translate 0.08s,
+        border-color 0.15s,
+        background-color 0.15s;
+}
+
+.app-shell.app-shell--hidden-menu .bt-skill:hover:not(:disabled) {
+    border-color: var(--ui-line-strong);
+    background: var(--ui-raised-hover);
+}
+
+.app-shell.app-shell--hidden-menu .bt-skill:active:not(:disabled) {
+    box-shadow: none;
+}
+
+.app-shell.app-shell--hidden-menu .bt-skill__text {
+    color: var(--ui-muted);
+}
+
+.app-shell.app-shell--hidden-menu .bt-skill__cost {
+    color: var(--ui-ally);
+}
+
+.app-shell.app-shell--hidden-menu :is(.bt-skill--selected, .bt-skill--selected:hover:not(:disabled)) {
+    border-color: #f6e3a6;
+    background: linear-gradient(#f3d98a, #c8a24b);
+    box-shadow:
+        inset 0 1px 0 rgb(255 250 230 / 0.6),
+        0 0 18px rgb(236 208 122 / 0.3);
+    color: #1c1a2b;
+}
+
+.app-shell.app-shell--hidden-menu .bt-skill--selected .bt-skill__text {
+    color: #3b3022;
+}
+
+.app-shell.app-shell--hidden-menu .bt-skill--selected .bt-skill__cost {
+    color: #1f4f9a;
+}
+
+/* A passiva não é botão: contorno tracejado em ouro e o selo "Passiva". */
+.app-shell.app-shell--hidden-menu .bt-skill--passive,
+.app-shell.app-shell--hidden-menu .bt-skill--passive:hover:not(:disabled) {
+    border: 1px dashed rgb(236 208 122 / 0.55);
+    background: rgb(200 162 75 / 0.08);
+}
+
+.app-shell.app-shell--hidden-menu .bt-skill__cost.bt-skill__cost--passive {
+    background: var(--ui-gold);
+    color: #1c1a2b;
+}
+
+/* Dano e cura base: selos escuros na cor de cada um; sobre a carta escolhida (ouro) voltam aos claros. */
+.app-shell.app-shell--hidden-menu .bt-skill__number--damage {
+    border-color: rgb(239 138 126 / 0.5);
+    background: rgb(239 138 126 / 0.12);
+    color: #f6b3aa;
+}
+
+.app-shell.app-shell--hidden-menu .bt-skill__number--heal {
+    border-color: rgb(159 210 123 / 0.5);
+    background: rgb(159 210 123 / 0.12);
+    color: #bfe3a5;
+}
+
+.app-shell.app-shell--hidden-menu .bt-skill__number--berserk {
+    border-color: #e0752e;
+    background: linear-gradient(#5e1a0c, #3a0f08);
+    color: #ffb27a;
+}
+
+.app-shell.app-shell--hidden-menu .bt-skill--selected .bt-skill__number--damage {
+    border-color: #c98f86;
+    background: #f9e3dc;
+    color: #7c211c;
+}
+
+.app-shell.app-shell--hidden-menu .bt-skill--selected .bt-skill__number--heal {
+    border-color: #9bc084;
+    background: #e4f3d8;
+    color: #2c5e1c;
+}
+
+/* Som: o botão de mudo escuro e o volume em ouro. */
+.app-shell.app-shell--hidden-menu .bt-sound__toggle {
+    border: 1px solid var(--ui-line-strong);
+    border-radius: 10px;
+    background: var(--ui-raised);
+    box-shadow: none;
+    color: var(--ui-text);
+}
+
+.app-shell.app-shell--hidden-menu .bt-sound__toggle:hover {
+    background: var(--ui-raised-hover);
+}
+
+.app-shell.app-shell--hidden-menu .bt-sound__toggle[aria-pressed='true'] {
+    color: var(--ui-enemy);
+}
+
+.app-shell.app-shell--hidden-menu .bt-sound__volume {
+    accent-color: var(--ui-gold);
+}
+
+/* O registro: cada linha com a faixa da cor do time. */
+.app-shell.app-shell--hidden-menu .bt-log__item {
+    border-left-color: var(--ui-faint);
+    color: var(--ui-muted);
+}
+
+.app-shell.app-shell--hidden-menu .bt-log__item--A {
+    border-left-color: var(--ui-ally);
+}
+
+.app-shell.app-shell--hidden-menu .bt-log__item--B {
+    border-left-color: var(--ui-enemy);
+}
+
+.app-shell.app-shell--hidden-menu .bt-log__item--end {
+    color: var(--ui-text);
+}
+
+.app-shell.app-shell--hidden-menu .bt-log__list {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(200 162 75 / 0.4) transparent;
+}
+
+/* Os botões da batalha: o principal em ouro, "Desistir" só no contorno vermelho. */
+.app-shell.app-shell--hidden-menu .bt-btn {
+    border: 1px solid #f6e3a6;
+    border-radius: 10px;
+    background: linear-gradient(#f3d98a, #c8a24b 85%);
+    box-shadow:
+        inset 0 1px 0 rgb(255 250 230 / 0.7),
+        0 4px 0 #6f5416;
+    color: #1c1a2b;
+}
+
+.app-shell.app-shell--hidden-menu .bt-btn:hover:not(:disabled) {
+    filter: brightness(1.07);
+}
+
+.app-shell.app-shell--hidden-menu .bt-btn:active:not(:disabled) {
+    box-shadow:
+        inset 0 1px 0 rgb(255 250 230 / 0.7),
+        0 1px 0 #6f5416;
+}
+
+.app-shell.app-shell--hidden-menu .bt-btn:disabled {
+    border-color: var(--ui-line);
+    background: rgb(255 240 200 / 0.07);
+    box-shadow: none;
+    color: var(--ui-faint);
+}
+
+.app-shell.app-shell--hidden-menu .bt-btn--plain {
+    border-color: var(--ui-line-strong);
+    background: var(--ui-raised);
+    box-shadow: none;
+    color: var(--ui-text);
+}
+
+.app-shell.app-shell--hidden-menu .bt-btn--plain:hover:not(:disabled) {
+    background: var(--ui-raised-hover);
+    filter: none;
+}
+
+.app-shell.app-shell--hidden-menu .bt-btn--quiet {
+    border-color: rgb(239 138 126 / 0.6);
+    background: transparent;
+    box-shadow: none;
+    color: var(--ui-enemy);
+}
+
+.app-shell.app-shell--hidden-menu .bt-btn--quiet:hover:not(:disabled) {
+    background: rgb(239 138 126 / 0.1);
+    filter: none;
+}
+
+.app-shell.app-shell--hidden-menu .bt-btn--quiet:disabled {
+    border-color: var(--ui-line);
+    color: var(--ui-faint);
+}
+
+.app-shell.app-shell--hidden-menu .bt-link {
+    color: var(--ui-ally);
+}
+
+.app-shell.app-shell--hidden-menu .bt-message--error {
+    border: 1px solid rgb(239 138 126 / 0.6);
+    border-radius: 10px;
+    background: rgb(168 50 44 / 0.18);
+    color: #f6d9d3;
+}
+
+/* ------------------------------------------------- Mostradores sobre a arena */
+
+/* O turno, a energia do inimigo e o prazo: plaquinhas escuras sobre o céu. */
+.app-shell.app-shell--hidden-menu .bt-chip {
+    border: 1px solid var(--ui-line-strong);
+    border-radius: 10px;
+    background: rgb(14 13 23 / 0.85);
+    box-shadow:
+        inset 0 1px 0 rgb(255 236 190 / 0.08),
+        0 4px 14px rgb(0 0 0 / 0.4);
+    color: var(--ui-text);
+}
+
+.app-shell.app-shell--hidden-menu .bt-chip__label {
+    color: var(--ui-muted);
+}
+
+.app-shell.app-shell--hidden-menu .bt-chip--ranked {
+    border-color: #f6e3a6;
+    background: linear-gradient(#f3d98a, #c8a24b);
+    color: #1c1a2b;
+}
+
+.app-shell.app-shell--hidden-menu .bt-chip--berserk {
+    border-color: #ff9a4a;
+    background: linear-gradient(#b3261a, #6e120c);
+    box-shadow: 0 0 14px rgb(255 84 30 / 0.7);
+    color: #ffe9c2;
+}
+
+.app-shell.app-shell--hidden-menu .bt-chip--urgent {
+    border-color: #f0a093;
+    background: linear-gradient(#d9483a, #8a1c12);
+    color: #fff3e0;
+}
+
+/* As gemas de energia: contorno claro, para aparecer no fundo escuro. */
+.app-shell.app-shell--hidden-menu .bt-energy__pip {
+    border-color: rgb(159 192 255 / 0.65);
+    background: rgb(255 255 255 / 0.06);
+}
+
+.app-shell.app-shell--hidden-menu .bt-energy__pip--full {
+    border-color: #cfe2ff;
+    background: linear-gradient(135deg, #9fd0ff, var(--bt-mana) 55%, #1f4f9a);
+    box-shadow: 0 0 6px rgb(95 160 255 / 0.55);
+}
+
+.app-shell.app-shell--hidden-menu .bt-energy__pip--locked {
+    border-color: rgb(255 240 200 / 0.18);
+    background: transparent;
+    box-shadow: none;
+}
+
+/* A fila de turnos: retratos com o fundo escuro. */
+.app-shell.app-shell--hidden-menu .bt-queue__item {
+    background: #171527;
+    box-shadow:
+        0 0 0 1px #0d0c16,
+        0 2px 6px rgb(0 0 0 / 0.5);
+}
+
+/* O aviso da habilidade (o nome dela, no alto da arena). */
+.app-shell.app-shell--hidden-menu .bt-banner {
+    border: 1px solid var(--ui-line-strong);
+    border-radius: 10px;
+    background: rgb(14 13 23 / 0.9);
+    box-shadow: 0 6px 20px rgb(0 0 0 / 0.5);
+    color: var(--ui-gold-bright);
+}
+
+/* A prévia de dano ou cura em cima do alvo. */
+.app-shell.app-shell--hidden-menu .bt-preview {
+    border: 1px solid rgb(239 138 126 / 0.75);
+    border-radius: 8px;
+    background: rgb(14 13 23 / 0.94);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 0.5);
+    color: #f6b3aa;
+}
+
+.app-shell.app-shell--hidden-menu .bt-preview__detail {
+    color: var(--ui-muted);
+}
+
+.app-shell.app-shell--hidden-menu .bt-preview__detail--shield {
+    color: var(--ui-ally);
+}
+
+.app-shell.app-shell--hidden-menu .bt-preview__tag--guard {
+    color: var(--ui-gold-bright);
+}
+
+.app-shell.app-shell--hidden-menu .bt-preview--defeats .bt-preview__detail {
+    color: #fff3e0;
+}
+
+.app-shell.app-shell--hidden-menu .bt-preview--heal {
+    border-color: rgb(159 210 123 / 0.6);
+    color: #bfe3a5;
+}
+
+.app-shell.app-shell--hidden-menu .bt-preview--defeats {
+    border-color: #f0a093;
+    background: linear-gradient(#c43d33, #a8322c);
+    color: #fff3e0;
+}
+
+/* --------------------------------------------------------- Guia do tutorial */
+
+.app-shell.app-shell--hidden-menu .bt-coach {
+    border-left: 4px solid var(--ui-gold);
+}
+
+.app-shell.app-shell--hidden-menu .bt-coach--tip {
+    border-color: var(--ui-line-strong);
+    border-left-color: var(--ui-gold-bright);
+    box-shadow:
+        0 0 0 1px rgb(236 208 122 / 0.35),
+        0 0 26px rgb(236 208 122 / 0.15),
+        var(--ui-shadow);
+}
+
+.app-shell.app-shell--hidden-menu .bt-coach__badge {
+    background: var(--ui-gold);
+    color: #1c1a2b;
+}
+
+.app-shell.app-shell--hidden-menu .bt-coach__title {
+    color: var(--ui-gold-bright);
+}
+
+.app-shell.app-shell--hidden-menu :is(.bt-coach__step, .bt-coach__text) {
+    color: var(--ui-muted);
+}
+
+.app-shell.app-shell--hidden-menu .bt-callout {
+    border-left: 4px solid var(--ui-gold);
+}
+
+.app-shell.app-shell--hidden-menu .bt-coach-label {
+    border-color: #171527;
+}
+
+/* ---------------------------------------------------------------- Resultado */
+
+.app-shell.app-shell--hidden-menu .bt-result__card {
+    border: 1px solid var(--ui-line-strong);
+    border-radius: 18px;
+    background: linear-gradient(180deg, #24213a, #15131f);
+    box-shadow:
+        inset 0 1px 0 rgb(255 236 190 / 0.08),
+        0 28px 70px rgb(0 0 0 / 0.6);
+    color: var(--ui-text);
+}
+
+.app-shell.app-shell--hidden-menu .bt-result--lost .bt-result__card {
+    border-color: rgb(239 138 126 / 0.45);
+    background: linear-gradient(180deg, #2a1e2a, #15121b);
+}
+
+.app-shell.app-shell--hidden-menu .bt-result__card--won {
+    border-color: var(--ui-gold-bright);
+    box-shadow:
+        0 0 0 1px var(--ui-gold-bright),
+        0 0 70px rgb(236 208 122 / 0.45),
+        0 28px 70px rgb(0 0 0 / 0.6);
+}
+
+.app-shell.app-shell--hidden-menu .bt-result__title {
+    color: var(--ui-enemy);
+}
+
+.app-shell.app-shell--hidden-menu .bt-result__card--won .bt-result__title {
+    color: var(--ui-gold-bright);
+    text-shadow: 0 0 24px rgb(236 208 122 / 0.45);
+}
+
+.app-shell.app-shell--hidden-menu .bt-result__text {
+    color: var(--ui-muted);
+}
+
+.app-shell.app-shell--hidden-menu .bt-result__face {
+    background: #171527;
+}
+
+/* O replay: a etiqueta da velocidade e a barra de progresso no escuro. */
+.app-shell.app-shell--hidden-menu .bt-field-label {
+    color: var(--ui-muted);
+}
+
+.app-shell.app-shell--hidden-menu .bt-replay__track {
+    border: 1px solid var(--ui-line);
+    background: rgb(8 7 14 / 0.6);
+}
+
+/* Os pontos da ranqueada no resultado: selo escuro, vermelho na perda e verde no ganho. */
+.app-shell.app-shell--hidden-menu .bt-result__rating {
+    border: 1px solid rgb(239 138 126 / 0.6);
+    background: rgb(239 138 126 / 0.14);
+    color: #f6b3aa;
+}
+
+.app-shell.app-shell--hidden-menu .bt-result__rating--up {
+    border-color: rgb(159 210 123 / 0.6);
+    background: rgb(159 210 123 / 0.14);
+    color: #bfe3a5;
+}
+
+/* Os avisos (como funciona a ranqueada): painel escuro com a faixa dourada à esquerda. */
+.app-shell.app-shell--hub .bt-callout {
+    border: 1px solid var(--ui-line);
+    border-left: 4px solid var(--ui-gold);
+    border-radius: 12px;
+    background: linear-gradient(180deg, var(--ui-panel-top), var(--ui-panel));
+    box-shadow: var(--ui-shadow);
+    color: var(--ui-muted);
+}
+
+/* Confirmações que não são de perigo: o botão de confirmar em ouro e o ícone dourado. */
+.ui-dialog__button--primary {
+    border-color: #f6e3a6;
+    background: linear-gradient(#f3d98a, #c8a24b 85%);
+    box-shadow: inset 0 1px 0 rgb(255 250 230 / 0.7), 0 3px 0 #6f5416;
+    color: #1c1a2b;
+}
+
+.ui-dialog__button--primary:hover:not(:disabled) {
+    background: linear-gradient(#f3d98a, #c8a24b 85%);
+    filter: brightness(1.07);
+}
+
+:is(.ui-dialog--warning, .ui-dialog--info) .ui-dialog__icon {
+    border-color: rgb(236 208 122 / 0.45);
+    background: rgb(236 208 122 / 0.1);
+    stroke: var(--ui-gold-bright);
+}

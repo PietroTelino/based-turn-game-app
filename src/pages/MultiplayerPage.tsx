@@ -26,21 +26,23 @@ export function MultiplayerPage({ mode = 'casual' }: { mode?: MultiplayerMode })
     const locked = tutorialDone === false;
 
     return (
-        <Layout title={t('nav.multiplayer')}>
+        <Layout title={t('nav.multiplayer')} heading={false}>
             <div className={mode === 'ranked' ? 'bt bt-play bt-ranked' : 'bt bt-play'}>
-                <header>
-                    <h2 className='bt-title'>{t('multiplayer.title')}</h2>
-                    <p className='bt-lead'>{t('multiplayer.subtitle')}</p>
+                {/* O título e as abas numa faixa só, no alto da página. */}
+                <header className='bt-hero'>
+                    <div className='bt-hero__text'>
+                        <h2 className='bt-title'>{t('multiplayer.title')}</h2>
+                        <p className='bt-lead'>{t('multiplayer.subtitle')}</p>
+                    </div>
+                    <ModeTabs
+                        label={t('multiplayer.modes')}
+                        tabs={[
+                            { to: '/multiplayer', label: t('multiplayer.tabs.casual'), locked },
+                            { to: '/multiplayer/ranked', label: t('multiplayer.tabs.ranked'), locked },
+                            { to: '/multiplayer/collection', label: t('multiplayer.tabs.collection') },
+                        ]}
+                    />
                 </header>
-
-                <ModeTabs
-                    label={t('multiplayer.modes')}
-                    tabs={[
-                        { to: '/multiplayer', label: t('multiplayer.tabs.casual'), locked },
-                        { to: '/multiplayer/ranked', label: t('multiplayer.tabs.ranked'), locked },
-                        { to: '/multiplayer/collection', label: t('multiplayer.tabs.collection') },
-                    ]}
-                />
 
                 {/* A coleção não é partida: fica aberta mesmo sem o tutorial. */}
                 {mode === 'collection' ? (

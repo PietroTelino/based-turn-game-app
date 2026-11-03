@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 
 interface ConfirmOptions {
     title: string;
@@ -14,36 +14,47 @@ interface ConfirmContextData {
 
 const ConfirmContext = createContext<ConfirmContextData | null>(null);
 
-const CONFIRM_BUTTON_STYLES: Record<string, string> = {
-    danger: 'bg-red-600 hover:bg-red-700 text-white',
-    warning: 'bg-yellow-500 hover:bg-yellow-600 text-white',
-    info: 'bg-blue-600 hover:bg-blue-700 text-white',
-}
+/** O ícone no alto da caixa, pelo tipo da pergunta (traço, 24 x 24). */
+const ICONS: Record<NonNullable<ConfirmOptions['variant']>, React.ReactNode> = {
+    // Bandeira: desistir, encerrar, apagar.
+    danger: <path d='M5 21V4M5 4h11l-2 4 2 4H5' />,
+    warning: <path d='M12 3 2 20h20zM12 10v4M12 17h.01' />,
+    info: <path d='M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 11v6M12 7.5h.01' />,
+};
 
+/**
+ * As perguntas de confirmação do jogo (desistir da batalha, encerrar uma
+ * sessão...), todas na mesma caixa da confirmação de sair da conta: o
+ * <dialog> do navegador aberto como modal, que fica por cima de tudo, prende o
+ * foco e fecha com Esc. O foco começa em "cancelar", para Enter sem querer não
+ * confirmar uma ação sem volta.
+ */
 export function ConfirmProvider({ children }: { children: React.ReactNode }) {
     const [options, setOptions] = useState<ConfirmOptions | null>(null);
-
-    const [resolveRef, setResolveRef] = useState<((value: boolean) => void) | null>(null);
+    const resolveRef = useRef<((value: boolean) => void) | null>(null);
+    const dialogRef = useRef<HTMLDialogElement>(null);
 
     function confirm(opts: ConfirmOptions): Promise<boolean> {
+        // Uma pergunta nova no lugar de outra ainda aberta: a antiga conta como "não".
+        resolveRef.current?.(false);
         setOptions(opts);
 
         return new Promise((resolve) => {
-            setResolveRef(() => resolve);
+            resolveRef.current = resolve;
         });
     }
 
-    function handleConfirm() {
-        resolveRef?.(true);
+    function answer(value: boolean) {
+        resolveRef.current?.(value);
+        resolveRef.current = null;
         setOptions(null);
-        setResolveRef(null);
     }
 
-    function handleCancel() {
-        resolveRef?.(false);
-        setOptions(null);
-        setResolveRef(null);
-    }
+    useEffect(() => {
+        const dialog = dialogRef.current;
+
+        if (dialog && options && !dialog.open) dialog.showModal();
+    }, [options]);
 
     const variant = options?.variant ?? 'danger';
 
@@ -52,34 +63,44 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
             {children}
 
             {options && (
-                <div className='fixed inset-0 z-50 flex items-center justify-center'>
-                    <div
-                        className='absolute inset-0 bg-black/40'
-                        onClick={handleCancel}
-                    />
-                    <div className='relative bg-white rounded-2xl shadow-lg w-full max-w-sm mx-4 p-6 flex flex-col gap-4'>
-                        <h2 className='text-base font-semibold text-gray-900'>
+                <dialog
+                    ref={dialogRef}
+                    className={`ui-dialog ui-dialog--${variant}`}
+                    aria-labelledby='confirm-title'
+                    aria-describedby='confirm-text'
+                    onCancel={(event) => {
+                        event.preventDefault();
+                        answer(false);
+                    }}
+                    // Clique fora da caixa (no fundo escurecido) também desiste.
+                    onClick={(event) => {
+                        if (event.target === event.currentTarget) answer(false);
+                    }}
+                >
+                    <div className='ui-dialog__box'>
+                        <svg className='ui-dialog__icon' viewBox='0 0 24 24' aria-hidden='true'>
+                            {ICONS[variant]}
+                        </svg>
+                        <h2 id='confirm-title' className='ui-dialog__title'>
                             {options.title}
                         </h2>
-                        <p className='text-sm text-gray-600'>
+                        <p id='confirm-text' className='ui-dialog__text'>
                             {options.message}
                         </p>
-                        <div className='flex gap-2 justify-end'>
-                            <button
-                                onClick={handleCancel}
-                                className='px-4 py-2 text-sm rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors'
-                            >
+                        <div className='ui-dialog__buttons'>
+                            <button type='button' className='ui-dialog__button' autoFocus onClick={() => answer(false)}>
                                 {options.cancelLabel ?? 'Cancelar'}
                             </button>
                             <button
-                                onClick={handleConfirm}
-                                className={`px-4 py-2 text-sm rounded-lg transition-colors ${CONFIRM_BUTTON_STYLES[variant]}`}
+                                type='button'
+                                className={`ui-dialog__button ${variant === 'danger' ? 'ui-dialog__button--danger' : 'ui-dialog__button--primary'}`}
+                                onClick={() => answer(true)}
                             >
                                 {options.confirmLabel ?? 'Confirmar'}
                             </button>
                         </div>
                     </div>
-                </div>
+                </dialog>
             )}
         </ConfirmContext.Provider>
     );

@@ -2758,18 +2758,12 @@
 }
 
 /*
- * Fora dos painéis, o texto fica sobre o fundo do app, que muda com o tema:
- * no escuro, títulos e textos soltos vão para o pergaminho, e os que estão
- * dentro de um painel de pergaminho continuam em tinta.
+ * Na batalha, títulos e textos soltos ficam no pergaminho claro, sobre o
+ * fundo escuro. As cores dos painéis da batalha e das outras telas estão em
+ * src/styles/ui.css.
  */
-.dark .bt-play > header,
-.dark .bt :is(.bt-title, .bt-subtitle, .bt-lead, .bt-message) {
+.app-shell--hidden-menu .bt :is(.bt-title, .bt-subtitle, .bt-lead, .bt-message) {
     color: var(--bt-paper);
-}
-
-.dark .bt :is(.bt-panel, .bt-callout, .bt-coach, .bt-banner, .bt-result__card, .bt-hud, .bt-log, .bt-history__item, .bt-queue__item, .bt-chip)
-    :is(.bt-title, .bt-subtitle, .bt-lead, .bt-message) {
-    color: var(--bt-ink);
 }
 
 .bt-message {
@@ -5954,14 +5948,6 @@
     left: 0;
     height: 3px;
     background: var(--bt-paper-light);
-}
-
-.dark .bt-modes {
-    border-bottom-color: var(--bt-gold);
-}
-
-.dark .bt-modes__tab {
-    border-color: var(--bt-gold);
 }
 
 /* ------------------------------------------------------- Dificuldade da IA */

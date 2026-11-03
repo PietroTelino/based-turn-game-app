@@ -53,22 +53,24 @@ export function PlayPage({ mode = 'quick' }: { mode?: SinglePlayerMode }) {
     const needsCatalog = showGame || mode === 'collection';
 
     return (
-        <Layout title={t('nav.play')}>
+        <Layout title={t('nav.play')} heading={false}>
             <div className='bt bt-play'>
-                <header>
-                    <h2 className='bt-title'>{t('singlePlayer.title')}</h2>
-                    <p className='bt-lead'>{t('singlePlayer.subtitle')}</p>
+                {/* O título e as abas numa faixa só, no alto da página. */}
+                <header className='bt-hero'>
+                    <div className='bt-hero__text'>
+                        <h2 className='bt-title'>{t('singlePlayer.title')}</h2>
+                        <p className='bt-lead'>{t('singlePlayer.subtitle')}</p>
+                    </div>
+                    <ModeTabs
+                        label={t('singlePlayer.modes')}
+                        tabs={[
+                            { to: '/play/tutorial', label: t('singlePlayer.tabs.tutorial') },
+                            { to: '/play', label: t('singlePlayer.tabs.quick'), locked },
+                            { to: '/play/campaign', label: t('singlePlayer.tabs.campaign'), locked },
+                            { to: '/play/collection', label: t('singlePlayer.tabs.collection') },
+                        ]}
+                    />
                 </header>
-
-                <ModeTabs
-                    label={t('singlePlayer.modes')}
-                    tabs={[
-                        { to: '/play/tutorial', label: t('singlePlayer.tabs.tutorial') },
-                        { to: '/play', label: t('singlePlayer.tabs.quick'), locked },
-                        { to: '/play/campaign', label: t('singlePlayer.tabs.campaign'), locked },
-                        { to: '/play/collection', label: t('singlePlayer.tabs.collection') },
-                    ]}
-                />
 
                 {/* O tutorial carrega o próprio time; as outras abas, o catálogo e o histórico. */}
                 {mode === 'tutorial' && <TutorialLobby required={locked} />}
@@ -313,7 +315,8 @@ function History({ battles }: { battles: BattleSummary[] }) {
             ) : (
                 <ul className='bt-history__list'>
                     {battles.map((battle) => (
-                        <li key={battle.id} className='bt-history__item'>
+                        // O resultado também vira cor: uma faixa verde (vitória), vermelha (derrota) ou dourada (em andamento).
+                        <li key={battle.id} className={`bt-history__item bt-history__item--${battle.status === 'in_progress' ? 'live' : battle.winner === battle.playerTeam ? 'won' : 'lost'}`}>
                             <span>
                                 <b>{t(battleLabelKey(battle), { turn: battle.turn })}</b>
                                 {battle.ranked ? (

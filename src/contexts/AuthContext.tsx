@@ -15,12 +15,13 @@ interface AuthContextData {
 
 const AuthContext = createContext<AuthContextData | null>(null);
 
-function applyTheme(theme: 'light' | 'dark') {
-    if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
-    } else {
-        document.documentElement.classList.remove('dark');
-    }
+/**
+ * O jogo tem uma aparência só, a escura (a mesma da seleção de personagens):
+ * a preferência de tema que a conta guardou não muda mais a tela. A função
+ * continua aqui para quem ainda a chama.
+ */
+function applyTheme(_theme: 'light' | 'dark') {
+    document.documentElement.classList.add('dark');
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {

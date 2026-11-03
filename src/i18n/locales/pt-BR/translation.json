@@ -27,6 +27,13 @@
         "menu": "Menu",
         "closeMenu": "Fechar menu"
     },
+    "logoutConfirm": {
+        "title": "Sair da conta?",
+        "text": "Você vai voltar para a tela de entrada e precisará entrar de novo para continuar jogando.",
+        "stay": "Continuar jogando",
+        "leave": "Sair",
+        "leaving": "Saindo..."
+    },
     "auth": {
         "login": {
             "title": "Entrar",

@@ -27,6 +27,13 @@
         "menu": "Menu",
         "closeMenu": "Close menu"
     },
+    "logoutConfirm": {
+        "title": "Log out?",
+        "text": "You will go back to the sign-in screen and will need to sign in again to keep playing.",
+        "stay": "Keep playing",
+        "leave": "Log out",
+        "leaving": "Logging out..."
+    },
     "auth": {
         "login": {
             "title": "Sign in",

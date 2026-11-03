@@ -1,6 +1,6 @@
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '@/contexts/AuthContext';
+import { LogoutDialog } from './LogoutDialog';
 
 interface HeaderProps {
     title: string;
@@ -10,13 +10,8 @@ interface HeaderProps {
 
 export function Header({ title, menu }: HeaderProps) {
     const { t } = useTranslation();
-    const { logout } = useAuth();
-    const navigate = useNavigate();
-
-    async function handleLogout() {
-        await logout();
-        navigate('/login');
-    }
+    /** A pergunta "Sair da conta?" está aberta. */
+    const [isConfirming, setIsConfirming] = useState(false);
 
     return (
         <header className='app-header'>
@@ -35,9 +30,10 @@ export function Header({ title, menu }: HeaderProps) {
                 )}
                 <h1 className='app-header__title'>{title}</h1>
             </div>
-            <button onClick={handleLogout} className='app-header__logout'>
+            <button onClick={() => setIsConfirming(true)} className='app-header__logout'>
                 {t('nav.logout')}
             </button>
+            <LogoutDialog open={isConfirming} onClose={() => setIsConfirming(false)} />
         </header>
     );
 }
