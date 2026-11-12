@@ -7479,3 +7479,52 @@
         transition: none;
     }
 }
+
+/* ------------------------------------------------------------ Arena em 3D */
+
+/*
+ * A pintura do cenário, numa camada própria que a cena 3D move junto com a
+ * câmera (src/battle/arena3d.ts). Ela herda o fundo da arena, com o mesmo
+ * tamanho e posição; a arena continua com a pintura embaixo, então nada
+ * aparece vazio quando a câmera treme.
+ */
+.bt-arena__backdrop {
+    position: absolute;
+    z-index: -2;
+    inset: 0;
+    background: inherit;
+    transform-origin: 0 0;
+    pointer-events: none;
+}
+
+/*
+ * O canvas das figuras, sombras e luzes: por cima da pintura e atrás de tudo
+ * o mais. Fica no mesmo nível do painel de efeitos (.bt-team::after, -1), mas
+ * vem antes no HTML, então o painel passa por cima dele.
+ */
+.bt-arena__canvas {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+/*
+ * Com a cena 3D ligada, as figuras da página ficam invisíveis, mas seguem
+ * animando: a cena copia delas o avanço, o tremor e a queda. Os projéteis e
+ * as áreas desenhados pela página também saem (no 3D a flecha é da cena). A
+ * sombra colorida no chão fica: é ela que diz de que time é cada um.
+ */
+.bt-arena[data-scene3d] .bt-unit__sprite {
+    visibility: hidden;
+}
+
+.bt-arena[data-scene3d] .bt-fx {
+    display: none;
+}
+
+.bt-arena[data-scene3d] .bt-unit__stage {
+    will-change: transform;
+}

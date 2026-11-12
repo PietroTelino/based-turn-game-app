@@ -21,6 +21,8 @@ export interface SkillFx {
     combo: boolean;
     /** Golpe corpo a corpo que gasta energia (o Golpe Trovejante): quem tem as poses `heavy-*` usa elas no lugar das do ataque básico. */
     heavy: boolean;
+    /** A habilidade (ou a passiva) que está sendo usada: a cena 3D escolhe a animação por ela. */
+    skillId: string;
     sourceId: string;
     targetIds: string[];
     /** Não é uma habilidade: é a passiva de começo de vez da unidade agindo sozinha. */
@@ -58,6 +60,7 @@ export function skillFxOf(event: Extract<BattleEvent, { type: 'skill_used' | 'co
         rain: delivery === 'area' && skill?.ranged === true,
         combo: delivery === 'melee' && (skill?.effects.filter((effect) => effect.type === 'damage').length ?? 0) > 1,
         heavy: delivery === 'melee' && (skill?.energyCost ?? 0) > 0,
+        skillId: event.skillId,
         sourceId: event.unitId,
         targetIds: event.targetIds,
         passive: false,
@@ -90,6 +93,7 @@ export function passiveFxOf(event: Extract<BattleEvent, { type: 'passive_trigger
         rain: false,
         combo: false,
         heavy: false,
+        skillId: event.passiveId,
         sourceId: event.unitId,
         targetIds: event.targetIds,
         passive: true,

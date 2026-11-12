@@ -92,6 +92,11 @@ export function UnitToken({ unit, units, isActive, acting, isHit, isHealed, isMo
             type='button'
             className={classes}
             data-unit-id={unit.id}
+            // A cena 3D (battle/arena3d.ts) escolhe o modelo pelo personagem e pela forma.
+            data-character={unit.characterId}
+            data-form={unit.form ?? ''}
+            // Provocando: na cena 3D, ele apara os golpes que recebe.
+            data-taunt={statuses.some((status) => status.kind === 'taunt') ? '1' : undefined}
             disabled={!isTargetable}
             onClick={() => onSelect(unit.id)}
             aria-label={[

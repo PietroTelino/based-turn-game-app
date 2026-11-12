@@ -84,7 +84,7 @@
         }
     },
     "dashboard": {
-        "greeting": "Hello, {{name}} 👋",
+        "greeting": "Hello, {{name}}",
         "welcome": "Welcome back. You are logged in as",
         "loading": "Loading your dashboard...",
         "loadError": "Could not load the dashboard. Check that the API is running and reload the page.",
@@ -932,5 +932,13 @@
         "lockedText": "This match unlocks once you win the training battle. It only takes a few minutes, and it teaches what you will need here.",
         "goToTutorial": "Go to the tutorial",
         "lockedTab": "locked until you play the tutorial"
+    },
+    "modelLoading": {
+        "title": "Preparing the characters",
+        "lead": "Heroes and enemies are loaded once, so battles open without waiting.",
+        "starting": "Starting download…",
+        "downloading": "Downloading: {{loaded}} of {{total}} MB",
+        "building": "Building characters: {{done}} of {{total}}",
+        "note": "Next time your browser will already have the files, so this will be faster."
     }
 }

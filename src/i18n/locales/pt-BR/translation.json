@@ -84,7 +84,7 @@
         }
     },
     "dashboard": {
-        "greeting": "Olá, {{name}} 👋",
+        "greeting": "Olá, {{name}}",
         "welcome": "Bem-vindo de volta. Você está logado como",
         "loading": "Carregando o seu painel...",
         "loadError": "Não foi possível carregar o painel. Confira se a API está no ar e recarregue a página.",
@@ -932,5 +932,13 @@
         "lockedText": "Esta partida fica liberada quando você vence a batalha de treino. São poucos minutos, e ela ensina o que você vai precisar aqui.",
         "goToTutorial": "Ir para o tutorial",
         "lockedTab": "travada até você fazer o tutorial"
+    },
+    "modelLoading": {
+        "title": "Preparando os personagens",
+        "lead": "Os heróis e inimigos estão sendo carregados uma única vez, para as batalhas abrirem sem espera.",
+        "starting": "Começando o download…",
+        "downloading": "Baixando: {{loaded}} de {{total}} MB",
+        "building": "Montando os personagens: {{done}} de {{total}}",
+        "note": "Na próxima vez o navegador já terá os arquivos e isto será mais rápido."
     }
 }

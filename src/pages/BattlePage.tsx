@@ -4,6 +4,7 @@ import { Layout } from '@/components/Layout';
 import { BattleLog, EnergyPips, SkillBar, TurnQueue } from '@/components/battle/BattleHud';
 import { ReplayBar } from '@/components/battle/ReplayBar';
 import { CharacterArt } from '@/components/battle/CharacterArt';
+import { Arena3DLayer } from '@/components/battle/Arena3DLayer';
 import { FxLayer } from '@/components/battle/FxLayer';
 import { SoundControl } from '@/components/battle/SoundControl';
 import { TutorialGuide } from '@/components/battle/TutorialGuide';
@@ -189,6 +190,9 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
                     .join(' ')}
                 data-arena={state.arena ?? 'muralha'}
             >
+                {/* O cenário e as figuras em 3D: vêm primeiro, atrás de todo o resto da arena. */}
+                <Arena3DLayer skill={effects.skill} impacts={effects.impacts} quake={effects.quake} />
+
                 {/* Vem antes de tudo para ficar só sobre o cenário, atrás das figuras e dos selos. */}
                 {berserk > 0 && !isOver && <span className='bt-berserk-veil' aria-hidden='true' />}
 
