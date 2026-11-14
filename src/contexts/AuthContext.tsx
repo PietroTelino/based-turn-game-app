@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { login as loginRequest, logout as logoutRequest } from '@/api/auth';
+import { clearProgression } from '@/hooks/useProgression';
 import type { User } from '@/types';
 
 interface AuthContextData {
@@ -60,6 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     async function logout() {
+        clearProgression();
         const refreshToken = localStorage.getItem('refreshToken');
 
         if (refreshToken) {

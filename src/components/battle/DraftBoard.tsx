@@ -20,6 +20,8 @@ interface DraftBoardProps {
     onLeave?: () => void;
     /** O cenário de fundo (o da fase, na campanha). Sem ele, a muralha. */
     arena?: string;
+    /** Personagens que o jogador ainda não desbloqueou: aparecem com o cadeado e não dá para escolher. */
+    locked?: string[];
 }
 
 /** Abaixo disto o relógio fica vermelho. */
@@ -62,7 +64,7 @@ function normalize(text: string): string {
  * dura: nada fica escondido embaixo da dobra. Vai direto no <body> (portal),
  * para nenhum contêiner da página limitar o tamanho dela.
  */
-export function DraftBoard({ draft, deadline, characters, isChoosing, onChoose, title, opponentTitle, onLeave, arena }: DraftBoardProps) {
+export function DraftBoard({ draft, deadline, characters, isChoosing, onChoose, title, opponentTitle, onLeave, arena, locked = [] }: DraftBoardProps) {
     const { t } = useTranslation();
     const [selected, setSelected] = useState<string | null>(null);
     const [query, setQuery] = useState('');
@@ -203,6 +205,7 @@ export function DraftBoard({ draft, deadline, characters, isChoosing, onChoose, 
                                 const mine = draft.teams[draft.you].includes(character.id);
                                 const theirs = draft.teams[enemy].includes(character.id);
                                 const valid = draft.choices.includes(character.id);
+                                const isLocked = locked.includes(character.id);
 
                                 return (
                                     <li key={character.id}>
@@ -215,18 +218,24 @@ export function DraftBoard({ draft, deadline, characters, isChoosing, onChoose, 
                                                 theirs && 'bt-draft__tile--theirs',
                                                 selected === character.id && 'bt-draft__tile--selected',
                                                 isMyTurn && valid && 'bt-draft__tile--valid',
+                                                isLocked && 'bt-draft__tile--locked',
                                             ]
                                                 .filter(Boolean)
                                                 .join(' ')}
                                             // Fora da sua vez dá para destacar e ler a ficha; banido e repetido no seu time, não.
                                             disabled={banned || mine}
                                             aria-pressed={selected === character.id}
-                                            title={banned ? t('ranked.draft.bannedTag') : mine ? t('ranked.draft.inYourTeam') : theirs ? t('ranked.draft.inTheirTeam') : undefined}
+                                            title={isLocked ? t('progression.lockedHint') : banned ? t('ranked.draft.bannedTag') : mine ? t('ranked.draft.inYourTeam') : theirs ? t('ranked.draft.inTheirTeam') : undefined}
                                             onClick={() => setSelected(character.id)}
                                             onDoubleClick={() => isMyTurn && valid && !isChoosing && onChoose(character.id)}
                                         >
                                             <span className='bt-draft__portrait'>
                                                 <CharacterArt characterId={character.id} kind='face' className='bt-queue__sprite' />
+                                                {isLocked && !mine && !theirs && (
+                                                    <span className='bt-draft__mark bt-draft__mark--lock' aria-label={t('progression.locked')}>
+                                                        🔒
+                                                    </span>
+                                                )}
                                                 {(banned || mine || theirs) && (
                                                     <span className='bt-draft__mark'>
                                                         {banned ? t('ranked.draft.bannedTag') : mine ? t('ranked.draft.youShort') : t('ranked.draft.themShort')}
@@ -292,7 +301,9 @@ export function DraftBoard({ draft, deadline, characters, isChoosing, onChoose, 
                             disabled={!selected || !draft.choices.includes(selected) || isChoosing}
                             onClick={() => selected && onChoose(selected)}
                         >
-                            {selected && draft.choices.includes(selected)
+                            {selected && locked.includes(selected) && current.kind === 'pick'
+                                ? t('progression.locked')
+                                : selected && draft.choices.includes(selected)
                                 ? t(current.kind === 'ban' ? 'ranked.draft.confirmBan' : 'ranked.draft.confirmPick', { name: nameOf(selected) })
                                 : t(current.kind === 'ban' ? 'ranked.draft.chooseBan' : 'ranked.draft.choosePick')}
                         </button>

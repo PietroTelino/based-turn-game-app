@@ -15,6 +15,7 @@ import { useBattle } from '@/hooks/useBattle';
 import { useTutorial } from '@/hooks/useTutorial';
 import { followsStep } from '@/battle/tutorial';
 import type { BattleResponse, TeamId } from '@/types/battle';
+import { BattleRewards } from '@/components/battle/BattleRewards';
 import '@/styles/battle.css';
 
 /** 75 -> "1:15": o prazo da vez, na partida ranqueada. */
@@ -287,6 +288,8 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
                                     {t(ratingKey(view.ratingChange), { count: Math.abs(view.ratingChange) })}
                                 </p>
                             )}
+                            {/* O ouro e as conquistas desta batalha (o replay não ganha nada de novo). */}
+                            {!isReplay && <BattleRewards battleId={battleId} />}
                             {/* Quem do seu time ficou de pé */}
                             <ul className='bt-result__team' aria-label={t('battle.survivors')}>
                                 {state.units

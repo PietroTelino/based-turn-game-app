@@ -7479,3 +7479,237 @@
         transition: none;
     }
 }
+
+/* ------------------------------------------------- Conquistas */
+
+.bt-achievements__list {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.bt-achievement {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px;
+    border: 1px solid var(--ui-line, rgb(200 162 75 / 0.24));
+    border-radius: 12px;
+    background: rgb(22 20 36 / 0.88);
+}
+
+.bt-achievement--done {
+    border-color: rgb(236 208 122 / 0.6);
+    background: linear-gradient(90deg, rgb(200 162 75 / 0.16), rgb(22 20 36 / 0.88) 60%);
+}
+
+.bt-achievement__seal {
+    display: grid;
+    width: 56px;
+    height: 56px;
+    place-items: center;
+    overflow: hidden;
+    border: 2px solid rgb(200 162 75 / 0.55);
+    border-radius: 50%;
+    background: rgb(0 0 0 / 0.35);
+    color: #ecd07a;
+    font-size: 1.6rem;
+}
+
+.bt-achievement:not(.bt-achievement--done) .bt-achievement__face {
+    filter: grayscale(0.85) brightness(0.7);
+}
+
+.bt-achievement__face {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.bt-achievement__name {
+    margin: 0;
+    color: #efe3c4;
+    font-family: var(--font-display, inherit);
+    font-size: 1.05rem;
+}
+
+.bt-achievement__goal,
+.bt-achievement__status {
+    margin: 2px 0 0;
+    color: #b9ab8a;
+    font-size: 0.88rem;
+}
+
+.bt-achievement__bar {
+    height: 6px;
+    margin-top: 6px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgb(0 0 0 / 0.4);
+}
+
+.bt-achievement__bar span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #8a6a24, #ecd07a);
+}
+
+.bt-achievement__reward {
+    display: grid;
+    justify-items: end;
+    gap: 3px;
+    font-size: 0.9rem;
+}
+
+.bt-achievement__reward-label {
+    color: #8a7f68;
+    font-size: 0.78rem;
+}
+
+.bt-achievement__unlock {
+    color: #9fc0ff;
+    font-weight: 700;
+}
+
+/* ------------------------------------------------- Loja */
+
+.bt-shop__wallet {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    color: #b9ab8a;
+    font-size: 1.05rem;
+}
+
+.bt-shop__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.bt-shop__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 12px 14px;
+    border: 1px solid rgb(200 162 75 / 0.3);
+    border-radius: 14px;
+    background: rgb(22 20 36 / 0.9);
+    text-align: center;
+}
+
+.bt-shop__item--owned {
+    border-color: rgb(159 210 123 / 0.55);
+}
+
+.bt-shop__art {
+    display: block;
+    width: 100%;
+    height: 170px;
+    overflow: hidden;
+    border-radius: 10px;
+    background: radial-gradient(circle at 50% 30%, rgb(200 162 75 / 0.18), transparent 70%);
+}
+
+.bt-shop__sprite {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.bt-shop__name {
+    margin: 0;
+    color: #efe3c4;
+    font-family: var(--font-display, inherit);
+    font-size: 1.1rem;
+}
+
+.bt-shop__role {
+    margin: 0;
+    color: #8a7f68;
+    font-size: 0.85rem;
+}
+
+.bt-shop__buttons {
+    margin-top: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+
+.app-shell .bt-shop .bt-btn.bt-shop__buy {
+    padding: 6px 12px;
+    border: 1px solid rgb(200 162 75 / 0.45);
+    background: rgb(0 0 0 / 0.35);
+    background-image: none;
+    box-shadow: none;
+}
+
+.app-shell .bt-shop .bt-btn.bt-shop__buy:hover:not(:disabled) {
+    border-color: #ecd07a;
+    background: rgb(200 162 75 / 0.18);
+}
+
+.app-shell .bt-shop .bt-btn.bt-shop__buy:disabled {
+    opacity: 0.45;
+}
+
+.bt-shop__owned {
+    margin: auto 0 0;
+    color: #9fd27b;
+    font-weight: 700;
+}
+
+.bt-shop__or {
+    margin: 0;
+    color: #8a7f68;
+    font-size: 0.78rem;
+    line-height: 1.3;
+}
+
+/* ------------------------------------------------- Personagem bloqueado na seleção e na sala */
+
+.bt-draft__tile--locked .bt-draft__portrait {
+    filter: grayscale(1) brightness(0.55);
+}
+
+.bt-draft__mark--lock {
+    background: rgb(0 0 0 / 0.6);
+}
+
+.bt-card__owned-lock {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 3;
+    font-size: 1.2rem;
+    filter: drop-shadow(0 1px 2px #000);
+}
+
+/* ------------------------------------------------- Recompensas no fim da batalha */
+
+.bt-result__rewards {
+    display: grid;
+    gap: 4px;
+    margin: 6px 0 4px;
+}
+
+.bt-result__gold,
+.bt-result__achievement {
+    margin: 0;
+    color: #efe3c4;
+}
+
+.bt-result__achievement {
+    color: #ecd07a;
+    font-weight: 700;
+}

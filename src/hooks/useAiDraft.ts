@@ -23,6 +23,8 @@ interface AiDraftInput {
     names: Record<DraftTeam, string>;
     /** A seleção acabou: os dois times, na ordem das escolhas. */
     onComplete: (team: string[], enemyTeam: string[]) => void;
+    /** Os personagens que o jogador já desbloqueou. Sem isto, todos. A IA escolhe entre todos. */
+    owned?: string[];
 }
 
 /**
@@ -31,7 +33,7 @@ interface AiDraftInput {
  * (DraftBoard). Como na ranqueada, o mesmo personagem pode estar nos dois
  * times, mas não duas vezes no mesmo.
  */
-export function useAiDraft({ characters, aiTeam, names, onComplete }: AiDraftInput) {
+export function useAiDraft({ characters, aiTeam, names, onComplete, owned }: AiDraftInput) {
     const [actions, setActions] = useState<DraftAction[]>([]);
     const completedRef = useRef(false);
     // O último onComplete: o efeito de fim não precisa recomeçar quando a função muda.
@@ -94,7 +96,7 @@ export function useAiDraft({ characters, aiTeam, names, onComplete }: AiDraftInp
         current: step ? { index, team: step.team, kind: step.kind, timeLeftMs: 0 } : null,
         banned: [],
         teams,
-        choices: isMyTurn ? characters.filter((character) => !teams.A.includes(character.id)).map((character) => character.id) : [],
+        choices: isMyTurn ? characters.filter((character) => !teams.A.includes(character.id) && (!owned || owned.includes(character.id))).map((character) => character.id) : [],
         battleId: null,
     };
 

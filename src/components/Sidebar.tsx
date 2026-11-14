@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
+import { Amount } from '@/components/battle/Currency';
+import { useProgression } from '@/hooks/useProgression';
 import { LogoutDialog } from './LogoutDialog';
 
 /**
@@ -53,6 +55,7 @@ interface SidebarProps {
 
 export function Sidebar({ id, onNavigate }: SidebarProps = {}) {
     const { user } = useAuth();
+    const progression = useProgression();
     const { t, i18n } = useTranslation();
     /** A pergunta "Sair da conta?" está aberta. */
     const [isConfirming, setIsConfirming] = useState(false);
@@ -103,6 +106,14 @@ export function Sidebar({ id, onNavigate }: SidebarProps = {}) {
                     <option value='en'>🇺🇸 English</option>
                 </select>
             </div>
+
+            {/* O saldo: ouro e diamantes (leva para a loja). */}
+            {progression && (
+                <NavLink to='/play/shop' className='app-sidebar__section app-sidebar__wallet' title={t('shop.open')}>
+                    <Amount currency='gold' value={progression.gold} />
+                    <Amount currency='diamonds' value={progression.diamonds} />
+                </NavLink>
+            )}
 
             {/* Quem está jogando, com a inicial no lugar do retrato, e o botão de sair. */}
             <div className='app-sidebar__section app-sidebar__user'>

@@ -1697,3 +1697,69 @@ html.dark body {
     background: rgb(236 208 122 / 0.1);
     stroke: var(--ui-gold-bright);
 }
+
+/* ------------------------------------------------- Recursos: moedas, saldo e o diálogo de dar recursos */
+
+.bt-coin {
+    width: 1.05em;
+    height: 1.05em;
+    flex: none;
+}
+
+.bt-amount {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.bt-amount--gold {
+    color: #f2cf6e;
+}
+
+.bt-amount--diamonds {
+    color: #9ad8ff;
+}
+
+.app-sidebar__wallet {
+    display: flex;
+    justify-content: space-around;
+    gap: 0.8rem;
+    margin: 0 0.9rem 0.6rem;
+    padding: 0.55rem 0.8rem;
+    border: 1px solid var(--ui-line);
+    border-radius: 999px;
+    background: rgb(0 0 0 / 0.22);
+    text-decoration: none;
+    font-size: 0.95rem;
+}
+
+.app-sidebar__wallet:hover {
+    border-color: var(--ui-line-strong);
+    background: var(--ui-raised-hover);
+}
+
+.ui-grant {
+    display: grid;
+    gap: 0.6rem;
+    margin: 0.8rem 0 0.4rem;
+}
+
+.ui-grant__field {
+    display: grid;
+    grid-template-columns: auto 1fr 8rem;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--ui-text);
+    text-transform: capitalize;
+}
+
+.ui-grant__field input {
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--ui-line-strong);
+    border-radius: 8px;
+    background: rgb(0 0 0 / 0.3);
+    color: var(--ui-text);
+    font: inherit;
+}

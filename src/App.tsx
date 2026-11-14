@@ -36,6 +36,8 @@ export default function App() {
                 <Route path="/play/campaign" element={<PlayPage mode='campaign' />} />
                 <Route path="/play/tutorial" element={<PlayPage mode='tutorial' />} />
                 <Route path="/play/collection" element={<PlayPage mode='collection' />} />
+                <Route path="/play/achievements" element={<PlayPage mode='achievements' />} />
+                <Route path="/play/shop" element={<PlayPage mode='shop' />} />
                 <Route path="/battle/:id" element={<BattlePage />} />
                 <Route path="/replay/:id" element={<BattlePage replay />} />
                 <Route path="/multiplayer" element={<MultiplayerPage mode='casual' />} />

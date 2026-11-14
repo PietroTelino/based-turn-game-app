@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { GrantResourcesDialog } from './GrantResourcesDialog';
 import { useTranslation } from 'react-i18next';
 import { useActiveUsers } from '@/hooks/useActiveUsers';
 import { useAuth } from '@/contexts/AuthContext';
@@ -6,6 +8,7 @@ import { StatusBadge } from '@/components/StatusBadge';
 import { UserFormModal } from './UserFormModal';
 
 export function ActiveUsersTab() {
+    const [granting, setGranting] = useState<{ id: string; name: string } | null>(null);
     const { t } = useTranslation();
     const { user: currentUser } = useAuth();
     const {
@@ -86,6 +89,17 @@ export function ActiveUsersTab() {
                                                 {new Date(user.createdAt).toLocaleDateString('pt-BR')}
                                             </td>
                                             <td className='px-4 py-3'>
+                                                {/* Dar recursos vale para todos, inclusive a própria conta (para testar a loja). */}
+                                                {!canAct && (
+                                                    <div className='flex items-center gap-3 justify-end'>
+                                                        <button
+                                                            onClick={() => setGranting({ id: user.id, name: user.name })}
+                                                            className='text-xs text-amber-600 dark:text-amber-400 hover:underline'
+                                                        >
+                                                            {t('grant.action')}
+                                                        </button>
+                                                    </div>
+                                                )}
                                                 {canAct && (
                                                 <div className='flex items-center gap-3 justify-end'>
                                                     <button
@@ -109,6 +123,12 @@ export function ActiveUsersTab() {
                                                             {t('users.actions.inactivate')}
                                                         </button>
                                                     )}
+                                                    <button
+                                                        onClick={() => setGranting({ id: user.id, name: user.name })}
+                                                        className='text-xs text-amber-600 dark:text-amber-400 hover:underline'
+                                                    >
+                                                        {t('grant.action')}
+                                                    </button>
                                                     <button
                                                         onClick={() => handleResetPassword(user.id)}
                                                         className='text-xs text-blue-600 dark:text-blue-400 hover:underline'
@@ -145,6 +165,7 @@ export function ActiveUsersTab() {
                 onCreate={handleCreate}
                 onEdit={handleEdit}
             />
+            <GrantResourcesDialog user={granting} onClose={() => setGranting(null)} />
         </>
     );
 }

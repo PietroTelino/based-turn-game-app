@@ -9,7 +9,10 @@ import { DraftBoard } from '@/components/battle/DraftBoard';
 import { ModeTabs } from '@/components/battle/ModeTabs';
 import { TutorialLobby } from '@/components/battle/TutorialLobby';
 import { TutorialLock } from '@/components/battle/TutorialLock';
+import { Achievements } from '@/components/battle/Achievements';
+import { Shop } from '@/components/battle/Shop';
 import { useAiDraft } from '@/hooks/useAiDraft';
+import { useProgression } from '@/hooks/useProgression';
 import { useCampaign } from '@/hooks/useCampaign';
 import { useDifficulty } from '@/hooks/useDifficulty';
 import { useTutorialStatus } from '@/hooks/useTutorialStatus';
@@ -19,7 +22,7 @@ import type { AiDifficulty, BattleSummary, CampaignStage, Character } from '@/ty
 import '@/styles/battle.css';
 
 /** As abas do single player: cada uma é uma rota. */
-export type SinglePlayerMode = 'tutorial' | 'quick' | 'campaign' | 'collection';
+export type SinglePlayerMode = 'tutorial' | 'quick' | 'campaign' | 'collection' | 'achievements' | 'shop';
 
 function battleLabelKey(battle: BattleSummary): string {
     if (battle.status === 'in_progress') return 'play.inProgress';
@@ -50,7 +53,7 @@ export function PlayPage({ mode = 'quick' }: { mode?: SinglePlayerMode }) {
     /** O conteúdo de uma aba de partida (enquanto não se sabe do tutorial, nada aparece). */
     const showGame = isMatch && tutorialDone === true;
     /** A aba usa o catálogo carregado (as de partida e a coleção). */
-    const needsCatalog = showGame || mode === 'collection';
+    const needsCatalog = showGame || mode === 'collection' || mode === 'achievements' || mode === 'shop';
 
     return (
         <Layout title={t('nav.play')} heading={false}>
@@ -68,6 +71,8 @@ export function PlayPage({ mode = 'quick' }: { mode?: SinglePlayerMode }) {
                             { to: '/play', label: t('singlePlayer.tabs.quick'), locked },
                             { to: '/play/campaign', label: t('singlePlayer.tabs.campaign'), locked },
                             { to: '/play/collection', label: t('singlePlayer.tabs.collection') },
+                            { to: '/play/achievements', label: t('singlePlayer.tabs.achievements') },
+                            { to: '/play/shop', label: t('singlePlayer.tabs.shop') },
                         ]}
                     />
                 </header>
@@ -85,6 +90,10 @@ export function PlayPage({ mode = 'quick' }: { mode?: SinglePlayerMode }) {
                 {showGame && !isLoading && !hasError && mode === 'campaign' && <Campaign play={play} difficulty={difficulty} onDifficulty={setDifficulty} />}
 
                 {mode === 'collection' && !isLoading && !hasError && <Collection characters={play.characters} />}
+
+                {mode === 'achievements' && !isLoading && !hasError && <Achievements characters={play.characters} />}
+
+                {mode === 'shop' && !isLoading && !hasError && <Shop characters={play.characters} />}
             </div>
         </Layout>
     );
@@ -158,7 +167,10 @@ function AiDraft({
 }) {
     const { t } = useTranslation();
     const names = useMemo(() => ({ A: t('ranked.draft.you'), B: t('singlePlayer.ai') }), [t]);
-    const { draft, choose } = useAiDraft({ characters: play.characters, names, onComplete, ...(aiTeam && { aiTeam }) });
+    const progression = useProgression();
+    const owned = progression?.owned;
+    const { draft, choose } = useAiDraft({ characters: play.characters, names, onComplete, ...(aiTeam && { aiTeam }), ...(owned && { owned }) });
+    const locked = owned ? play.characters.map((c) => c.id).filter((id) => !owned.includes(id)) : [];
 
     return (
         <DraftBoard
@@ -170,6 +182,7 @@ function AiDraft({
             title={title}
             opponentTitle={t('singlePlayer.aiTeam')}
             onLeave={onLeave}
+            locked={locked}
             {...(arena && { arena })}
         />
     );

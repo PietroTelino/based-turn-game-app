@@ -12,6 +12,7 @@ export async function createRoom(): Promise<RoomView> {
     return data;
 }
 
+/** A sala, com a seleção de personagens em dia. */
 export async function getRoom(code: string): Promise<RoomView> {
     const { data } = await api.get<RoomView>(`/rooms/${code}`);
     return data;
@@ -23,15 +24,9 @@ export async function joinRoom(code: string): Promise<RoomView> {
     return data;
 }
 
-/** Confirma o time e avisa que está pronto. Se o outro já estava, a batalha começa. */
-export async function readyInRoom(code: string, team: string[]): Promise<RoomView> {
-    const { data } = await api.post<RoomView>(`/rooms/${code}/ready`, { team });
-    return data;
-}
-
-/** Volta atrás para trocar o time. */
-export async function unreadyInRoom(code: string): Promise<RoomView> {
-    const { data } = await api.post<RoomView>(`/rooms/${code}/unready`);
+/** Bane ou escolhe `characterId` no passo da vez da seleção da sala. */
+export async function sendRoomDraftChoice(code: string, characterId: string): Promise<RoomView> {
+    const { data } = await api.post<RoomView>(`/rooms/${code}/draft`, { characterId });
     return data;
 }
 

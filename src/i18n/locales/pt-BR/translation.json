@@ -572,14 +572,14 @@
     },
     "room": {
         "title": "Sala de batalha",
-        "subtitle": "Escolha {{size}} personagens e aperte Jogar. O outro jogador só vê o seu time quando a batalha começar, e você só vê o dele.",
+        "subtitle": "Assim que o outro jogador entrar, começa a seleção de personagens, igual à da ranqueada: cada um bane um personagem e depois vocês escolhem {{size}} cada, alternando a vez. A partida não vale pontos.",
         "loading": "Entrando na sala...",
         "loadError": "Não foi possível entrar nessa sala.",
         "backToLobby": "Voltar para as salas",
         "closed": "Quem criou esta sala saiu, e ela foi fechada.",
         "closedByYou": "Você fechou esta sala.",
         "statusLabel": "Código e jogadores da sala",
-        "actionsLabel": "Confirmar o time",
+        "actionsLabel": "Ações da sala",
         "code": "Código da sala",
         "copy": "Copiar",
         "copied": "Copiado!",
@@ -588,15 +588,11 @@
         "versus": "contra",
         "nobody": "Ninguém ainda",
         "waitingOpponent": "Esperando alguém entrar",
-        "choosing": "Escolhendo o time",
-        "ready": "Pronto",
-        "play": "Jogar",
-        "changeTeam": "Trocar time",
         "leave": "Sair da sala",
-        "teamComplete": "{{count}} de {{max}} escolhidos. Aperte Jogar para confirmar o time.",
-        "waitingJoin": "Time confirmado. A batalha começa quando alguém entrar na sala e também apertar Jogar.",
-        "waitingReady": "Time confirmado. Esperando {{name}} apertar Jogar.",
-        "starting": "Os dois estão prontos. Começando a batalha..."
+        "waitingJoin": "A seleção de personagens começa assim que alguém entrar na sala.",
+        "starting": "Seleção encerrada. Começando a batalha...",
+        "inRoom": "Na sala",
+        "draftTitle": "Partida casual"
     },
     "ranked": {
         "title": "Partida ranqueada",
@@ -875,7 +871,9 @@
             "tutorial": "Tutorial",
             "quick": "Partida rápida",
             "campaign": "Campanha",
-            "collection": "Coleção"
+            "collection": "Coleção",
+            "achievements": "Conquistas",
+            "shop": "Loja"
         },
         "quickLead": "Escolha o nível da IA e monte o seu time numa seleção contra ela: vocês escolhem alternando, um personagem por vez. O cenário é sorteado.",
         "quickTitle": "Nova partida rápida",
@@ -936,5 +934,82 @@
         "lockedText": "Esta partida fica liberada quando você vence a batalha de treino. São poucos minutos, e ela ensina o que você vai precisar aqui.",
         "goToTutorial": "Ir para o tutorial",
         "lockedTab": "travada até você fazer o tutorial"
+    },
+    "progression": {
+        "gold": "ouro",
+        "diamonds": "diamantes",
+        "locked": "Bloqueado",
+        "lockedHint": "Bloqueado: desbloqueie pela conquista ou na loja",
+        "earned": "Você ganhou",
+        "achievementDone": "Conquista completa: {{name}}"
+    },
+    "achievements": {
+        "loading": "Carregando conquistas...",
+        "summary": "{{done}} de {{total}} conquistas completas",
+        "progress": "{{progress}} / {{goal}}",
+        "completedOn": "Completa em {{date}}",
+        "reward": "Recompensa",
+        "unlocks": "Desbloqueia {{name}}",
+        "metric": {
+            "wins_one": "Vença {{count}} partida",
+            "wins_other": "Vença {{count}} partidas",
+            "played_one": "Termine {{count}} partida",
+            "played_other": "Termine {{count}} partidas",
+            "winsHard_one": "Vença {{count}} partida contra a IA no difícil",
+            "winsHard_other": "Vença {{count}} partidas contra a IA no difícil",
+            "campaign_one": "Vença a fase {{count}} da campanha",
+            "campaign_other": "Vença a fase {{count}} da campanha",
+            "campaignHard_one": "Vença a fase {{count}} da campanha no difícil",
+            "campaignHard_other": "Vença a fase {{count}} da campanha no difícil",
+            "pvpWins_one": "Vença {{count}} partida contra outro jogador",
+            "pvpWins_other": "Vença {{count}} partidas contra outros jogadores",
+            "rankedWins_one": "Vença {{count}} partida ranqueada",
+            "rankedWins_other": "Vença {{count}} partidas ranqueadas",
+            "characterWins_one": "Vença {{count}} partida com {{name}} no time",
+            "characterWins_other": "Vença {{count}} partidas com {{name}} no time"
+        },
+        "items": {
+            "primeira-vitoria": "Primeira vitória",
+            "aquecendo": "Aquecendo",
+            "cinco-vitorias": "Mãos ligeiras",
+            "quinze-vitorias": "Canção de batalha",
+            "quarenta-vitorias": "Raízes profundas",
+            "cem-vitorias": "Lenda viva",
+            "desafio-aceito": "Desafio aceito",
+            "mestre-do-dificil": "Sede de sangue",
+            "campanha-1": "O primeiro passo",
+            "campanha-3": "Juramento de luz",
+            "campanha-completa": "Senhor dos mortos",
+            "campanha-lendaria": "Campanha lendária",
+            "primeiro-duelo": "Primeiro duelo",
+            "duelista": "Tentação",
+            "estreia-ranqueada": "Estreia ranqueada",
+            "escalada": "Lamento da escalada",
+            "senhor-do-gelo": "Senhor do gelo",
+            "voz-da-cura": "Voz da cura"
+        }
+    },
+    "shop": {
+        "loading": "Carregando a loja...",
+        "balance": "Seu saldo",
+        "owned": "Desbloqueado",
+        "buy": "Comprar",
+        "open": "Abrir a loja",
+        "confirmTitle": "Comprar {{name}}?",
+        "confirmMessage": "{{name}} será desbloqueado por {{price}} {{currency}}.",
+        "error": "Não foi possível comprar agora.",
+        "orAchievement": "Ou pela conquista: {{goal}}",
+        "notEnough": {
+            "gold": "Ouro insuficiente",
+            "diamonds": "Diamantes insuficientes"
+        }
+    },
+    "grant": {
+        "action": "Dar recursos",
+        "title": "Recursos de {{name}}",
+        "text": "Use número negativo para tirar.",
+        "confirm": "Aplicar",
+        "cancel": "Cancelar",
+        "success": "Recursos de {{name}} atualizados."
     }
 }

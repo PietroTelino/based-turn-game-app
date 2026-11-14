@@ -2,10 +2,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getCharacters } from '@/api/battles';
-import { getRoom, joinRoom, leaveRoom, readyInRoom, unreadyInRoom } from '@/api/rooms';
+import { getRoom, joinRoom, leaveRoom, sendRoomDraftChoice } from '@/api/rooms';
 import { sfx } from '@/audio/sfx';
 import { useToast } from '@/contexts/ToastContext';
-import { TEAM_SIZE } from '@/hooks/usePlay';
 import type { Character } from '@/types/battle';
 import type { RoomView } from '@/types/room';
 
@@ -22,13 +21,13 @@ function messageOf(error: unknown): string | undefined {
 /**
  * Controla uma sala do multiplayer na tela.
  *
- * O time fica só nesta tela enquanto está sendo montado: ele vai para a API
- * quando o jogador aperta "Jogar", e mesmo lá o outro jogador não o recebe.
- * Do outro só chegam o nome e se ele já está pronto.
+ * Enquanto só o anfitrião está na sala, a tela espera. Quando o outro entra,
+ * começa a seleção de personagens, a mesma da ranqueada (banimentos e
+ * escolhas alternados, com prazo): ela vem junto com a sala.
  *
  * Não há conexão aberta com o servidor: a tela pergunta como está a sala a
  * cada POLL_INTERVAL. É assim que ela fica sabendo que alguém entrou, que o
- * outro ficou pronto e que a batalha começou.
+ * outro jogou e que a batalha começou.
  */
 export function useRoom(code: string) {
     const { t } = useTranslation();
@@ -39,9 +38,11 @@ export function useRoom(code: string) {
     const [characters, setCharacters] = useState<Character[]>([]);
     const [phase, setPhase] = useState<Phase>('loading');
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [team, setTeam] = useState<string[]>([]);
-    /** Esperando a resposta de "Jogar", "Trocar time" ou "Sair". */
-    const [isSending, setIsSending] = useState(false);
+    /** Quando acaba o prazo do passo da vez, no relógio deste navegador (ms). */
+    const [deadline, setDeadline] = useState<number | null>(null);
+    /** Esperando a resposta de uma escolha. */
+    const [isChoosing, setIsChoosing] = useState(false);
+    const [isLeaving, setIsLeaving] = useState(false);
 
     // Sobe a cada pedido que muda a sala. Uma consulta que saiu antes do pedido
     // e voltou depois traz a sala velha: ela percebe que o número mudou e é descartada.
@@ -52,16 +53,17 @@ export function useRoom(code: string) {
     const show = useCallback((fresh: RoomView) => {
         const last = lastRef.current;
 
-        // O outro entrou ou ficou pronto: um som avisa quem está olhando para outra aba.
+        // O outro entrou (a seleção começou) ou alguém jogou: um som avisa quem está olhando para outra aba.
         if (last && !last.opponent && fresh.opponent) sfx.play('turn');
-        if (last?.opponent && !last.opponent.ready && fresh.opponent?.ready) sfx.play('select');
+        if (last?.draft && fresh.draft && fresh.draft.actions.length > last.draft.actions.length) sfx.play('select');
 
         lastRef.current = fresh;
         setRoom(fresh);
+        setDeadline(fresh.draft?.current ? Date.now() + fresh.draft.current.timeLeftMs : null);
     }, []);
 
     // Abrir a tela é entrar na sala. Para quem já está nela (o anfitrião, ou
-    // quem recarregou a página), a API só devolve a sala.
+    // quem recarregou a página no meio da seleção), a API só devolve a sala.
     useEffect(() => {
         let cancelled = false;
 
@@ -71,8 +73,6 @@ export function useRoom(code: string) {
 
                 show(joined);
                 setCharacters(loaded);
-                // Quem recarregou a página depois de confirmar o time o recebe de volta.
-                setTeam(joined.you.team ?? []);
                 setPhase('open');
             })
             .catch((error) => {
@@ -88,10 +88,10 @@ export function useRoom(code: string) {
     }, [code, show]);
 
     const status = room?.status;
-    const isWaitingForStart = status === 'waiting' || status === 'selecting' || status === 'starting';
+    const isOpen = status === 'waiting' || status === 'selecting' || status === 'starting';
 
     useEffect(() => {
-        if (!isWaitingForStart) return;
+        if (!isOpen) return;
 
         let cancelled = false;
         let timer: number | undefined;
@@ -118,11 +118,11 @@ export function useRoom(code: string) {
             cancelled = true;
             window.clearTimeout(timer);
         };
-    }, [code, isWaitingForStart, show]);
+    }, [code, isOpen, show]);
 
     // A batalha começou: as duas telas vão para ela. "replace" tira a sala do
     // histórico, para o botão de voltar não cair numa sala que já acabou.
-    const battleId = status === 'started' ? room?.battleId : null;
+    const battleId = room?.battleId ?? room?.draft?.battleId ?? null;
 
     useEffect(() => {
         if (battleId) {
@@ -130,58 +130,35 @@ export function useRoom(code: string) {
         }
     }, [battleId, navigate]);
 
-    const isReady = room?.you.ready ?? false;
-    const canChoose = phase === 'open' && isWaitingForStart && status !== 'starting' && !isReady && !isSending;
+    /** Bane ou escolhe `characterId` no passo da vez. */
+    async function choose(characterId: string) {
+        if (!room?.draft || isChoosing) return;
 
-    function toggle(characterId: string) {
-        if (!canChoose) return;
-
-        sfx.play('select');
-
-        setTeam((current) => {
-            if (current.includes(characterId)) {
-                return current.filter((id) => id !== characterId);
-            }
-
-            return current.length < TEAM_SIZE ? [...current, characterId] : current;
-        });
-    }
-
-    /** Manda um pedido que muda a sala e mostra a sala que voltou. */
-    async function send(request: () => Promise<RoomView>) {
-        setIsSending(true);
+        setIsChoosing(true);
         changesRef.current += 1;
+        sfx.play('click');
 
         try {
-            show(await request());
+            show(await sendRoomDraftChoice(code, characterId));
         } catch (error) {
-            showToast(messageOf(error) ?? t('errors.genericError'), 'error');
+            showToast(messageOf(error) ?? t('ranked.draft.chooseError'), 'error');
+
+            // A seleção pode ter andado (o prazo acabou no caminho): mostra como ela está.
+            try {
+                show(await getRoom(code));
+            } catch {
+                // A próxima consulta acerta.
+            }
         } finally {
             changesRef.current += 1;
-            setIsSending(false);
+            setIsChoosing(false);
         }
     }
 
-    /** Confirma o time. Se o outro já confirmou, a resposta já traz a batalha. */
-    async function ready() {
-        if (!canChoose || team.length !== TEAM_SIZE) return;
-
-        sfx.play('click');
-        await send(() => readyInRoom(code, team));
-    }
-
-    /** Volta atrás para trocar o time, enquanto a batalha não começou. */
-    async function unready() {
-        if (!isReady || isSending || status === 'starting' || status === 'started') return;
-
-        sfx.play('click');
-        await send(() => unreadyInRoom(code));
-    }
-
     async function leave() {
-        if (isSending) return;
+        if (isLeaving) return;
 
-        setIsSending(true);
+        setIsLeaving(true);
         changesRef.current += 1;
 
         try {
@@ -193,5 +170,5 @@ export function useRoom(code: string) {
         navigate('/multiplayer');
     }
 
-    return { room, characters, phase, errorMessage, team, isReady, isSending, canChoose, toggle, ready, unready, leave };
+    return { room, characters, phase, errorMessage, deadline, isChoosing, isLeaving, choose, leave };
 }

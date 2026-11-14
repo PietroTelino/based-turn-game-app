@@ -572,14 +572,14 @@
     },
     "room": {
         "title": "Battle room",
-        "subtitle": "Pick {{size}} characters and press Play. The other player only sees your team when the battle starts, and you only see theirs.",
+        "subtitle": "As soon as the other player joins, the character draft starts, just like in ranked: each of you bans one character and then you pick {{size}} each, taking turns. This match doesn't count for points.",
         "loading": "Joining the room...",
         "loadError": "Could not join this room.",
         "backToLobby": "Back to rooms",
         "closed": "The player who created this room left, and it was closed.",
         "closedByYou": "You closed this room.",
         "statusLabel": "Room code and players",
-        "actionsLabel": "Confirm your team",
+        "actionsLabel": "Room actions",
         "code": "Room code",
         "copy": "Copy",
         "copied": "Copied!",
@@ -588,15 +588,11 @@
         "versus": "vs",
         "nobody": "Nobody yet",
         "waitingOpponent": "Waiting for someone to join",
-        "choosing": "Picking a team",
-        "ready": "Ready",
-        "play": "Play",
-        "changeTeam": "Change team",
         "leave": "Leave room",
-        "teamComplete": "{{count}} of {{max}} picked. Press Play to confirm your team.",
-        "waitingJoin": "Team confirmed. The battle starts when someone joins the room and also presses Play.",
-        "waitingReady": "Team confirmed. Waiting for {{name}} to press Play.",
-        "starting": "Both players are ready. Starting the battle..."
+        "waitingJoin": "The character draft starts as soon as someone joins the room.",
+        "starting": "Draft finished. Starting the battle...",
+        "inRoom": "In the room",
+        "draftTitle": "Casual match"
     },
     "ranked": {
         "title": "Ranked match",
@@ -875,7 +871,9 @@
             "tutorial": "Tutorial",
             "quick": "Quick match",
             "campaign": "Campaign",
-            "collection": "Collection"
+            "collection": "Collection",
+            "achievements": "Achievements",
+            "shop": "Shop"
         },
         "quickLead": "Pick the AI level and build your team in a draft against it: you take turns, one character at a time. The arena is random.",
         "quickTitle": "New quick match",
@@ -936,5 +934,82 @@
         "lockedText": "This match unlocks once you win the training battle. It only takes a few minutes, and it teaches what you will need here.",
         "goToTutorial": "Go to the tutorial",
         "lockedTab": "locked until you play the tutorial"
+    },
+    "progression": {
+        "gold": "gold",
+        "diamonds": "diamonds",
+        "locked": "Locked",
+        "lockedHint": "Locked: unlock it through its achievement or in the shop",
+        "earned": "You earned",
+        "achievementDone": "Achievement completed: {{name}}"
+    },
+    "achievements": {
+        "loading": "Loading achievements...",
+        "summary": "{{done}} of {{total}} achievements completed",
+        "progress": "{{progress}} / {{goal}}",
+        "completedOn": "Completed on {{date}}",
+        "reward": "Reward",
+        "unlocks": "Unlocks {{name}}",
+        "metric": {
+            "wins_one": "Win {{count}} match",
+            "wins_other": "Win {{count}} matches",
+            "played_one": "Finish {{count}} match",
+            "played_other": "Finish {{count}} matches",
+            "winsHard_one": "Win {{count}} match against the AI on hard",
+            "winsHard_other": "Win {{count}} matches against the AI on hard",
+            "campaign_one": "Clear campaign stage {{count}}",
+            "campaign_other": "Clear campaign stage {{count}}",
+            "campaignHard_one": "Clear campaign stage {{count}} on hard",
+            "campaignHard_other": "Clear campaign stage {{count}} on hard",
+            "pvpWins_one": "Win {{count}} match against another player",
+            "pvpWins_other": "Win {{count}} matches against other players",
+            "rankedWins_one": "Win {{count}} ranked match",
+            "rankedWins_other": "Win {{count}} ranked matches",
+            "characterWins_one": "Win {{count}} match with {{name}} on your team",
+            "characterWins_other": "Win {{count}} matches with {{name}} on your team"
+        },
+        "items": {
+            "primeira-vitoria": "First victory",
+            "aquecendo": "Warming up",
+            "cinco-vitorias": "Quick hands",
+            "quinze-vitorias": "Battle song",
+            "quarenta-vitorias": "Deep roots",
+            "cem-vitorias": "Living legend",
+            "desafio-aceito": "Challenge accepted",
+            "mestre-do-dificil": "Bloodthirst",
+            "campanha-1": "The first step",
+            "campanha-3": "Oath of light",
+            "campanha-completa": "Lord of the dead",
+            "campanha-lendaria": "Legendary campaign",
+            "primeiro-duelo": "First duel",
+            "duelista": "Temptation",
+            "estreia-ranqueada": "Ranked debut",
+            "escalada": "Lament of the climb",
+            "senhor-do-gelo": "Lord of ice",
+            "voz-da-cura": "Voice of healing"
+        }
+    },
+    "shop": {
+        "loading": "Loading the shop...",
+        "balance": "Your balance",
+        "owned": "Unlocked",
+        "buy": "Buy",
+        "open": "Open the shop",
+        "confirmTitle": "Buy {{name}}?",
+        "confirmMessage": "{{name}} will be unlocked for {{price}} {{currency}}.",
+        "error": "Could not buy right now.",
+        "orAchievement": "Or through the achievement: {{goal}}",
+        "notEnough": {
+            "gold": "Not enough gold",
+            "diamonds": "Not enough diamonds"
+        }
+    },
+    "grant": {
+        "action": "Give resources",
+        "title": "Resources for {{name}}",
+        "text": "Use a negative number to take away.",
+        "confirm": "Apply",
+        "cancel": "Cancel",
+        "success": "Resources for {{name}} updated."
     }
 }
