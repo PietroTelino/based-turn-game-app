@@ -290,14 +290,18 @@
             "PASSWORD_RESET_CONFIRM": "Reset confirmation",
             "PASSWORD_ADMIN_RESET": "Admin reset",
             "PREFERENCES_UPDATE": "Preferences",
-            "SESSION_LOGOUT": "Session logout"
+            "SESSION_LOGOUT": "Session logout",
+            "USER_SELF_DELETE": "Account self-deletion",
+            "USER_RESTORE": "User restore",
+            "USER_HARD_DELETE": "Permanent deletion"
         },
         "entities": {
             "USER": "User",
             "PASSWORD": "Password",
             "PREFERENCES": "Preferences",
             "SESSION": "Session"
-        }
+        },
+        "pageTitle": "Audit"
     },
     "play": {
         "title": "Build your team",

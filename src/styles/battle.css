@@ -379,7 +379,7 @@
     background: none;
     color: inherit;
     font: inherit;
-    cursor: default;
+    cursor: var(--cursor-default);
 }
 
 /*
@@ -1765,7 +1765,7 @@
 
 /* Pode ser escolhida como alvo: contorno de luz na figura */
 .bt-unit--target {
-    cursor: pointer;
+    cursor: var(--cursor-pointer);
 }
 
 .bt-unit--target .bt-unit__sprite {
@@ -2407,7 +2407,7 @@
     box-shadow: 0 2px 0 #4a3b2a, inset 0 1px 0 rgb(255 255 255 / 0.6);
     background: var(--bt-paper-light);
     color: var(--bt-ink);
-    cursor: pointer;
+    cursor: var(--cursor-pointer);
 }
 
 .bt-sound__toggle[aria-pressed='true'] {
@@ -2417,7 +2417,7 @@
 .bt-sound__volume {
     width: 88px;
     accent-color: var(--bt-ally);
-    cursor: pointer;
+    cursor: var(--cursor-pointer);
 }
 
 .bt-sound__volume:disabled {
@@ -2465,7 +2465,7 @@
     color: inherit;
     font: inherit;
     text-align: left;
-    cursor: pointer;
+    cursor: var(--cursor-pointer);
     transition: translate 0.08s, box-shadow 0.08s, background 0.15s;
 }
 
@@ -2534,7 +2534,7 @@
     border-color: #6a4d10;
     box-shadow: none;
     background: rgb(200 162 75 / 0.16);
-    cursor: default;
+    cursor: var(--cursor-default);
 }
 
 /* As regras de botão (.bt-skill:hover, :active) não valem para ela. */
@@ -2624,7 +2624,7 @@
     font-weight: 700;
     font-size: 19px;
     text-decoration: none;
-    cursor: pointer;
+    cursor: var(--cursor-pointer);
     transition: translate 0.08s, box-shadow 0.08s;
 }
 
@@ -2833,7 +2833,7 @@
     color: inherit;
     font: inherit;
     text-align: center;
-    cursor: pointer;
+    cursor: var(--cursor-pointer);
     /* A sombra fica no botão (no meio dos dois lados), para não aparecer duas vezes. */
     box-shadow: 0 4px 12px rgb(28 26 43 / 0.3);
     transform-style: preserve-3d;
@@ -3143,7 +3143,7 @@
     box-shadow: 0 2px 5px rgb(28 26 43 / 0.45);
     background: var(--bt-paper-light);
     color: var(--bt-ink);
-    cursor: pointer;
+    cursor: var(--cursor-pointer);
 }
 
 .bt-card__flip[aria-pressed='true'] {
@@ -5989,7 +5989,7 @@
     border: 2px solid rgb(28 26 43 / 0.45);
     border-radius: 8px;
     background: rgb(255 248 226 / 0.55);
-    cursor: pointer;
+    cursor: var(--cursor-pointer);
     transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
@@ -6019,7 +6019,7 @@
 }
 
 .bt-difficulty:disabled .bt-difficulty__option {
-    cursor: default;
+    cursor: var(--cursor-default);
     opacity: 0.6;
 }
 
@@ -6481,7 +6481,7 @@
     color: var(--bt-ink);
     font-size: 14px;
     font-weight: 700;
-    cursor: pointer;
+    cursor: var(--cursor-pointer);
 }
 
 .bt-collection__filter:hover {
@@ -6512,7 +6512,7 @@
 
 /* Na coleção a carta só se lê: nada de cursor de "proibido". */
 .bt-collection .bt-card__pick:disabled {
-    cursor: default;
+    cursor: var(--cursor-default);
 }
 
 @media (max-width: 1100px) {
@@ -6731,7 +6731,7 @@
     background: rgb(12 11 20 / 0.6);
     color: var(--draft-text);
     font-weight: 700;
-    cursor: pointer;
+    cursor: var(--cursor-pointer);
 }
 
 .bt-draft__leave:hover:not(:disabled) {
@@ -6740,7 +6740,7 @@
 
 .bt-draft__leave:disabled {
     opacity: 0.5;
-    cursor: default;
+    cursor: var(--cursor-default);
 }
 
 .bt-draft__leave:focus-visible {
@@ -7053,7 +7053,7 @@
     color: var(--draft-text);
     font-size: 14px;
     font-weight: 700;
-    cursor: pointer;
+    cursor: var(--cursor-pointer);
 }
 
 .bt-draft__filter:hover {
@@ -7135,7 +7135,7 @@
     border: 0;
     background: transparent;
     color: var(--draft-text);
-    cursor: pointer;
+    cursor: var(--cursor-pointer);
 }
 
 .bt-draft__portrait {
@@ -7166,7 +7166,7 @@
 }
 
 .bt-draft__tile:disabled {
-    cursor: default;
+    cursor: var(--cursor-default);
 }
 
 .bt-draft__tile--banned .bt-draft__portrait,

@@ -29,8 +29,11 @@ export function AuditPage() {
         { value: 'USER_CREATE', label: t('audit.actions.USER_CREATE') },
         { value: 'USER_UPDATE', label: t('audit.actions.USER_UPDATE') },
         { value: 'USER_DELETE', label: t('audit.actions.USER_DELETE') },
+        { value: 'USER_SELF_DELETE', label: t('audit.actions.USER_SELF_DELETE') },
+        { value: 'USER_HARD_DELETE', label: t('audit.actions.USER_HARD_DELETE') },
         { value: 'USER_INACTIVATE', label: t('audit.actions.USER_INACTIVATE') },
         { value: 'USER_REACTIVATE', label: t('audit.actions.USER_REACTIVATE') },
+        { value: 'USER_RESTORE', label: t('audit.actions.USER_RESTORE') },
         { value: 'PASSWORD_CHANGE', label: t('audit.actions.PASSWORD_CHANGE') },
         { value: 'PASSWORD_RESET_REQUEST', label: t('audit.actions.PASSWORD_RESET_REQUEST') },
         { value: 'PASSWORD_RESET_CONFIRM', label: t('audit.actions.PASSWORD_RESET_CONFIRM') },
@@ -48,7 +51,7 @@ export function AuditPage() {
     ];
 
     return (
-        <Layout title="Auditoria">
+        <Layout title={t('audit.pageTitle')}>
             <div className='flex flex-col gap-6'>
                 <div>
                     <h2 className='text-lg font-semibold text-gray-900 dark:text-white'>{t('audit.title')}</h2>
@@ -121,10 +124,10 @@ export function AuditPage() {
                                             </td>
                                             <td className='px-4 py-3'>
                                                 <span className='px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded text-xs font-mono'>
-                                                    {log.action}
+                                                    {t(`audit.actions.${log.action}`, { defaultValue: log.action })}
                                                 </span>
                                             </td>
-                                            <td className='px-4 py-3 text-gray-600 dark:text-gray-400'>{log.entity}</td>
+                                            <td className='px-4 py-3 text-gray-600 dark:text-gray-400'>{t(`audit.entities.${log.entity}`, { defaultValue: log.entity })}</td>
                                             <td className='px-4 py-3'>
                                                 {log.user ? (
                                                     <div className='flex flex-col'>

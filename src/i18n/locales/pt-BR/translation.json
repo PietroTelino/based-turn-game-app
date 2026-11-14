@@ -290,14 +290,18 @@
             "PASSWORD_RESET_CONFIRM": "Confirmação de reset",
             "PASSWORD_ADMIN_RESET": "Reset por admin",
             "PREFERENCES_UPDATE": "Preferências",
-            "SESSION_LOGOUT": "Logout de sessão"
+            "SESSION_LOGOUT": "Logout de sessão",
+            "USER_SELF_DELETE": "Exclusão da própria conta",
+            "USER_RESTORE": "Restauração de usuário",
+            "USER_HARD_DELETE": "Exclusão definitiva"
         },
         "entities": {
             "USER": "Usuário",
             "PASSWORD": "Senha",
             "PREFERENCES": "Preferências",
             "SESSION": "Sessão"
-        }
+        },
+        "pageTitle": "Auditoria"
     },
     "play": {
         "title": "Monte seu time",

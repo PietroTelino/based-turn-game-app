@@ -1,3 +1,39 @@
+/* ------------------------------------------------- Cursor do jogo */
+
+/* Uma espada no lugar da seta; ela brilha sobre o que se pode clicar e vira uma mira sobre os alvos. */
+:root {
+    --cursor-default: url('/cursors/espada.svg') 2 2, auto;
+    --cursor-pointer: url('/cursors/espada-ativa.svg') 2 2, pointer;
+    --cursor-target: url('/cursors/alvo.svg') 16 16, crosshair;
+}
+
+html,
+body {
+    cursor: var(--cursor-default);
+}
+
+a,
+button,
+summary,
+select,
+label[for],
+[role='button'],
+[role='tab'],
+input[type='checkbox'],
+input[type='radio'],
+input[type='range'] {
+    cursor: var(--cursor-pointer);
+}
+
+button:disabled {
+    cursor: not-allowed;
+}
+
+.bt-unit--target,
+.bt-unit--target * {
+    cursor: var(--cursor-target) !important;
+}
+
 /*
  * Aparência das telas fora da batalha (menu, Um Jogador, Multijogador,
  * painel, perfil...), tirada da seleção de personagens: noite de tinta com o
@@ -228,7 +264,7 @@ html.dark body {
     border: 1px solid transparent;
     border-radius: 8px;
     color: var(--ui-muted);
-    cursor: pointer;
+    cursor: var(--cursor-pointer);
     transition:
         background-color 0.15s,
         color 0.15s;
@@ -1133,7 +1169,7 @@ html.dark body {
     font-family: var(--font-display);
     font-size: 18px;
     font-weight: 700;
-    cursor: pointer;
+    cursor: var(--cursor-pointer);
     transition:
         background-color 0.15s,
         filter 0.15s;
@@ -1157,7 +1193,7 @@ html.dark body {
 
 .ui-dialog__button:disabled {
     opacity: 0.6;
-    cursor: default;
+    cursor: var(--cursor-default);
 }
 
 .ui-dialog__button:focus-visible {
