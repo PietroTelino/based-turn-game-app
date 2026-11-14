@@ -906,6 +906,46 @@
             "floresta": {
                 "name": "A Floresta da Noite",
                 "story": "Na floresta, as criaturas da noite esperam. A Súcubo põe o seu time para dormir, o Vampiro bebe a vida que tira e o Necromante ergue os mortos. Leve quem saiba purificar."
+            },
+            "lago": {
+                "name": "O Lago Congelado",
+                "story": "As sentinelas do lago guardam a travessia. O Cavaleiro segura a linha, o Criomante prende quem chega perto e o Sacerdote cura o que o gelo não segurou. Quebre a defesa antes que o frio quebre você."
+            },
+            "ordem": {
+                "name": "A Ordem da Muralha",
+                "story": "A ordem que guarda a muralha não deixa ninguém passar. Paladino e Inquisidora punem quem ataca os aliados, e o Sacerdote mantém todos de pé. Derrube primeiro quem cura."
+            },
+            "bosque": {
+                "name": "O Bosque Enfurecido",
+                "story": "A natureza acordou de mau humor. Raízes prendem, esporos envenenam, a Dríade e o Xamã curam, e a Harpia ataca de cima. Leve quem saiba purificar e quem bata em área."
+            },
+            "nevasca": {
+                "name": "Os Mortos da Nevasca",
+                "story": "Na nevasca os mortos não ficam no chão. O Necromante os ergue, a Banshee amaldiçoa, o Vampiro se cura no seu sangue e o Ladino some na neve. Seja rápido."
+            },
+            "torneio": {
+                "name": "O Torneio dos Duelistas",
+                "story": "Só lâminas no torneio: Espadachim, Bárbaro e Ladino batem forte, o Bardo acelera o ritmo e a Inquisidora não perdoa. Quem tiver mais resistência fica de pé."
+            },
+            "covil": {
+                "name": "O Covil dos Encantos",
+                "story": "No covil, ninguém luta acordado por muito tempo. A Súcubo faz dormir, o Bardo encanta, a Harpia e o Vampiro aproveitam. Tenha quem desperte o time."
+            },
+            "conclave": {
+                "name": "O Conclave dos Magos",
+                "story": "Os magos se reuniram no lago: fogo e gelo caem em área enquanto o Xamã e o Sacerdote sustentam o círculo. Espalhe o dano e corte a cura."
+            },
+            "cruzada": {
+                "name": "A Cruzada",
+                "story": "A cruzada marcha com uma linha de frente que não cai e cura que não para. Paciência: desgaste o Guardião e o Paladino e não deixe o Sacerdote trabalhar."
+            },
+            "coracao": {
+                "name": "O Coração Sombrio",
+                "story": "No coração da floresta, a noite volta mais forte. Mortos erguidos, maldições, sono e sangue, com a Dríade curando tudo. É a fase da floresta, só que sem misericórdia."
+            },
+            "trono": {
+                "name": "O Trono de Gelo",
+                "story": "O último time, o melhor de cada lado: a armadura do Paladino, o gelo do Criomante, os mortos do Necromante, o ritmo do Bardo e a lâmina do Espadachim. Vença aqui e a campanha é sua."
             }
         },
         "enemies": "Time inimigo",

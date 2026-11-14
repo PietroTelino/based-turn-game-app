@@ -906,6 +906,46 @@
             "floresta": {
                 "name": "The Night Forest",
                 "story": "In the forest, the creatures of the night are waiting. The Succubus puts your team to sleep, the Vampire drinks the life it takes and the Necromancer raises the dead. Bring someone who can cleanse."
+            },
+            "lago": {
+                "name": "The Frozen Lake",
+                "story": "The lake sentinels guard the crossing. The Knight holds the line, the Cryomancer locks down whoever gets close and the Priest heals whatever the ice missed. Break the defense before the cold breaks you."
+            },
+            "ordem": {
+                "name": "The Order of the Wall",
+                "story": "The order that guards the wall lets no one through. Paladin and Inquisitor punish attacks on their allies, and the Priest keeps everyone standing. Take down the healer first."
+            },
+            "bosque": {
+                "name": "The Raging Grove",
+                "story": "Nature woke up angry. Roots bind, spores poison, the Dryad and the Shaman heal, and the Harpy strikes from above. Bring someone who can cleanse and someone who hits in an area."
+            },
+            "nevasca": {
+                "name": "The Dead of the Blizzard",
+                "story": "In the blizzard the dead don't stay down. The Necromancer raises them, the Banshee curses, the Vampire heals on your blood and the Rogue vanishes in the snow. Be quick."
+            },
+            "torneio": {
+                "name": "The Duelists' Tournament",
+                "story": "Only blades at the tournament: Swordsman, Barbarian and Rogue hit hard, the Bard speeds things up and the Inquisitor shows no mercy. Whoever lasts longest wins."
+            },
+            "covil": {
+                "name": "The Den of Charms",
+                "story": "In the den, no one stays awake for long. The Succubus puts you to sleep, the Bard charms, the Harpy and the Vampire take advantage. Bring someone who can wake the team."
+            },
+            "conclave": {
+                "name": "The Mages' Conclave",
+                "story": "The mages gathered at the lake: fire and ice fall in an area while the Shaman and the Priest sustain the circle. Spread the damage and cut the healing."
+            },
+            "cruzada": {
+                "name": "The Crusade",
+                "story": "The crusade marches with a front line that won't fall and healing that won't stop. Be patient: wear down the Guardian and the Paladin and don't let the Priest work."
+            },
+            "coracao": {
+                "name": "The Dark Heart",
+                "story": "In the heart of the forest, the night returns stronger. Raised dead, curses, sleep and blood, with the Dryad healing it all. It's the forest stage, without mercy."
+            },
+            "trono": {
+                "name": "The Ice Throne",
+                "story": "The final team, the best of every side: the Paladin's armor, the Cryomancer's ice, the Necromancer's dead, the Bard's rhythm and the Swordsman's blade. Win here and the campaign is yours."
             }
         },
         "enemies": "Enemy team",
