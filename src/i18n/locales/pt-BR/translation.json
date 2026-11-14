@@ -543,7 +543,9 @@
         "permanent": "permanente",
         "chooseRevive": "Clique no aliado caído que {{skill}} vai trazer de volta.",
         "chooseRaise": "Clique no aliado caído que {{skill}} vai erguer como esqueleto.",
-        "backToCampaign": "Voltar à campanha"
+        "backToCampaign": "Voltar à campanha",
+        "backToTower": "Voltar à torre",
+        "boss": "Chefe"
     },
     "multiplayer": {
         "title": "Multijogador",
@@ -566,7 +568,9 @@
         "tabs": {
             "casual": "Partida casual",
             "ranked": "Partida ranqueada",
-            "collection": "Coleção"
+            "collection": "Coleção",
+            "leaderboard": "Placar",
+            "friends": "Amigos"
         },
         "casualLead": "Crie uma sala e passe o código para alguém, ou entre na sala de outra pessoa. A partida não vale pontos. Cada jogada tem 30 segundos: se o tempo acabar, o jogo faz uma jogada ao acaso."
     },
@@ -673,6 +677,11 @@
             "cost_other": "{{count}} de energia",
             "passive": "passiva",
             "leave": "Voltar"
+        },
+        "season": {
+            "current": "Temporada {{season}}, até {{ends}}.",
+            "leaderboard": "Ver o placar",
+            "last": "Na temporada {{season}} você terminou no {{rank}} e ganhou {{gold}} de ouro e {{diamonds}} diamantes."
         }
     },
     "replay": {
@@ -873,7 +882,9 @@
             "campaign": "Campanha",
             "collection": "Coleção",
             "achievements": "Conquistas",
-            "shop": "Loja"
+            "shop": "Loja",
+            "tower": "Torre",
+            "missions": "Missões"
         },
         "quickLead": "Escolha o nível da IA e monte o seu time numa seleção contra ela: vocês escolhem alternando, um personagem por vez. O cenário é sorteado.",
         "quickTitle": "Nova partida rápida",
@@ -909,7 +920,7 @@
             },
             "lago": {
                 "name": "O Lago Congelado",
-                "story": "As sentinelas do lago guardam a travessia. O Cavaleiro segura a linha, o Criomante prende quem chega perto e o Sacerdote cura o que o gelo não segurou. Quebre a defesa antes que o frio quebre você."
+                "story": "As sentinelas do lago guardam a travessia. O Cavaleiro segura a linha, a Criomante prende quem chega perto e o Sacerdote cura o que o gelo não segurou. Quebre a defesa antes que o frio quebre você."
             },
             "ordem": {
                 "name": "A Ordem da Muralha",
@@ -945,7 +956,7 @@
             },
             "trono": {
                 "name": "O Trono de Gelo",
-                "story": "O último time, o melhor de cada lado: a armadura do Paladino, o gelo do Criomante, os mortos do Necromante, o ritmo do Bardo e a lâmina do Espadachim. Vença aqui e a campanha é sua."
+                "story": "O último time, o melhor de cada lado: a armadura do Paladino, o gelo da Criomante, os mortos do Necromante, o ritmo do Bardo e a lâmina do Espadachim. Vença aqui e a campanha é sua."
             }
         },
         "enemies": "Time inimigo",
@@ -956,7 +967,15 @@
         "chosen": "Fase escolhida",
         "pickStage": "Escolha uma fase aberta acima para montar o time.",
         "draftText": "Fase {{stage}}: vocês escolhem alternando, sem banimento, e a IA leva o time da fase. Vencer, em qualquer nível, abre a fase seguinte.",
-        "draftTitle": "Fase {{stage}}: {{name}}"
+        "draftTitle": "Fase {{stage}}: {{name}}",
+        "starsOf_one": "{{count}} estrela",
+        "starsOf_other": "{{count}} estrelas",
+        "starsTitle": "Estrelas da campanha",
+        "starsTotal": "{{total}} de {{max}} estrelas",
+        "starsHint": "Vencer no fácil vale 1 estrela, no normal 2 e no difícil 3. Conta a melhor vitória de cada fase.",
+        "chestOpened": "Baú aberto!",
+        "chestDone": "Aberto",
+        "chestOpen": "Abrir"
     },
     "tutorialGate": {
         "welcomeTitle": "Comece por aqui: o tutorial é obrigatório",
@@ -1051,5 +1070,130 @@
         "confirm": "Aplicar",
         "cancel": "Cancelar",
         "success": "Recursos de {{name}} atualizados."
+    },
+    "missions": {
+        "loading": "Carregando as missões...",
+        "claimed": "Recompensa resgatada!",
+        "daily": "Missões do dia",
+        "weekly": "Missões da semana",
+        "resetsIn": "Novas missões em {{time}}",
+        "leftDays": "{{days}}d {{hours}}h",
+        "leftHours": "{{hours}}h {{minutes}}min",
+        "claim": "Resgatar",
+        "done": "Resgatada",
+        "metric": {
+            "play_one": "Jogue {{count}} partida",
+            "play_other": "Jogue {{count}} partidas",
+            "win_one": "Vença {{count}} partida",
+            "win_other": "Vença {{count}} partidas",
+            "winRole_one": "Vença {{count}} partida com um {{role}} no time",
+            "winRole_other": "Vença {{count}} partidas com um {{role}} no time",
+            "winHard_one": "Vença {{count}} partida contra a IA no difícil",
+            "winHard_other": "Vença {{count}} partidas contra a IA no difícil",
+            "winCampaign_one": "Vença {{count}} fase da campanha",
+            "winCampaign_other": "Vença {{count}} fases da campanha",
+            "winTower_one": "Vença {{count}} andar da torre",
+            "winTower_other": "Vença {{count}} andares da torre",
+            "playVersus_one": "Jogue {{count}} partida contra outro jogador",
+            "playVersus_other": "Jogue {{count}} partidas contra outros jogadores",
+            "winVersus_one": "Vença {{count}} partida contra outro jogador",
+            "winVersus_other": "Vença {{count}} partidas contra outros jogadores",
+            "playRanked_one": "Jogue {{count}} partida ranqueada",
+            "playRanked_other": "Jogue {{count}} partidas ranqueadas"
+        }
+    },
+    "tower": {
+        "loading": "Carregando a torre...",
+        "loadError": "Não foi possível carregar a torre. Confira se a API está no ar e recarregue a página.",
+        "lead": "Suba andar por andar. Cada andar tem um time fixo, um nível de IA e inimigos mais fortes que o anterior; a partir do 3º, modificadores mudam as regras. Vencer abre o próximo e paga o prêmio do andar.",
+        "best": "Seu recorde: andar {{floor}}",
+        "floorLabel": "Andar {{floor}}",
+        "floorText": "IA no nível {{level}}. Vida e ataque dos inimigos +{{percent}}%.",
+        "noModifiers": "Sem modificadores neste andar.",
+        "reward": "Prêmio:",
+        "climb": "Montar o time",
+        "draftTitle": "Torre, andar {{floor}}",
+        "modifiers": {
+            "fortificado": {
+                "name": "Fortificado:",
+                "text": "inimigos com 30% a mais de vida."
+            },
+            "feroz": {
+                "name": "Feroz:",
+                "text": "inimigos com 20% a mais de ataque."
+            },
+            "veloz": {
+                "name": "Veloz:",
+                "text": "inimigos 15% mais rápidos."
+            },
+            "blindado": {
+                "name": "Blindado:",
+                "text": "inimigos com 60% a mais de defesa."
+            },
+            "furioso": {
+                "name": "Furioso:",
+                "text": "inimigos com 10% a mais de ataque e 8% de velocidade."
+            },
+            "chefe": {
+                "name": "Chefe:",
+                "text": "o primeiro inimigo é um chefe, com o dobro de vida."
+            }
+        }
+    },
+    "leaderboard": {
+        "loading": "Carregando o placar...",
+        "loadError": "Não foi possível carregar o placar.",
+        "lead": "Os melhores da temporada {{season}}. A temporada acaba em {{ends}}: aí cada um recebe o prêmio do rank e os pontos caem pela metade.",
+        "you": "Você está em {{position}}º lugar, com {{points}} pontos.",
+        "empty": "Ninguém jogou ranqueada nesta temporada ainda.",
+        "player": "Jogador",
+        "rank": "Rank",
+        "points": "Pontos",
+        "record": "V / D",
+        "wl": "{{wins}} / {{losses}}"
+    },
+    "friends": {
+        "loading": "Carregando os amigos...",
+        "loadError": "Não foi possível carregar os amigos.",
+        "invitesTitle": "Convites para sala",
+        "invitedBy": "{{name}} convidou você para uma sala",
+        "join": "Entrar",
+        "dismiss": "Dispensar",
+        "addTitle": "Adicionar amigo",
+        "searchLabel": "Nome do jogador",
+        "searchPlaceholder": "Digite pelo menos 2 letras",
+        "noResults": "Ninguém encontrado com esse nome.",
+        "add": "Adicionar",
+        "accept": "Aceitar",
+        "status": {
+            "friend": "Amigo",
+            "outgoing": "Pedido enviado"
+        },
+        "requestsTitle": "Pedidos de amizade",
+        "noRequests": "Nenhum pedido pendente.",
+        "wantsToBeFriend": "{{name}} quer ser seu amigo",
+        "decline": "Recusar",
+        "waitingFor": "Esperando {{name}} aceitar",
+        "cancel": "Cancelar",
+        "listTitle_one": "{{count}} amigo",
+        "listTitle_other": "{{count}} amigos",
+        "empty": "Você ainda não tem amigos aqui. Procure alguém pelo nome.",
+        "playing": "Jogando agora",
+        "idle": "Fora de partida",
+        "watch": "Assistir",
+        "remove": "Desfazer amizade",
+        "inviteHint": "Para jogar com um amigo, crie uma sala na aba Partida casual e convide-o por lá.",
+        "inviteTitle": "Convidar amigos",
+        "invite": "Convidar",
+        "invited": "Convidado",
+        "requestSent": "Pedido de amizade enviado.",
+        "accepted": "Agora vocês são amigos!"
+    },
+    "spectate": {
+        "tag": "Assistindo",
+        "hint": "Você está assistindo à partida de um amigo.",
+        "watching": "Assistindo: as jogadas aparecem aqui assim que acontecem.",
+        "back": "Voltar aos amigos",
+        "title": "Assistindo"
     }
 }

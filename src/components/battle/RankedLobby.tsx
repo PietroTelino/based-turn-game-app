@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { seasonName } from '@/battle/rating';
 import { useTranslation } from 'react-i18next';
 import { DraftBoard } from '@/components/battle/DraftBoard';
 import { RankBadge } from '@/components/battle/RankBadge';
@@ -16,7 +17,7 @@ function formatClock(seconds: number): string {
  * automático e, depois dele, a seleção de personagens contra o adversário.
  */
 export function RankedLobby() {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { profile, characters, phase, queue, waited, isSending, isSearching, isDrafting, canSearch, search, cancel, draft, deadline, isChoosing, choose } = useRanked();
 
     return (
@@ -31,6 +32,22 @@ export function RankedLobby() {
                     {/* Na seleção de personagens, a tela é toda dela. */}
                     {!isDrafting && (
                     <section className='bt-panel bt-ranked__profile' aria-label={t('ranked.yourRank')}>
+                        <p className='bt-ranked__season'>
+                            {t('ranked.season.current', { season: seasonName(profile.season.id, i18n.language), ends: new Date(profile.season.endsAt).toLocaleDateString(i18n.language, { day: '2-digit', month: 'long' }) })}
+                            <Link to='/multiplayer/leaderboard' className='bt-ranked__season-link'>
+                                {t('ranked.season.leaderboard')}
+                            </Link>
+                        </p>
+                        {profile.lastSeason && (
+                            <p className='bt-callout'>
+                                {t('ranked.season.last', {
+                                    season: seasonName(profile.lastSeason.season, i18n.language),
+                                    rank: t(`ranked.ranks.${profile.lastSeason.rank}`),
+                                    gold: profile.lastSeason.gold,
+                                    diamonds: profile.lastSeason.diamonds,
+                                })}
+                            </p>
+                        )}
                         <RankProgress profile={profile} />
 
                         {/* A escada inteira, com o degrau do jogador em destaque. */}

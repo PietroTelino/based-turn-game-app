@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import { getBattle, getBattleEvents, getBattleReplay, sendBattleAction, surrenderBattle } from '@/api/battles';
+import { getBattle, getBattleEvents, getBattleReplay, sendBattleAction, surrenderBattle, watchBattle } from '@/api/battles';
 import { sfx } from '@/audio/sfx';
 import { findPassive, findSkill } from '@/battle/forms';
 import { impactsOf, passiveFxOf, skillFxOf } from '@/battle/fx';
@@ -542,9 +542,14 @@ function effectsOf(
  * quando ela foi criada e todos os eventos, e anima tudo do começo, como se
  * fosse uma abertura muito comprida. Ninguém joga: `replay` traz os controles
  * (pausar, velocidade, pular para o fim, recomeçar).
+ *
+ * Espectador (`options.spectate`): a batalha é de um amigo. A tela começa do
+ * estado de agora e pergunta pelas jogadas novas como numa partida entre
+ * jogadores, mas não joga nem desiste.
  */
-export function useBattle(battleId: string, opening?: BattleResponse, options: { replay?: boolean } = {}) {
+export function useBattle(battleId: string, opening?: BattleResponse, options: { replay?: boolean; spectate?: boolean } = {}) {
     const isReplay = options.replay === true;
+    const isSpectating = options.spectate === true;
     const { t } = useTranslation();
     const { showToast } = useToast();
     const { confirm } = useConfirm();
@@ -694,6 +699,20 @@ export function useBattle(battleId: string, opening?: BattleResponse, options: {
                     return;
                 }
 
+                if (isSpectating) {
+                    // Do estado de agora: os eventos antigos não são animados (um número enorme pula todos).
+                    const watched = await watchBattle(battleId, 1_000_000_000);
+
+                    if (runRef.current !== run) return;
+
+                    noteDeadline(watched.battle);
+                    setView(watched.battle);
+                    setState(watched.battle.state);
+                    setPhase('idle');
+
+                    return;
+                }
+
                 const fetched = await getBattle(battleId);
 
                 if (runRef.current !== run) return;
@@ -749,13 +768,13 @@ export function useBattle(battleId: string, opening?: BattleResponse, options: {
             // Invalida este carregamento: a animação em andamento para no próximo passo.
             runRef.current = run + 1;
         };
-    }, [battleId, opening, play, t, isReplay, replayRound, noteDeadline]);
+    }, [battleId, opening, play, t, isReplay, isSpectating, replayRound, noteDeadline]);
 
     // Batalha entre jogadores: enquanto a tela está parada, pergunta o que o
     // outro fez. Vale também na própria vez, porque o outro pode desistir. Com
     // a pergunta de desistir aberta a tela não se mexe, para a resposta valer
     // para o que o jogador está vendo.
-    const isWatching = phase === 'idle' && !isConfirming && view?.mode === 'pvp' && view.status === 'in_progress';
+    const isWatching = phase === 'idle' && !isConfirming && (view?.mode === 'pvp' || isSpectating) && view?.status === 'in_progress';
     const cursor = view?.cursor ?? 0;
 
     useEffect(() => {
@@ -768,7 +787,7 @@ export function useBattle(battleId: string, opening?: BattleResponse, options: {
 
         async function check() {
             try {
-                const response = await getBattleEvents(battleId, cursor);
+                const response = isSpectating ? await watchBattle(battleId, cursor) : await getBattleEvents(battleId, cursor);
 
                 // Se o jogador jogou ou desistiu enquanto a consulta estava a
                 // caminho, ela é descartada: a resposta da jogada já traz o estado.
@@ -796,7 +815,7 @@ export function useBattle(battleId: string, opening?: BattleResponse, options: {
             cancelled = true;
             window.clearTimeout(timer);
         };
-    }, [isWatching, battleId, cursor, state, play, noteDeadline]);
+    }, [isWatching, isSpectating, battleId, cursor, state, play, noteDeadline]);
 
     const actions: AvailableAction[] = view?.availableActions ?? [];
     const selected = actions.find((a) => a.skill.id === selectedSkillId && a.usable) ?? actions.find((a) => a.usable) ?? null;
@@ -948,7 +967,8 @@ export function useBattle(battleId: string, opening?: BattleResponse, options: {
             setSelectedSkillId(skillId);
         },
         act,
-        canSurrender,
+        canSurrender: canSurrender && !isSpectating,
         surrender,
+        isSpectating,
     };
 }

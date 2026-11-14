@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
+import { InviteNotifier } from './InviteNotifier';
 import type React from 'react';
 
 interface LayoutProps {
@@ -59,6 +60,8 @@ export function Layout({ title, children, hideMenu = false, heading = true }: La
                     )}
                     {children}
                 </main>
+                {/* Convite de amigo para sala: aparece em qualquer página. */}
+                <InviteNotifier />
             </div>
         </div>
     );

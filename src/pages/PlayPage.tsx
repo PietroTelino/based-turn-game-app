@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/Layout';
@@ -11,6 +11,10 @@ import { TutorialLobby } from '@/components/battle/TutorialLobby';
 import { TutorialLock } from '@/components/battle/TutorialLock';
 import { Achievements } from '@/components/battle/Achievements';
 import { Shop } from '@/components/battle/Shop';
+import { Missions } from '@/components/battle/Missions';
+import { StageStars, StarChests } from '@/components/battle/StarChests';
+import { Amount } from '@/components/battle/Currency';
+import { getTower } from '@/api/battles';
 import { useAiDraft } from '@/hooks/useAiDraft';
 import { useProgression } from '@/hooks/useProgression';
 import { useCampaign } from '@/hooks/useCampaign';
@@ -18,11 +22,11 @@ import { useDifficulty } from '@/hooks/useDifficulty';
 import { useTutorialStatus } from '@/hooks/useTutorialStatus';
 import { usePlay } from '@/hooks/usePlay';
 import { ratingKey } from '@/battle/rating';
-import type { AiDifficulty, BattleSummary, CampaignStage, Character } from '@/types/battle';
+import type { AiDifficulty, BattleSummary, CampaignStage, Character, TowerView } from '@/types/battle';
 import '@/styles/battle.css';
 
 /** As abas do single player: cada uma é uma rota. */
-export type SinglePlayerMode = 'tutorial' | 'quick' | 'campaign' | 'collection' | 'achievements' | 'shop';
+export type SinglePlayerMode = 'tutorial' | 'quick' | 'campaign' | 'tower' | 'missions' | 'collection' | 'achievements' | 'shop';
 
 function battleLabelKey(battle: BattleSummary): string {
     if (battle.status === 'in_progress') return 'play.inProgress';
@@ -49,7 +53,7 @@ export function PlayPage({ mode = 'quick' }: { mode?: SinglePlayerMode }) {
     /** Falta o tutorial: as abas de partida mostram a trava no lugar do conteúdo. */
     const locked = tutorialDone === false;
     /** A aba é de partida (a coleção e o tutorial não são). */
-    const isMatch = mode === 'quick' || mode === 'campaign';
+    const isMatch = mode === 'quick' || mode === 'campaign' || mode === 'tower';
     /** O conteúdo de uma aba de partida (enquanto não se sabe do tutorial, nada aparece). */
     const showGame = isMatch && tutorialDone === true;
     /** A aba usa o catálogo carregado (as de partida e a coleção). */
@@ -70,6 +74,8 @@ export function PlayPage({ mode = 'quick' }: { mode?: SinglePlayerMode }) {
                             { to: '/play/tutorial', label: t('singlePlayer.tabs.tutorial') },
                             { to: '/play', label: t('singlePlayer.tabs.quick'), locked },
                             { to: '/play/campaign', label: t('singlePlayer.tabs.campaign'), locked },
+                            { to: '/play/tower', label: t('singlePlayer.tabs.tower'), locked },
+                            { to: '/play/missions', label: t('singlePlayer.tabs.missions') },
                             { to: '/play/collection', label: t('singlePlayer.tabs.collection') },
                             { to: '/play/achievements', label: t('singlePlayer.tabs.achievements') },
                             { to: '/play/shop', label: t('singlePlayer.tabs.shop') },
@@ -88,6 +94,10 @@ export function PlayPage({ mode = 'quick' }: { mode?: SinglePlayerMode }) {
                 {showGame && !isLoading && !hasError && mode === 'quick' && <QuickMatch play={play} difficulty={difficulty} onDifficulty={setDifficulty} />}
 
                 {showGame && !isLoading && !hasError && mode === 'campaign' && <Campaign play={play} difficulty={difficulty} onDifficulty={setDifficulty} />}
+
+                {showGame && !isLoading && !hasError && mode === 'tower' && <Tower play={play} />}
+
+                {mode === 'missions' && <Missions />}
 
                 {mode === 'collection' && !isLoading && !hasError && <Collection characters={play.characters} />}
 
@@ -199,6 +209,7 @@ function Campaign({ play, difficulty, onDifficulty }: MatchTabProps) {
 
     return (
         <div className='bt-mode'>
+            <StarChests />
             <ol className='bt-stages'>
                 {stages.map((stage) => (
                     <StageCard
@@ -245,6 +256,7 @@ function Campaign({ play, difficulty, onDifficulty }: MatchTabProps) {
 function StageCard({ stage, characters, isSelected, onSelect }: { stage: CampaignStage; characters: Character[]; isSelected: boolean; onSelect: () => void }) {
     const { t } = useTranslation();
     const name = t(`campaign.stages.${stage.key}.name`);
+    const stars = useProgression()?.stars.byStage[String(stage.stage)] ?? 0;
 
     return (
         <li
@@ -254,16 +266,20 @@ function StageCard({ stage, characters, isSelected, onSelect }: { stage: Campaig
             <div className='bt-stage__scene' aria-hidden='true' />
 
             <div className='bt-stage__body'>
-                <p className='bt-stage__number'>{t('campaign.stageLabel', { stage: stage.stage })}</p>
+                <p className='bt-stage__number'>
+                    {t('campaign.stageLabel', { stage: stage.stage })}
+                    {stage.unlocked && <StageStars stars={stars} />}
+                </p>
                 <h3 className='bt-stage__name'>{name}</h3>
                 <p className='bt-stage__story'>{t(`campaign.stages.${stage.key}.story`)}</p>
 
                 <ul className='bt-stage__enemies' aria-label={t('campaign.enemies')}>
-                    {stage.enemyTeam.map((id) => {
+                    {stage.enemyTeam.map((id, index) => {
                         const character = characters.find((item) => item.id === id);
+                        const isBoss = stage.boss?.slot === index;
 
                         return (
-                            <li key={id} className='bt-stage__enemy' title={character?.name ?? id}>
+                            <li key={id} className={isBoss ? 'bt-stage__enemy bt-stage__enemy--boss' : 'bt-stage__enemy'} title={isBoss ? stage.boss!.name : (character?.name ?? id)}>
                                 <CharacterArt characterId={id} kind='face' className='bt-stage__face' />
                                 <span className='bt-visually-hidden'>{character?.name ?? id}</span>
                             </li>
@@ -304,6 +320,100 @@ function StageCard({ stage, characters, isSelected, onSelect }: { stage: Campaig
                 </div>
             </div>
         </li>
+    );
+}
+
+/**
+ * A torre: andares sem fim, cada um mais difícil. O jogador vê o próximo
+ * andar (time inimigo, nível, modificadores e prêmio) e monta o time numa
+ * seleção contra a IA, que leva o time do andar.
+ */
+function Tower({ play }: { play: Play }) {
+    const { t } = useTranslation();
+    const [tower, setTower] = useState<TowerView | null>(null);
+    const [hasError, setHasError] = useState(false);
+    const [isDrafting, setIsDrafting] = useState(false);
+
+    useEffect(() => {
+        let cancelled = false;
+
+        getTower()
+            .then((data) => !cancelled && setTower(data))
+            .catch(() => !cancelled && setHasError(true));
+
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    if (hasError) return <p className='bt-message bt-message--error'>{t('tower.loadError')}</p>;
+    if (!tower) return <p className='bt-message'>{t('tower.loading')}</p>;
+
+    const { next } = tower;
+
+    return (
+        <div className='bt-mode bt-tower'>
+            <p className='bt-lead'>{t('tower.lead')}</p>
+
+            <section className='bt-stage bt-stage--selected bt-tower__floor' data-arena={next.arena}>
+                <div className='bt-stage__scene' aria-hidden='true' />
+                <div className='bt-stage__body'>
+                    <p className='bt-stage__number'>{t('tower.best', { floor: tower.best })}</p>
+                    <h3 className='bt-stage__name'>{t('tower.floorLabel', { floor: next.floor })}</h3>
+                    <p className='bt-stage__story'>
+                        {t('tower.floorText', { level: t(`difficulty.${next.difficulty}`), percent: next.scalePercent })}
+                    </p>
+
+                    <ul className='bt-stage__enemies' aria-label={t('campaign.enemies')}>
+                        {next.enemyTeam.map((id, index) => {
+                            const isBoss = index === 0 && next.modifiers.includes('chefe');
+
+                            return (
+                                <li key={id} className={isBoss ? 'bt-stage__enemy bt-stage__enemy--boss' : 'bt-stage__enemy'} title={play.characters.find((c) => c.id === id)?.name ?? id}>
+                                    <CharacterArt characterId={id} kind='face' className='bt-stage__face' />
+                                </li>
+                            );
+                        })}
+                    </ul>
+
+                    {next.modifiers.length > 0 ? (
+                        <ul className='bt-tower__mods'>
+                            {next.modifiers.map((id) => (
+                                <li key={id} className='bt-tower__mod'>
+                                    <b>{t(`tower.modifiers.${id}.name`)}</b> {t(`tower.modifiers.${id}.text`)}
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p className='bt-stage__status'>{t('tower.noModifiers')}</p>
+                    )}
+
+                    <div className='bt-stage__footer'>
+                        <p className='bt-stage__status bt-tower__reward'>
+                            {t('tower.reward')}
+                            <Amount currency='gold' value={next.reward.gold} />
+                            {next.reward.diamonds ? <Amount currency='diamonds' value={next.reward.diamonds} /> : null}
+                        </p>
+                        <button type='button' className='bt-btn bt-btn--big' disabled={play.isStarting} onClick={() => setIsDrafting(true)}>
+                            {t('tower.climb')}
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            {isDrafting && (
+                <AiDraft
+                    play={play}
+                    title={t('tower.draftTitle', { floor: next.floor })}
+                    aiTeam={next.enemyTeam}
+                    arena={next.arena}
+                    onLeave={() => setIsDrafting(false)}
+                    onComplete={async (team) => {
+                        if (!(await play.start(team, { towerFloor: next.floor }))) setIsDrafting(false);
+                    }}
+                />
+            )}
+        </div>
     );
 }
 

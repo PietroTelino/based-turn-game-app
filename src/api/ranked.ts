@@ -1,5 +1,11 @@
 import { api } from './client';
-import type { DraftView, QueueView, RankedProfile } from '@/types/ranked';
+import type { DraftView, Leaderboard, QueueView, RankedProfile } from '@/types/ranked';
+
+/** O placar de líderes da temporada. */
+export async function getLeaderboard(): Promise<Leaderboard> {
+    const { data } = await api.get<Leaderboard>('/ranked/leaderboard');
+    return data;
+}
 
 /** Os pontos, o rank e a situação na fila de quem está logado. */
 export async function getRankedProfile(): Promise<RankedProfile> {

@@ -543,7 +543,9 @@
         "permanent": "permanent",
         "chooseRevive": "Click the fallen ally that {{skill}} will bring back.",
         "chooseRaise": "Click the fallen ally that {{skill}} will raise as a skeleton.",
-        "backToCampaign": "Back to the campaign"
+        "backToCampaign": "Back to the campaign",
+        "backToTower": "Back to the tower",
+        "boss": "Boss"
     },
     "multiplayer": {
         "title": "Multiplayer",
@@ -566,7 +568,9 @@
         "tabs": {
             "casual": "Casual match",
             "ranked": "Ranked match",
-            "collection": "Collection"
+            "collection": "Collection",
+            "leaderboard": "Leaderboard",
+            "friends": "Friends"
         },
         "casualLead": "Create a room and share the code with someone, or join someone else’s room. The match is not worth points. Each move has 30 seconds: if time runs out, the game makes a random move."
     },
@@ -673,6 +677,11 @@
             "cost_other": "{{count}} energy",
             "passive": "passive",
             "leave": "Back"
+        },
+        "season": {
+            "current": "Season {{season}}, until {{ends}}.",
+            "leaderboard": "See the leaderboard",
+            "last": "In season {{season}} you finished in {{rank}} and earned {{gold}} gold and {{diamonds}} diamonds."
         }
     },
     "replay": {
@@ -873,7 +882,9 @@
             "campaign": "Campaign",
             "collection": "Collection",
             "achievements": "Achievements",
-            "shop": "Shop"
+            "shop": "Shop",
+            "tower": "Tower",
+            "missions": "Missions"
         },
         "quickLead": "Pick the AI level and build your team in a draft against it: you take turns, one character at a time. The arena is random.",
         "quickTitle": "New quick match",
@@ -956,7 +967,15 @@
         "chosen": "Chosen stage",
         "pickStage": "Choose an unlocked stage above to build your team.",
         "draftText": "Stage {{stage}}: you take turns picking, with no bans, and the AI takes the stage team. Winning on any level opens the next stage.",
-        "draftTitle": "Stage {{stage}}: {{name}}"
+        "draftTitle": "Stage {{stage}}: {{name}}",
+        "starsOf_one": "{{count}} star",
+        "starsOf_other": "{{count}} stars",
+        "starsTitle": "Campaign stars",
+        "starsTotal": "{{total}} of {{max}} stars",
+        "starsHint": "Winning on easy is worth 1 star, on normal 2 and on hard 3. Your best win on each stage counts.",
+        "chestOpened": "Chest opened!",
+        "chestDone": "Opened",
+        "chestOpen": "Open"
     },
     "tutorialGate": {
         "welcomeTitle": "Start here: the tutorial is required",
@@ -1051,5 +1070,130 @@
         "confirm": "Apply",
         "cancel": "Cancel",
         "success": "Resources for {{name}} updated."
+    },
+    "missions": {
+        "loading": "Loading missions...",
+        "claimed": "Reward claimed!",
+        "daily": "Daily missions",
+        "weekly": "Weekly missions",
+        "resetsIn": "New missions in {{time}}",
+        "leftDays": "{{days}}d {{hours}}h",
+        "leftHours": "{{hours}}h {{minutes}}min",
+        "claim": "Claim",
+        "done": "Claimed",
+        "metric": {
+            "play_one": "Play {{count}} match",
+            "play_other": "Play {{count}} matches",
+            "win_one": "Win {{count}} match",
+            "win_other": "Win {{count}} matches",
+            "winRole_one": "Win {{count}} match with a {{role}} on your team",
+            "winRole_other": "Win {{count}} matches with a {{role}} on your team",
+            "winHard_one": "Win {{count}} match against the AI on hard",
+            "winHard_other": "Win {{count}} matches against the AI on hard",
+            "winCampaign_one": "Win {{count}} campaign stage",
+            "winCampaign_other": "Win {{count}} campaign stages",
+            "winTower_one": "Win {{count}} tower floor",
+            "winTower_other": "Win {{count}} tower floors",
+            "playVersus_one": "Play {{count}} match against another player",
+            "playVersus_other": "Play {{count}} matches against other players",
+            "winVersus_one": "Win {{count}} match against another player",
+            "winVersus_other": "Win {{count}} matches against other players",
+            "playRanked_one": "Play {{count}} ranked match",
+            "playRanked_other": "Play {{count}} ranked matches"
+        }
+    },
+    "tower": {
+        "loading": "Loading the tower...",
+        "loadError": "Couldn't load the tower. Check that the API is up and reload the page.",
+        "lead": "Climb floor by floor. Each floor has a fixed team, an AI level and enemies stronger than the last; from floor 3 on, modifiers change the rules. Winning opens the next floor and pays the floor reward.",
+        "best": "Your record: floor {{floor}}",
+        "floorLabel": "Floor {{floor}}",
+        "floorText": "AI on {{level}}. Enemy health and attack +{{percent}}%.",
+        "noModifiers": "No modifiers on this floor.",
+        "reward": "Reward:",
+        "climb": "Build your team",
+        "draftTitle": "Tower, floor {{floor}}",
+        "modifiers": {
+            "fortificado": {
+                "name": "Fortified:",
+                "text": "enemies have 30% more health."
+            },
+            "feroz": {
+                "name": "Fierce:",
+                "text": "enemies have 20% more attack."
+            },
+            "veloz": {
+                "name": "Swift:",
+                "text": "enemies are 15% faster."
+            },
+            "blindado": {
+                "name": "Armored:",
+                "text": "enemies have 60% more defense."
+            },
+            "furioso": {
+                "name": "Furious:",
+                "text": "enemies have 10% more attack and 8% more speed."
+            },
+            "chefe": {
+                "name": "Boss:",
+                "text": "the first enemy is a boss with double health."
+            }
+        }
+    },
+    "leaderboard": {
+        "loading": "Loading the leaderboard...",
+        "loadError": "Couldn't load the leaderboard.",
+        "lead": "The best of season {{season}}. The season ends on {{ends}}: then everyone gets their rank's reward and points are cut in half.",
+        "you": "You're in place {{position}}, with {{points}} points.",
+        "empty": "Nobody has played ranked this season yet.",
+        "player": "Player",
+        "rank": "Rank",
+        "points": "Points",
+        "record": "W / L",
+        "wl": "{{wins}} / {{losses}}"
+    },
+    "friends": {
+        "loading": "Loading friends...",
+        "loadError": "Couldn't load your friends.",
+        "invitesTitle": "Room invites",
+        "invitedBy": "{{name}} invited you to a room",
+        "join": "Join",
+        "dismiss": "Dismiss",
+        "addTitle": "Add a friend",
+        "searchLabel": "Player name",
+        "searchPlaceholder": "Type at least 2 letters",
+        "noResults": "Nobody found with that name.",
+        "add": "Add",
+        "accept": "Accept",
+        "status": {
+            "friend": "Friend",
+            "outgoing": "Request sent"
+        },
+        "requestsTitle": "Friend requests",
+        "noRequests": "No pending requests.",
+        "wantsToBeFriend": "{{name}} wants to be your friend",
+        "decline": "Decline",
+        "waitingFor": "Waiting for {{name}} to accept",
+        "cancel": "Cancel",
+        "listTitle_one": "{{count}} friend",
+        "listTitle_other": "{{count}} friends",
+        "empty": "You don't have friends here yet. Search for someone by name.",
+        "playing": "Playing now",
+        "idle": "Not in a match",
+        "watch": "Watch",
+        "remove": "Unfriend",
+        "inviteHint": "To play with a friend, create a room on the Casual tab and invite them from there.",
+        "inviteTitle": "Invite friends",
+        "invite": "Invite",
+        "invited": "Invited",
+        "requestSent": "Friend request sent.",
+        "accepted": "You're friends now!"
+    },
+    "spectate": {
+        "tag": "Watching",
+        "hint": "You're watching a friend's match.",
+        "watching": "Watching: moves show up here as soon as they happen.",
+        "back": "Back to friends",
+        "title": "Watching"
     }
 }

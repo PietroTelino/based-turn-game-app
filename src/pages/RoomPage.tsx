@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/Layout';
 import { DraftBoard } from '@/components/battle/DraftBoard';
+import { InviteFriends } from '@/components/battle/Friends';
 import { TEAM_SIZE } from '@/hooks/usePlay';
 import { useRoom } from '@/hooks/useRoom';
 import '@/styles/battle.css';
@@ -106,6 +107,9 @@ function RoomScreen({ code }: { code: string }) {
                     )}
                 </ul>
             </section>
+
+            {/* Só quem criou a sala convida, e só enquanto ninguém entrou. */}
+            {room.role === 'host' && room.status === 'waiting' && <InviteFriends code={room.code} />}
 
             <section className='bt-panel bt-room__bar' aria-label={t('room.actionsLabel')}>
                 <p className='bt-room__note' aria-live='polite'>

@@ -61,6 +61,7 @@ export function UnitToken({ unit, units, isActive, acting, isHit, isHealed, isMo
     const classes = [
         'bt-unit',
         isActive && 'bt-unit--active',
+        unit.boss && 'bt-unit--boss',
         // Corpo a corpo avança no alvo; o resto conjura no lugar, na cor do elemento.
         acting && (acting.delivery === 'melee' ? 'bt-unit--acting' : `bt-unit--casting bt-el--${acting.element}`),
         // Vários golpes seguidos no mesmo alvo: quem tem as poses combo-* troca de pose a cada golpe.
@@ -170,7 +171,14 @@ export function UnitToken({ unit, units, isActive, acting, isHit, isHealed, isMo
                     </span>
                 )}
                 {/* Nome comprido (Guerreiro Esqueleto) quebra em duas linhas menores em vez de ser cortado. */}
-                <span className={unit.name.length > 12 ? 'bt-unit__name bt-unit__name--long' : 'bt-unit__name'}>{unit.name}</span>
+                <span className={unit.name.length > 12 ? 'bt-unit__name bt-unit__name--long' : 'bt-unit__name'}>
+                    {unit.boss && (
+                        <span className='bt-unit__crown' title={t('battle.boss')}>
+                            ♛
+                        </span>
+                    )}
+                    {unit.name}
+                </span>
                 <span className='bt-hp'>
                     <span className='bt-hp__fill' style={{ width: `${Math.max(0, ratio) * 100}%`, background: hpColor(ratio) }} />
                 </span>

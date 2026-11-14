@@ -26,7 +26,7 @@ function formatClock(seconds: number): string {
 /** Abaixo disto o relógio da vez fica vermelho. */
 const URGENT_SECONDS = 10;
 
-function BattleScreen({ battleId, opening, isReplay = false }: { battleId: string; opening?: BattleResponse; isReplay?: boolean }) {
+function BattleScreen({ battleId, opening, isReplay = false, isSpectating = false }: { battleId: string; opening?: BattleResponse; isReplay?: boolean; isSpectating?: boolean }) {
     const { t } = useTranslation();
     const {
         view,
@@ -46,7 +46,7 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
         act,
         canSurrender: canGiveUp,
         surrender,
-    } = useBattle(battleId, opening, { replay: isReplay });
+    } = useBattle(battleId, opening, { replay: isReplay, spectate: isSpectating });
     /** Batalha de treino: mostra o guia e destaca a parte da tela de que ele fala. No replay ninguém joga, então não há guia. */
     const isTutorial = !isReplay && view?.state.training === true;
     const tutorial = useTutorial(isTutorial, { view, state, canAct, selected: chosen });
@@ -143,7 +143,18 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
     /** Batalha entre jogadores, na vez do outro: não há jogada para escolher, só esperar. */
     const isWaitingOpponent = isVersus && view.status === 'in_progress' && actions.length === 0;
     /** Para onde o jogador volta quando a batalha acaba. */
-    const lobbyPath = view.ranked ? '/multiplayer/ranked' : isVersus ? '/multiplayer' : typeof view.campaignStage === 'number' ? '/play/campaign' : '/play';
+    const isTower = typeof view.towerFloor === 'number';
+    const lobbyPath = isSpectating
+        ? '/multiplayer/friends'
+        : view.ranked
+          ? '/multiplayer/ranked'
+          : isVersus
+            ? '/multiplayer'
+            : typeof view.campaignStage === 'number'
+              ? '/play/campaign'
+              : isTower
+                ? '/play/tower'
+                : '/play';
     /** A desistência foi por tempo esgotado (partida ranqueada). */
     const timedOut = state.timedOut === true;
     /** As passivas de quem está na vez: são mostradas junto das habilidades dele. */
@@ -163,6 +174,8 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
 
     if (isReplay) {
         hint = t(isOver ? 'replay.finished' : 'replay.hint');
+    } else if (isSpectating && !isOver) {
+        hint = t('spectate.hint');
     } else if (isOver) {
         hint = playerSurrendered ? t('battle.log.surrendered') : playerWon ? t('battle.log.won') : t('battle.log.lost');
     } else if (isWaitingOpponent && !isAnimating) {
@@ -197,6 +210,12 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
                     <span className='bt-topbar__turn'>
                         <span className='bt-chip'>{t('battle.turn', { turn: state.turn })}</span>
                         {isReplay && <span className='bt-chip bt-chip--tag'>{t('replay.tag')}</span>}
+                        {isSpectating && <span className='bt-chip bt-chip--tag'>{t('spectate.tag')}</span>}
+                        {isTower && (
+                            <span className='bt-chip bt-chip--tag' title={(state.towerModifiers ?? []).map((id) => t(`tower.modifiers.${id}.name`)).join(', ')}>
+                                {t('tower.floorLabel', { floor: view.towerFloor })}
+                            </span>
+                        )}
                         {view.ranked && <span className='bt-chip bt-chip--tag bt-chip--ranked'>{t('battle.ranked')}</span>}
                         {/* O prazo de quem está na vez. Só aparece com a tela parada, que é quando ele corre. */}
                         {turnSecondsLeft !== null && (
@@ -289,7 +308,7 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
                                 </p>
                             )}
                             {/* O ouro e as conquistas desta batalha (o replay não ganha nada de novo). */}
-                            {!isReplay && <BattleRewards battleId={battleId} />}
+                            {!isReplay && !isSpectating && <BattleRewards battleId={battleId} />}
                             {/* Quem do seu time ficou de pé */}
                             <ul className='bt-result__team' aria-label={t('battle.survivors')}>
                                 {state.units
@@ -308,7 +327,11 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
                                     ))}
                             </ul>
                             <div className='bt-result__buttons'>
-                                {isReplay && replay ? (
+                                {isSpectating ? (
+                                    <Link to={lobbyPath} className='bt-btn'>
+                                        {t('spectate.back')}
+                                    </Link>
+                                ) : isReplay && replay ? (
                                     <>
                                         <button type='button' className='bt-btn' onClick={replay.restart}>
                                             {t('replay.again')}
@@ -330,7 +353,9 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
                                                       ? 'battle.newRanked'
                                                       : typeof view.campaignStage === 'number'
                                                         ? 'battle.backToCampaign'
-                                                        : 'battle.newBattle',
+                                                        : isTower
+                                                          ? 'battle.backToTower'
+                                                          : 'battle.newBattle',
                                             )}
                                         </Link>
                                         {view.hasReplay && (
@@ -361,6 +386,8 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
                     <h2 className='bt-hud__title'>
                         {isReplay
                             ? t('replay.title')
+                            : isSpectating
+                              ? t('spectate.title')
                             : activeUnit
                               ? t(activeUnit.team === playerTeam ? 'battle.yourTurn' : 'battle.enemyTurn', { unit: activeUnit.name })
                               : t('battle.title')}
@@ -376,6 +403,8 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
 
                 {replay ? (
                     <ReplayBar replay={replay} />
+                ) : isSpectating ? (
+                    <p className='bt-hud__waiting'>{t('spectate.watching')}</p>
                 ) : isWaitingOpponent ? (
                     <p className='bt-hud__waiting'>{t('battle.waitingOpponentLong')}</p>
                 ) : (
@@ -406,7 +435,7 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
                                 {t('battle.useSkill', { skill: selected.skill.name })}
                             </button>
                         )}
-                        {view.status === 'in_progress' && (
+                        {view.status === 'in_progress' && !isSpectating && (
                             <button type='button' className='bt-btn bt-btn--quiet' disabled={!canSurrender} onClick={surrender}>
                                 {t('battle.surrender')}
                             </button>
@@ -420,17 +449,28 @@ function BattleScreen({ battleId, opening, isReplay = false }: { battleId: strin
     );
 }
 
-/** `replay`: a rota /replay/:id, que mostra uma batalha encerrada do começo ao fim em vez de deixar jogar. */
-export function BattlePage({ replay = false }: { replay?: boolean }) {
+/**
+ * `replay`: a rota /replay/:id, que mostra uma batalha encerrada do começo ao fim em vez de deixar jogar.
+ * `spectate`: a rota /watch/:id, que acompanha a batalha de um amigo sem jogar.
+ */
+export function BattlePage({ replay = false, spectate = false }: { replay?: boolean; spectate?: boolean }) {
     const { t } = useTranslation();
     const { id } = useParams();
     const location = useLocation();
     const opening = (location.state as { opening?: BattleResponse } | null)?.opening;
 
     return (
-        <Layout title={t(replay ? 'replay.title' : 'battle.title')} hideMenu>
+        <Layout title={t(replay ? 'replay.title' : spectate ? 'spectate.title' : 'battle.title')} hideMenu>
             {/* key: trocar de batalha (ou da batalha para o replay dela) recria a tela do zero */}
-            {id && <BattleScreen key={`${replay ? 'replay' : 'battle'}-${id}`} battleId={id} isReplay={replay} {...(!replay && opening && { opening })} />}
+            {id && (
+                <BattleScreen
+                    key={`${replay ? 'replay' : spectate ? 'watch' : 'battle'}-${id}`}
+                    battleId={id}
+                    isReplay={replay}
+                    isSpectating={spectate}
+                    {...(!replay && !spectate && opening && { opening })}
+                />
+            )}
         </Layout>
     );
 }

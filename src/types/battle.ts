@@ -216,6 +216,8 @@ export interface BattleUnit {
     summons?: Form[];
     /** A unidade foi invocada (um esqueleto erguido no lugar de um aliado derrotado). */
     summoned?: boolean;
+    /** Chefe (da campanha ou da torre): aparece maior e com a marca de chefe. */
+    boss?: boolean;
     /**
      * Só em quem se transforma: o id da forma atual (ausente = a original),
      * todas as formas e a original (id 'base'). Transformada, a unidade já vem
@@ -260,6 +262,9 @@ export interface BattleState {
     difficulty?: AiDifficulty;
     /** Batalha da campanha: a fase (1, 2...). */
     campaignStage?: number;
+    /** Batalha da torre: o andar e os modificadores dele. */
+    towerFloor?: number;
+    towerModifiers?: string[];
 }
 
 /** O nível da IA nas partidas single player. */
@@ -280,6 +285,24 @@ export interface CampaignStage {
     unlocked: boolean;
     /** Os níveis em que o jogador já venceu a fase. */
     clearedOn: AiDifficulty[];
+    /** O chefe da fase, quando ela tem: a posição no time inimigo e o nome. */
+    boss: { slot: number; name: string } | null;
+}
+
+/** A torre: o andar mais alto vencido e o próximo. */
+export interface TowerView {
+    best: number;
+    next: {
+        floor: number;
+        enemyTeam: string[];
+        arena: ArenaId;
+        difficulty: AiDifficulty;
+        /** Ids dos modificadores (tower.modifiers.<id> nas traduções). */
+        modifiers: string[];
+        /** Quanto a vida e o ataque dos inimigos cresceram, em %. */
+        scalePercent: number;
+        reward: { gold: number; diamonds: number };
+    };
 }
 
 /** Os cenários possíveis (a imagem de cada um fica em src/assets/scenery). */
@@ -408,6 +431,10 @@ export interface BattleView {
     difficulty: AiDifficulty | null;
     /** Batalha da campanha: a fase. */
     campaignStage: number | null;
+    /** Batalha da torre: o andar. */
+    towerFloor: number | null;
+    /** Você só assiste (a batalha é de um amigo): nada para escolher, o lado mostrado é o A. */
+    spectating: boolean;
     /**
      * Partida entre jogadores em andamento: quanto tempo quem está na vez ainda
      * tem para jogar, em ms, no instante da resposta. Em zero, a jogada é feita
@@ -449,6 +476,8 @@ export interface BattleSummary {
     difficulty: AiDifficulty | null;
     /** Batalha da campanha: a fase. */
     campaignStage: number | null;
+    /** Batalha da torre: o andar. */
+    towerFloor: number | null;
     createdAt: string;
     updatedAt: string;
     finishedAt: string | null;

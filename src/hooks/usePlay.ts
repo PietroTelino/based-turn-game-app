@@ -52,7 +52,7 @@ export function usePlay() {
      * da IA, o time dela (partida rápida) ou a fase (campanha). Devolve
      * `false` se não deu certo (o aviso já apareceu).
      */
-    async function start(team: string[], options: Pick<CreateBattleOptions, 'difficulty' | 'campaignStage' | 'enemyTeam'> = {}): Promise<boolean> {
+    async function start(team: string[], options: Pick<CreateBattleOptions, 'difficulty' | 'campaignStage' | 'enemyTeam' | 'towerFloor'> = {}): Promise<boolean> {
         if (team.length !== TEAM_SIZE || isStarting) return false;
 
         setIsStarting(true);

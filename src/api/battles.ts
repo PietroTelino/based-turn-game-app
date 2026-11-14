@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { AiDifficulty, BattleActionInput, BattleResponse, BattleSummary, BattleView, CampaignStage, Character, ReplayResponse } from '@/types/battle';
+import type { AiDifficulty, BattleActionInput, BattleResponse, BattleSummary, BattleView, CampaignStage, Character, ReplayResponse, TowerView } from '@/types/battle';
 
 export async function getCharacters(): Promise<Character[]> {
     const { data } = await api.get<Character[]>('/battles/characters');
@@ -27,6 +27,20 @@ export interface CreateBattleOptions {
     difficulty?: AiDifficulty;
     /** Uma fase da campanha: o time inimigo e o cenário são os dela. */
     campaignStage?: number;
+    /** Um andar da torre (o próximo do jogador): time, nível e cenário são os do andar. */
+    towerFloor?: number;
+}
+
+/** A torre: até onde o jogador chegou e o próximo andar. */
+export async function getTower(): Promise<TowerView> {
+    const { data } = await api.get<TowerView>('/battles/tower');
+    return data;
+}
+
+/** Assistir à batalha de um amigo: a batalha (do lado A) e o que aconteceu depois dos `after` primeiros eventos. */
+export async function watchBattle(id: string, after: number): Promise<BattleResponse> {
+    const { data } = await api.get<BattleResponse>(`/battles/${id}/watch`, { params: { after } });
+    return data;
 }
 
 /** Cria uma batalha contra a IA. */

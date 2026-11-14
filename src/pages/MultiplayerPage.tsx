@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/Layout';
 import { Collection } from '@/components/battle/Collection';
+import { Friends } from '@/components/battle/Friends';
+import { Leaderboard } from '@/components/battle/Leaderboard';
 import { ModeTabs } from '@/components/battle/ModeTabs';
 import { RankedLobby } from '@/components/battle/RankedLobby';
 import { TutorialLock } from '@/components/battle/TutorialLock';
@@ -12,7 +14,7 @@ import '@/styles/battle.css';
 const CODE_LENGTH = 6;
 
 /** As abas do multiplayer: cada uma é uma rota. */
-export type MultiplayerMode = 'casual' | 'ranked' | 'collection';
+export type MultiplayerMode = 'casual' | 'ranked' | 'leaderboard' | 'friends' | 'collection';
 
 /**
  * Multiplayer: jogar contra outras pessoas. Na partida casual, por uma sala
@@ -39,6 +41,8 @@ export function MultiplayerPage({ mode = 'casual' }: { mode?: MultiplayerMode })
                         tabs={[
                             { to: '/multiplayer', label: t('multiplayer.tabs.casual'), locked },
                             { to: '/multiplayer/ranked', label: t('multiplayer.tabs.ranked'), locked },
+                            { to: '/multiplayer/leaderboard', label: t('multiplayer.tabs.leaderboard') },
+                            { to: '/multiplayer/friends', label: t('multiplayer.tabs.friends') },
                             { to: '/multiplayer/collection', label: t('multiplayer.tabs.collection') },
                         ]}
                     />
@@ -47,6 +51,10 @@ export function MultiplayerPage({ mode = 'casual' }: { mode?: MultiplayerMode })
                 {/* A coleção não é partida: fica aberta mesmo sem o tutorial. */}
                 {mode === 'collection' ? (
                     <Collection />
+                ) : mode === 'leaderboard' ? (
+                    <Leaderboard />
+                ) : mode === 'friends' ? (
+                    <Friends />
                 ) : (
                     <>
                         {locked && <TutorialLock />}

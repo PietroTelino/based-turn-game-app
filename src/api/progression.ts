@@ -27,7 +27,26 @@ export interface ShopItem {
     achievementId: string | null;
 }
 
-/** Saldo, personagens do jogador, conquistas e a loja. */
+export interface Mission {
+    id: string;
+    metric: 'play' | 'win' | 'winRole' | 'winHard' | 'winCampaign' | 'winTower' | 'playVersus' | 'winVersus' | 'playRanked';
+    /** Nas missões de categoria: qual (mage, support...). */
+    role: string | null;
+    goal: number;
+    progress: number;
+    reward: { gold: number; diamonds: number };
+    claimed: boolean;
+}
+
+export interface Stars {
+    total: number;
+    max: number;
+    /** Estrelas de cada fase, pelo número da fase. */
+    byStage: Record<string, number>;
+    chests: { at: number; gold: number; diamonds: number; claimed: boolean }[];
+}
+
+/** Saldo, personagens do jogador, conquistas, missões, estrelas e a loja. */
 export interface Progression {
     gold: number;
     diamonds: number;
@@ -35,6 +54,16 @@ export interface Progression {
     owned: string[];
     achievements: Achievement[];
     shop: ShopItem[];
+    missions: { daily: Mission[]; weekly: Mission[]; dailyResetsAt: string; weeklyResetsAt: string };
+    stars: Stars;
+}
+
+/** O que dá para resgatar: uma missão do dia ou da semana, ou um baú de estrelas. */
+export type ClaimTarget = { type: 'daily' | 'weekly'; id: string } | { type: 'chest'; at: number };
+
+export async function claimReward(target: ClaimTarget): Promise<Progression> {
+    const { data } = await api.post<Progression>('/progression/claim', target);
+    return data;
 }
 
 export interface BattleReward {

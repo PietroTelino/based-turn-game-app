@@ -38,11 +38,16 @@ export default function App() {
                 <Route path="/play/collection" element={<PlayPage mode='collection' />} />
                 <Route path="/play/achievements" element={<PlayPage mode='achievements' />} />
                 <Route path="/play/shop" element={<PlayPage mode='shop' />} />
+                <Route path="/play/tower" element={<PlayPage mode='tower' />} />
+                <Route path="/play/missions" element={<PlayPage mode='missions' />} />
                 <Route path="/battle/:id" element={<BattlePage />} />
                 <Route path="/replay/:id" element={<BattlePage replay />} />
+                <Route path="/watch/:id" element={<BattlePage spectate />} />
                 <Route path="/multiplayer" element={<MultiplayerPage mode='casual' />} />
                 <Route path="/multiplayer/ranked" element={<MultiplayerPage mode='ranked' />} />
                 <Route path="/multiplayer/collection" element={<MultiplayerPage mode='collection' />} />
+                <Route path="/multiplayer/leaderboard" element={<MultiplayerPage mode='leaderboard' />} />
+                <Route path="/multiplayer/friends" element={<MultiplayerPage mode='friends' />} />
                 {/* A ranqueada era uma página própria: o endereço antigo leva à aba nova. */}
                 <Route path="/ranked" element={<Navigate to="/multiplayer/ranked" replace />} />
                 <Route path="/room/:code" element={<RoomPage />} />

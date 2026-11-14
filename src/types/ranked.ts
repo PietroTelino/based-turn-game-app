@@ -75,6 +75,38 @@ export interface RankedProfile {
     wins: number;
     losses: number;
     queue: QueueView;
+    /** A temporada atual (ex.: "2026-11") e quando ela acaba. */
+    season: { id: string; endsAt: string };
+    /** Como você terminou a última temporada em que jogou, e o que ganhou. */
+    lastSeason: SeasonResult | null;
+}
+
+export interface SeasonResult {
+    season: string;
+    rating: number;
+    rank: RankId;
+    wins: number;
+    losses: number;
+    gold: number;
+    diamonds: number;
+}
+
+export interface LeaderboardEntry {
+    position: number;
+    userId: string;
+    name: string;
+    points: number;
+    rank: RankId;
+    wins: number;
+    losses: number;
+}
+
+/** Os melhores da temporada e a sua posição (se você jogou nela). */
+export interface Leaderboard {
+    season: string;
+    endsAt: string;
+    entries: LeaderboardEntry[];
+    you: { position: number; points: number } | null;
 }
 
 /** Um personagem numa lista de mais usados. */
